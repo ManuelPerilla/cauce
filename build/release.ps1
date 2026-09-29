@@ -82,11 +82,16 @@ OAuth tokens are still stored in Windows Credential Manager for the current Wind
         $MsiOut = Join-Path $Artifacts "msi\$Rid"
         New-Item -ItemType Directory -Path $MsiOut -Force | Out-Null
 
+        $WixObj = Join-Path $Artifacts "wix-obj\$Rid"
+        New-CleanDirectory $WixObj
+
         & dotnet build $InstallerProject `
             --configuration Release `
+            --no-incremental `
             -p:Version=$Version `
             -p:InstallerPlatform=$Arch `
             -p:NgMusicPayloadDir=$PublishDir `
+            -p:IntermediateOutputPath="$WixObj\" `
             -p:OutputPath="$MsiOut\"
         if ($LASTEXITCODE -ne 0) { throw "MSI build failed for $Rid." }
 
