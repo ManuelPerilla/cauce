@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.0
+
+- Added a graphical Windows Setup.exe with a Next → Next → Install wizard.
+- Setup collects the Google OAuth Desktop Client ID before NgMusic first runs.
+- Setup installs the matching architecture-specific MSI after UAC approval.
+- Setup can create Start-menu and desktop shortcuts.
+- Setup can launch NgMusic when installation finishes.
+- Direct MSI and portable ZIP distributions remain available.
+- Updated multilingual installation documentation.
+
 ## 0.3.0
 
 - Added interactive Google OAuth setup on first `login`.
