@@ -1,17 +1,9 @@
 # Installation
 
-NgMusic cible Windows 10 et Windows 11 modernes.
+Setup.exe, MSI et ZIP portable sont tous officiellement pris en charge.
 
-| Système | Package |
-| --- | --- |
-| Intel/AMD 64 bits | `NgMusic-<version>-win-x64.msi` |
-| Windows on ARM | `NgMusic-<version>-win-arm64.msi` |
-| Windows 32 bits | `NgMusic-<version>-win-x86.msi` |
+Après une installation MSI interactive, le configurateur NgMusic s'ouvre afin d'enregistrer le Client ID Google OAuth Desktop et les raccourcis. L'état final est donc aligné avec Setup.exe.
 
-Téléchargez le MSI correspondant, vérifiez éventuellement le SHA-256, exécutez l'installateur et acceptez l'élévation administrateur si nécessaire. Ouvrez ensuite un nouveau terminal et lancez `ngmusic`.
+Un MSI silencieux (/qn) n'ouvre aucune interface, ce qui convient aux déploiements administrés. L'utilisateur peut ensuite exécuter `ngmusic setup`.
 
-Le MSI installe sous Program Files, enregistre les informations d'upgrade/désinstallation et ajoute NgMusic au `PATH` système. La version actuelle ne crée pas de raccourci dans le menu Démarrer.
-
-Pour la version portable, extrayez le ZIP et lancez `ngmusic.exe`.
-
-Les releases sont self-contained : .NET n'a pas besoin d'être installé séparément.
+Le mode portable ne modifie ni Program Files ni PATH.

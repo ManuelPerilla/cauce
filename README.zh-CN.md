@@ -1,24 +1,17 @@
 # NgMusic
 
-**Windows PowerShell 风格终端音乐控制器。**
+**Windows PowerShell 风格终端音乐播放器。**
 
-推荐使用图形安装程序：
+支持三种分发方式：
 
-```text
-NgMusic-<version>-win-x64-setup.exe
-NgMusic-<version>-win-arm64-setup.exe
-NgMusic-<version>-win-x86-setup.exe
-```
+- Setup.exe：推荐的图形向导。
+- MSI：Windows 原生安装，交互式安装完成后自动打开配置器。
+- Portable ZIP：解压即用。
 
-安装向导提供标准的“下一步 → 下一步 → 安装”流程，并配置 Google OAuth Desktop Client ID、Program Files 安装、系统 PATH 和可选快捷方式。
+交互式 MSI 与 Setup.exe 最终达到相同配置状态：Program Files、PATH、OAuth Client ID 和可选快捷方式。
+
+静默 MSI 保持完全静默，适用于企业部署。
 
 安装后通常只需要：
 
-```text
-ngmusic
-login
-search "..."
-play 1
-```
-
-MSI 和 portable ZIP 仍然保留。
+`ngmusic → login → search → play`

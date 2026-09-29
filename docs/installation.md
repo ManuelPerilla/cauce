@@ -1,60 +1,83 @@
-# Installation
+# Installation and package behavior
 
 [Documentation home](../README.md) · [Configuration](configuration.md) · [Troubleshooting](troubleshooting.md)
 
-NgMusic targets modern Windows 10 and Windows 11.
+NgMusic supports Windows 10/11 on x64, ARM64, and legacy x86.
 
-## Recommended: graphical Setup.exe
+## Package matrix
 
-Download the setup executable matching your architecture:
+| Format | Installs application | PATH | OAuth setup | Shortcuts |
+| --- | --- | --- | --- | --- |
+| Setup.exe | Program Files | System | In graphical wizard | Optional Start/Desktop |
+| Interactive MSI | Program Files | System | Configurator after MSI finishes | Optional Start/Desktop |
+| Silent MSI | Program Files | System | No UI; admin/in-app setup later | None automatically |
+| Portable ZIP | Extracted folder | No | First `login` if needed | None automatically |
 
-| System type | Recommended package |
-| --- | --- |
-| Intel/AMD 64-bit | `NgMusic-<version>-win-x64-setup.exe` |
-| Windows on ARM | `NgMusic-<version>-win-arm64-setup.exe` |
-| 32-bit Windows | `NgMusic-<version>-win-x86-setup.exe` |
+## Recommended: Setup.exe
 
-The graphical installer is designed for a normal **Next → Next → Install** flow.
+Download the architecture-matching `*-setup.exe`.
 
-### What the wizard does
+The wizard:
 
-- Explains the prerequisites.
-- Collects the Google OAuth Desktop Client ID.
-- Can open the step-by-step OAuth guide.
-- Installs the architecture-matching MSI silently after Windows UAC approval.
-- Installs NgMusic under Program Files.
-- Adds the NgMusic directory to system `PATH`.
-- Saves the Client ID for the current user in `%LOCALAPPDATA%\NgMusic\config.json`.
-- Optionally creates a Start-menu shortcut.
-- Optionally creates a desktop shortcut.
-- Optionally launches NgMusic when setup finishes.
+1. explains requirements;
+2. asks for the non-secret Google OAuth Desktop Client ID;
+3. offers shortcut options;
+4. requests UAC only for the Program Files/MSI installation;
+5. saves OAuth configuration to the current user's profile;
+6. optionally launches NgMusic.
 
-The installer does not store Google passwords, OAuth access/refresh tokens, API keys, or signing secrets.
+No separate .NET runtime is required.
 
-### Why UAC appears only during install
+## Direct MSI
 
-The setup wizard runs initially as the current user so the Client ID is saved to the correct Windows profile. It elevates only the MSI installation step that needs access to Program Files and the system `PATH`.
+The MSI is a fully supported installation path, not a reduced package.
 
-## Direct MSI installation
+It installs:
 
-The MSI remains available for managed deployment or users who prefer Windows Installer directly.
+- `ngmusic.exe`;
+- `NgMusicConfigurator.exe`;
+- Windows Installer upgrade/uninstall metadata;
+- system `PATH` registration.
 
-It installs NgMusic under Program Files and adds it to the system `PATH`.
+### Interactive MSI behavior
 
-If you use the MSI directly, configure OAuth on first `login` through NgMusic's terminal wizard, or use the documented environment variables.
+When the MSI is launched normally with Windows Installer UI, NgMusic opens its post-install configurator after a successful first installation.
 
-## Portable ZIP
+The configurator lets the current user set the same OAuth Client ID and shortcut preferences exposed by Setup.exe.
 
-Extract the portable ZIP anywhere and run `ngmusic.exe`.
+### Silent/managed MSI behavior
 
-Portable mode does not modify Program Files, shortcuts, or `PATH`. On first login, the terminal setup wizard can save the Google OAuth Client ID for the current user.
+When deployed silently, for example:
 
-## Runtime requirements
+```powershell
+msiexec /i NgMusic-0.5.0-win-x64.msi /qn /norestart
+```
 
-Official releases are self-contained. No separate .NET installation is required.
+the MSI does **not** open post-install UI.
+
+This is intentional for GPO, Intune, SCCM, scripted, or other managed deployment systems.
+
+After silent deployment, configuration can be supplied through environment variables or completed with:
+
+```text
+ngmusic
+setup
+```
+
+## Setup.exe vs MSI
+
+Setup.exe wraps the same architecture-specific MSI. It passes an internal marker to prevent the MSI from opening a second configurator, because Setup.exe already completed that step.
+
+This keeps one application payload and one Windows Installer package per architecture while providing two installer experiences.
+
+## Portable
+
+Portable builds remain self-contained and require no installation.
+
+OAuth setup still works through the in-app wizard.
 
 ## Uninstall
 
-For Setup.exe or MSI installations, use **Settings → Apps → Installed apps → NgMusic → Uninstall**.
+Installed editions uninstall through **Settings → Apps → Installed apps → NgMusic**.
 
-Portable installations are removed by deleting the extracted folder. Use `logout` first if you also want to remove NgMusic's OAuth token from Windows Credential Manager.
+OAuth tokens are user credentials and are intentionally not deleted automatically by a machine-wide uninstall. Run `logout` if you want to remove the saved OAuth token first.

@@ -1,25 +1,9 @@
 # 安装
 
-NgMusic 面向现代 Windows 10 和 Windows 11。
+Setup.exe、MSI 和 Portable ZIP 都是正式支持的安装方式。
 
-## 选择正确的软件包
+交互式 MSI 安装完成后会自动启动 NgMusic 配置器，用于保存 Google OAuth Desktop Client ID 和创建快捷方式，因此最终状态与 Setup.exe 一致。
 
-| 系统 | 推荐包 |
-| --- | --- |
-| Intel/AMD 64 位 | `NgMusic-<版本>-win-x64.msi` |
-| Windows on ARM | `NgMusic-<版本>-win-arm64.msi` |
-| 32 位 Windows | `NgMusic-<版本>-win-x86.msi` |
+静默 MSI（/qn）不会弹出配置窗口，适合企业部署。之后可运行 `ngmusic setup`。
 
-## MSI
-
-下载对应架构的 MSI，按需使用 `SHA256SUMS.txt` 校验，然后运行安装程序。Windows 可能要求管理员权限。安装完成后请打开新的终端并运行 `ngmusic`。
-
-MSI 安装到 Program Files，注册升级/卸载信息并加入系统 `PATH`。当前版本不会创建开始菜单快捷方式。
-
-## 便携版
-
-解压对应的 portable ZIP，然后运行 `ngmusic.exe`。它不会修改 Program Files 或 `PATH`。
-
-OAuth token 仍保存在 Windows Credential Manager。
-
-官方 release 是 self-contained，运行时无需单独安装 .NET。
+Portable 模式不修改 Program Files 或 PATH。

@@ -1,63 +1,59 @@
 # NgMusic
 
-**A PowerShell-inspired, terminal-first music controller for Windows, using Google OAuth and YouTube's supported embedded player.**
+**PowerShell-inspired terminal music player for Windows with Google OAuth, YouTube playback, graphical/MSI installers, and portable builds.**
 
 [English](README.md) · [Español](README.es.md) · [简体中文](README.zh-CN.md) · [हिन्दी](README.hi.md) · [Français](README.fr.md)
 
-> **Project status:** early-stage but usable. Public releases are built automatically with GitHub Actions for Windows x64, ARM64, and x86.
+> **Repository description:** PowerShell-inspired terminal music player for Windows with Google OAuth, YouTube playback, MSI/Setup.exe and portable builds.
 
-## Recommended install: Setup.exe
+## Installation options
 
-For the smoothest experience, download the architecture-matching graphical installer:
+All three distribution channels are supported and lead to the same usable NgMusic configuration.
 
-```text
-NgMusic-<version>-win-x64-setup.exe
-NgMusic-<version>-win-arm64-setup.exe
-NgMusic-<version>-win-x86-setup.exe
-```
+| Package | Experience | OAuth setup |
+| --- | --- | --- |
+| `*-setup.exe` | Recommended graphical Next → Next → Install wizard | During installer wizard |
+| `*.msi` | Native Windows Installer | Post-install configurator opens automatically for interactive installs |
+| `*-portable.zip` | Extract and run | First `login` launches terminal setup |
 
-The wizard walks through:
+### Graphical Setup.exe
 
-1. Welcome
-2. Google OAuth Desktop Client ID
-3. Optional shortcuts
-4. Windows installation
-5. Finish / launch NgMusic
+The recommended option. It collects the Google OAuth Desktop Client ID, installs the matching MSI, configures shortcuts, adds NgMusic to `PATH`, and can launch NgMusic when finished.
 
-The installer embeds the matching MSI, installs the self-contained app under Program Files, adds `ngmusic` to system `PATH`, saves the non-secret Google OAuth Client ID for the current user, and optionally creates Start-menu/Desktop shortcuts.
+### Direct MSI
 
-After setup, the intended first session is:
+The MSI now installs the same application payload and also includes the same configuration capability.
+
+When you double-click the MSI interactively, Windows installs NgMusic and then opens **Finish setting up NgMusic**, where you can:
+
+- enter the Google OAuth Desktop Client ID;
+- create a Start-menu shortcut;
+- create a desktop shortcut;
+- launch NgMusic.
+
+For managed silent deployments, the MSI remains silent and does not unexpectedly open configuration windows. Administrators can provide environment configuration or users can run `setup` later.
+
+### Portable
+
+Extract and run `ngmusic.exe`. No Program Files or `PATH` changes. If OAuth is not configured, the first `login` opens the terminal setup wizard.
+
+## Ready-to-use flow
+
+After either Setup.exe or an interactive MSI installation:
 
 ```text
 PS C:\> ngmusic
+
 PS Music:\> login
 PS Music:\> search "Massive Attack Teardrop"
 PS Music:\> play 1
 ```
 
-No manual .NET installation or Client-ID environment variable is required.
+Official releases are self-contained, so users do not need to install .NET separately.
 
-## Other distribution options
+## OAuth storage
 
-| Option | Best for |
-| --- | --- |
-| `*-setup.exe` | Recommended guided installation |
-| `*.msi` | Direct/managed Windows Installer deployment |
-| `*-portable.zip` | No installation / removable folder |
-
-All official builds are self-contained.
-
-## What NgMusic is
-
-NgMusic is a personal Windows music shell for people who prefer keyboard and terminal workflows. It provides PowerShell-like commands for search, playback, volume, seeking, queue management, and Google authentication.
-
-Playback remains inside YouTube's visible official IFrame player. NgMusic does not extract raw media streams or download tracks.
-
-## OAuth and local configuration
-
-The graphical installer can save the Google OAuth **Desktop app Client ID** before NgMusic ever runs.
-
-That Client ID is not secret and is stored in:
+The non-secret Google OAuth Desktop Client ID is stored in:
 
 ```text
 %LOCALAPPDATA%\NgMusic\config.json
@@ -65,12 +61,22 @@ That Client ID is not secret and is stored in:
 
 OAuth access/refresh tokens remain in **Windows Credential Manager**.
 
-If setup was skipped or the Client ID was not supplied, `login` still falls back to NgMusic's interactive terminal setup wizard.
+Client secrets and API keys are not written to NgMusic's JSON configuration.
+
+## Windows packages
+
+NgMusic releases x64, ARM64, and x86 variants of:
+
+- graphical Setup.exe;
+- MSI;
+- portable ZIP.
+
+Use the [latest GitHub Release](https://github.com/ManuelPerilla/ngmusic/releases/latest).
 
 ## Documentation
 
-- [Installation](docs/installation.md)
-- [Configuration and Google OAuth](docs/configuration.md)
+- [Installation and package behavior](docs/installation.md)
+- [Google OAuth configuration](docs/configuration.md)
 - [Command reference](docs/commands.md)
 - [Architecture](docs/architecture.md)
 - [Security and privacy](docs/security.md)
@@ -78,8 +84,8 @@ If setup was skipped or the Client ID was not supplied, `login` still falls back
 - [Building and releasing](docs/releasing.md)
 - [Code signing policy](docs/code-signing-policy.md)
 
-## Code signing status
+## Code signing
 
-SignPath Foundation approval is pending. If official signing becomes active:
+SignPath Foundation approval is pending. When official signing is enabled:
 
 **Free code signing provided by SignPath.io, certificate by SignPath Foundation.**

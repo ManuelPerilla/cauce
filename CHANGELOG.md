@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.5.0
+
+- Aligned interactive MSI installation with the graphical Setup.exe flow.
+- Added a shared post-install configurator for Google OAuth Client ID and shortcuts.
+- Interactive MSI installs now launch the configurator after installation.
+- Silent/managed MSI installs remain fully silent.
+- Setup.exe suppresses the MSI configurator because it already performs the same configuration.
+- Kept MSI, graphical Setup.exe, and portable ZIP as supported distribution channels.
+- Expanded installation/distribution documentation.
+
 ## 0.4.0
 
 - Added a graphical Windows Setup.exe with a Next → Next → Install wizard.

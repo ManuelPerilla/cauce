@@ -1,29 +1,28 @@
 # Instalación
 
-## Recomendado: Setup.exe gráfico
+NgMusic ofrece Setup.exe, MSI y ZIP portable.
 
-Descarga el `*-setup.exe` correspondiente a x64, ARM64 o x86.
+## Setup.exe
 
-El asistente:
+Es la opción recomendada. Configura OAuth antes de instalar y permite crear accesos directos.
 
-1. muestra bienvenida;
-2. pide el Google OAuth Client ID tipo Desktop app;
-3. permite elegir accesos directos;
-4. instala NgMusic tras pedir UAC;
-5. guarda el Client ID en tu perfil;
-6. puede lanzar NgMusic.
+## MSI interactivo
 
-No necesitas instalar .NET.
+Al hacer doble clic:
 
-El Client ID queda en `%LOCALAPPDATA%\NgMusic\config.json`. Los tokens OAuth se guardan en Windows Credential Manager.
+1. instala NgMusic en Program Files;
+2. añade NgMusic al PATH;
+3. abre el configurador al terminar;
+4. permite guardar el Client ID y crear accesos directos.
 
-El MSI directo y el ZIP portable siguen disponibles.
+El resultado funcional queda alineado con Setup.exe.
 
-Después del Setup.exe:
+## MSI silencioso
 
-```text
-ngmusic
-login
-search "Massive Attack Teardrop"
-play 1
-```
+Con `/qn` no abre interfaz ni configurador. Esto es intencional para GPO, Intune, SCCM y scripts.
+
+Después puede ejecutarse `ngmusic setup` o usarse configuración por variables de entorno.
+
+## Portable
+
+No instala nada. El primer `login` puede lanzar el asistente de configuración.

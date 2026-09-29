@@ -6,7 +6,7 @@ on:
       version:
         description: Release version (for example 0.4.0)
         required: true
-        default: 0.4.0
+        default: 0.5.0
   push:
     branches:
       - main
@@ -108,7 +108,7 @@ jobs:
             "- Combined Windows package bundle"
             "- SHA-256 checksums"
             ""
-            "The graphical installer collects the non-secret Google OAuth Desktop Client ID during setup so the normal first session can be login → search → play."
+            "Setup.exe configures OAuth during the wizard. Interactive MSI installation launches the same post-install configurator. Silent MSI deployment stays silent and can be configured through environment variables or the in-app setup command."
           ) | Set-Content $notesPath -Encoding utf8
 
           gh release view $tag --repo $env:GITHUB_REPOSITORY *> $null

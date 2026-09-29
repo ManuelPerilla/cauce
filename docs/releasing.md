@@ -1,45 +1,46 @@
 # Building and releasing
 
-[Documentation home](../README.md) · [Architecture](architecture.md) · [Code signing policy](code-signing-policy.md)
+## Distribution architecture
 
-## Release outputs
+For each RID (`win-x64`, `win-arm64`, `win-x86`) the release pipeline builds:
 
-For every selected Windows architecture, the release script produces:
+1. the self-contained NgMusic application;
+2. the portable ZIP;
+3. the self-contained post-install configurator;
+4. the MSI containing NgMusic + configurator;
+5. the graphical Setup.exe embedding that MSI.
 
-- graphical `Setup.exe`;
-- direct MSI installer;
-- portable ZIP.
+This means Setup.exe and MSI use the same application payload rather than independently packaged copies.
 
-The graphical setup executable embeds the matching MSI, so each setup binary is architecture-specific.
+## MSI configurator rules
 
-## Build
+Interactive first-time MSI installation schedules `NgMusicConfigurator.exe` after `InstallFinalize`.
+
+The custom action:
+
+- runs only for a first install;
+- runs only when Windows Installer UI is present;
+- runs in the installing user's context;
+- is asynchronous so MSI completion is not blocked by the configurator;
+- is suppressed when MSI is invoked by NgMusic Setup.exe;
+- is suppressed for silent deployments.
+
+## Build command
 
 ```powershell
-.\build\release.ps1 -Version 0.4.0
+.\build\release.ps1 -Version 0.5.0
 ```
 
-For each architecture the pipeline:
+## Release validation checklist
 
-1. publishes the self-contained NgMusic application;
-2. creates the portable ZIP;
-3. builds an architecture-specific MSI;
-4. builds an architecture-specific WinForms Setup.exe embedding that MSI;
-5. generates SHA-256 checksums;
-6. uploads the GitHub Actions package;
-7. publishes GitHub Release assets.
-
-## Release validation
-
-The release must verify that:
-
-- x64, ARM64, and x86 application payloads differ where expected;
-- each MSI embeds the correct architecture;
-- each Setup.exe embeds its matching MSI;
-- the graphical setup can save the current user's OAuth Client ID;
-- installation completes after UAC approval;
-- `ngmusic` resolves from a newly opened terminal;
-- uninstall works through Windows Settings.
-
-## Signing
-
-When code signing is active, sign the NgMusic application payload and installation artifacts in the approved pipeline. Setup executables and MSI packages should both receive Authenticode signatures before public release.
+- Build x64, ARM64 and x86.
+- Confirm Setup.exe, MSI and portable ZIP exist for every architecture.
+- Confirm architecture hashes differ where expected.
+- Confirm interactive MSI launches the post-install configurator.
+- Confirm silent MSI does not launch UI.
+- Confirm Setup.exe does not produce a duplicate configurator.
+- Confirm Client ID is saved under the current user's LocalAppData.
+- Confirm `ngmusic` resolves from a new terminal after installed editions.
+- Confirm Windows uninstall succeeds.
+- Generate SHA-256 checksums.
+- Sign all executable/MSI artifacts when signing is available.

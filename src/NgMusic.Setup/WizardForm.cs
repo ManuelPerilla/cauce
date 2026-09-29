@@ -407,7 +407,7 @@ internal sealed class WizardForm : Form
         var startInfo = new ProcessStartInfo
         {
             FileName = "msiexec.exe",
-            Arguments = $"/i \"{msiPath}\" /qn /norestart",
+            Arguments = $"/i \"{msiPath}\" NGMUSIC_WRAPPER=1 /qn /norestart",
             UseShellExecute = true,
             Verb = "runas"
         };

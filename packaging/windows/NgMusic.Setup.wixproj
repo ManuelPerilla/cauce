@@ -3,7 +3,8 @@
     <OutputName>NgMusic</OutputName>
     <InstallerPlatform Condition="'$(InstallerPlatform)' == ''">x64</InstallerPlatform>
     <NgMusicPayloadDir Condition="'$(NgMusicPayloadDir)' == ''">$(MSBuildThisFileDirectory)..\..\artifacts\publish\win-$(InstallerPlatform)</NgMusicPayloadDir>
-    <DefineConstants>Version=$(Version);PayloadDir=$(NgMusicPayloadDir)</DefineConstants>
+    <NgMusicConfiguratorPath Condition="'$(NgMusicConfiguratorPath)' == ''">$(MSBuildThisFileDirectory)..\..\artifacts\configurator\win-$(InstallerPlatform)\NgMusicConfigurator.exe</NgMusicConfiguratorPath>
+    <DefineConstants>Version=$(Version);PayloadDir=$(NgMusicPayloadDir);ConfiguratorPath=$(NgMusicConfiguratorPath)</DefineConstants>
     <DebugType>none</DebugType>
   </PropertyGroup>
 </Project>

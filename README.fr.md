@@ -1,18 +1,15 @@
 # NgMusic
 
-**Contrôleur musical Windows orienté terminal et inspiré de PowerShell.**
+**Lecteur musical Windows orienté terminal, inspiré de PowerShell.**
 
-L'option recommandée devient le `Setup.exe` graphique.
+Trois formats sont pris en charge :
 
-L'assistant suit le flux classique **Suivant → Suivant → Installer** et configure le Client ID Google OAuth Desktop, l'installation dans Program Files, le PATH et les raccourcis optionnels.
+- Setup.exe : assistant graphique recommandé.
+- MSI : Windows Installer natif avec configurateur après une installation interactive.
+- ZIP portable : extraire et exécuter.
 
-Après installation :
+Le MSI interactif aboutit au même état fonctionnel que Setup.exe : Program Files, PATH, Client ID OAuth et raccourcis optionnels.
 
-```text
-ngmusic
-login
-search "..."
-play 1
-```
+Le MSI silencieux reste silencieux pour les déploiements administrés.
 
-Le MSI direct et le ZIP portable restent disponibles.
+Flux normal : `ngmusic → login → search → play`

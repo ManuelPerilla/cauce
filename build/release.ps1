@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [string]$Version = "0.4.0",
+    [string]$Version = "0.5.0",
     [ValidateSet("x64", "arm64", "x86")]
     [string[]]$Architectures = @("x64", "arm64", "x86"),
     [switch]$SkipInstaller
@@ -13,6 +13,7 @@ $Root = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $Project = Join-Path $Root "src\NgMusic\NgMusic.csproj"
 $InstallerProject = Join-Path $Root "packaging\windows\NgMusic.Setup.wixproj"
 $GuiSetupProject = Join-Path $Root "src\NgMusic.Setup\NgMusic.Setup.csproj"
+$ConfiguratorProject = Join-Path $Root "src\NgMusic.Configurator\NgMusic.Configurator.csproj"
 $Artifacts = Join-Path $Root "artifacts"
 $PublishRoot = Join-Path $Artifacts "publish"
 $ReleaseRoot = Join-Path $Artifacts "release"
@@ -40,7 +41,7 @@ foreach ($Arch in $Architectures) {
     $PublishDir = Join-Path $PublishRoot $Rid
     New-Item -ItemType Directory -Path $PublishDir -Force | Out-Null
 
-    Write-Host "`n[$Rid] Publishing self-contained single-file app..." -ForegroundColor Cyan
+    Write-Host "`n[$Rid] Publishing app..." -ForegroundColor Cyan
     & dotnet publish $Project `
         --configuration Release `
         --runtime $Rid `
@@ -49,7 +50,6 @@ foreach ($Arch in $Architectures) {
         -p:PublishDir="$PublishDir\" `
         -p:PublishSingleFile=true `
         -p:PublishReadyToRun=true `
-        -p:PublishReadyToRunShowWarnings=true `
         -p:PublishTrimmed=false `
         -p:DebugType=None `
         -p:DebugSymbols=false
@@ -58,31 +58,39 @@ foreach ($Arch in $Architectures) {
     $PortableStage = Join-Path $Artifacts "portable\$Rid"
     New-CleanDirectory $PortableStage
     Copy-Item -Path (Join-Path $PublishDir "*") -Destination $PortableStage -Recurse -Force
-
-    $PortableReadme = @"
-NgMusic $Version portable ($Rid)
-================================
-
-1. Put this folder anywhere you want.
-2. Run ngmusic.exe.
-3. The first 'login' starts the OAuth setup wizard if needed.
-
-No .NET runtime installation is required. This build is self-contained.
-Nothing is added to Program Files, the Start menu, or PATH.
-OAuth tokens are stored in Windows Credential Manager for the current Windows user.
-"@
-    Set-Content -Path (Join-Path $PortableStage "README-PORTABLE.txt") -Value $PortableReadme -Encoding UTF8
     Copy-Item (Join-Path $Root "docs\installation.md") (Join-Path $PortableStage "INSTALLATION.md") -Force
 
+    @"
+NgMusic $Version portable ($Rid)
+================================
+Run ngmusic.exe. On first login, NgMusic can configure the Google OAuth Client ID interactively.
+No .NET runtime is required. Portable mode does not modify Program Files or PATH.
+"@ | Set-Content -Path (Join-Path $PortableStage "README-PORTABLE.txt") -Encoding UTF8
+
     $PortableZip = Join-Path $ReleaseRoot "NgMusic-$Version-$Rid-portable.zip"
-    Write-Host "[$Rid] Creating portable ZIP..."
     Compress-Archive -Path (Join-Path $PortableStage "*") -DestinationPath $PortableZip -CompressionLevel Optimal
 
     if (-not $SkipInstaller) {
+        Write-Host "[$Rid] Publishing post-install configurator..."
+        $ConfiguratorOut = Join-Path $Artifacts "configurator\$Rid"
+        New-CleanDirectory $ConfiguratorOut
+
+        & dotnet publish $ConfiguratorProject `
+            --configuration Release `
+            --runtime $Rid `
+            --self-contained true `
+            -p:Version=$Version `
+            "-p:PublishDir=$ConfiguratorOut\" `
+            -p:PublishSingleFile=true `
+            -p:PublishTrimmed=false
+        if ($LASTEXITCODE -ne 0) { throw "Configurator build failed for $Rid." }
+
+        $ConfiguratorExe = Get-ChildItem $ConfiguratorOut -Filter "NgMusicConfigurator.exe" -File | Select-Object -First 1
+        if (-not $ConfiguratorExe) { throw "NgMusicConfigurator.exe was not found for $Rid." }
+
         Write-Host "[$Rid] Building MSI..."
         $MsiOut = Join-Path $Artifacts "msi\$Rid"
         New-Item -ItemType Directory -Path $MsiOut -Force | Out-Null
-
         $WixObj = Join-Path $Artifacts "wix-obj\$Rid"
         New-CleanDirectory $WixObj
 
@@ -92,15 +100,14 @@ OAuth tokens are stored in Windows Credential Manager for the current Windows us
             -p:Version=$Version `
             -p:InstallerPlatform=$Arch `
             -p:NgMusicPayloadDir=$PublishDir `
+            "-p:NgMusicConfiguratorPath=$($ConfiguratorExe.FullName)" `
             -p:IntermediateOutputPath="$WixObj\" `
             -p:OutputPath="$MsiOut\"
         if ($LASTEXITCODE -ne 0) { throw "MSI build failed for $Rid." }
 
-        $Msi = Get-ChildItem -Path $MsiOut -Filter "*.msi" -Recurse | Select-Object -First 1
+        $Msi = Get-ChildItem $MsiOut -Filter "*.msi" -Recurse | Select-Object -First 1
         if (-not $Msi) { throw "MSI build completed but no MSI was found for $Rid." }
-
-        $ReleaseMsi = Join-Path $ReleaseRoot "NgMusic-$Version-$Rid.msi"
-        Copy-Item $Msi.FullName $ReleaseMsi -Force
+        Copy-Item $Msi.FullName (Join-Path $ReleaseRoot "NgMusic-$Version-$Rid.msi") -Force
 
         Write-Host "[$Rid] Building graphical Setup.exe..."
         $GuiSetupOut = Join-Path $Artifacts "gui-setup\$Rid"
@@ -117,9 +124,8 @@ OAuth tokens are stored in Windows Credential Manager for the current Windows us
             -p:PublishTrimmed=false
         if ($LASTEXITCODE -ne 0) { throw "Graphical setup build failed for $Rid." }
 
-        $SetupExe = Get-ChildItem -Path $GuiSetupOut -Filter "NgMusicSetup.exe" -File | Select-Object -First 1
-        if (-not $SetupExe) { throw "Graphical setup build completed but NgMusicSetup.exe was not found for $Rid." }
-
+        $SetupExe = Get-ChildItem $GuiSetupOut -Filter "NgMusicSetup.exe" -File | Select-Object -First 1
+        if (-not $SetupExe) { throw "NgMusicSetup.exe was not found for $Rid." }
         Copy-Item $SetupExe.FullName (Join-Path $ReleaseRoot "NgMusic-$Version-$Rid-setup.exe") -Force
     }
 }

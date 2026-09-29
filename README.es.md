@@ -1,35 +1,20 @@
 # NgMusic
 
-**Controlador musical para Windows inspirado en PowerShell y centrado en terminal.**
+**Reproductor musical de terminal para Windows inspirado en PowerShell, con Google OAuth y reproducción de YouTube.**
 
-[English](README.md) · [Español](README.es.md) · [简体中文](README.zh-CN.md) · [हिन्दी](README.hi.md) · [Français](README.fr.md)
+## Paquetes
 
-## Instalación recomendada: Setup.exe
+| Paquete | Experiencia |
+| --- | --- |
+| Setup.exe | Recomendado: asistente gráfico |
+| MSI | Instalador nativo de Windows + configurador al terminar |
+| Portable ZIP | Extraer y ejecutar |
 
-La opción recomendada ahora es el instalador gráfico:
+El MSI interactivo ya deja el mismo estado funcional que Setup.exe: instala NgMusic, agrega `PATH` y abre un configurador para Client ID y accesos directos.
 
-```text
-NgMusic-<versión>-win-x64-setup.exe
-NgMusic-<versión>-win-arm64-setup.exe
-NgMusic-<versión>-win-x86-setup.exe
-```
+El MSI silencioso permanece silencioso para despliegues empresariales.
 
-El asistente hace el flujo típico **Siguiente → Siguiente → Instalar** y deja preparado:
-
-- NgMusic en Program Files.
-- `ngmusic` en el `PATH`.
-- Google OAuth Desktop Client ID.
-- Acceso directo en Inicio opcional.
-- Acceso directo en escritorio opcional.
-- Lanzar NgMusic al terminar.
-
-El Client ID no es secreto y se guarda en:
-
-`%LOCALAPPDATA%\NgMusic\config.json`
-
-Los tokens OAuth siguen en Windows Credential Manager.
-
-Después de instalar, la idea es:
+Después de Setup.exe o MSI interactivo:
 
 ```text
 ngmusic
@@ -38,6 +23,4 @@ search "..."
 play 1
 ```
 
-MSI directo y ZIP portable siguen disponibles como opciones alternativas.
-
-[Documentación de instalación](docs/i18n/es/installation.md)
+[Instalación](docs/i18n/es/installation.md)

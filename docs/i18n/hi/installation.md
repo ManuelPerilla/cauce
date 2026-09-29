@@ -1,17 +1,9 @@
 # Installation
 
-NgMusic modern Windows 10 और Windows 11 के लिए है।
+Setup.exe, MSI और Portable ZIP सभी supported हैं।
 
-| System | Package |
-| --- | --- |
-| Intel/AMD 64-bit | `NgMusic-<version>-win-x64.msi` |
-| Windows on ARM | `NgMusic-<version>-win-arm64.msi` |
-| 32-bit Windows | `NgMusic-<version>-win-x86.msi` |
+Interactive MSI install के बाद NgMusic configurator खोलता है ताकि Google OAuth Desktop Client ID और shortcuts configure किए जा सकें। इसलिए final state Setup.exe के बराबर है।
 
-MSI चलाएँ, जरूरत हो तो administrator approval दें, फिर नई terminal खोलकर `ngmusic` चलाएँ।
+Silent MSI (/qn) कोई UI नहीं खोलता और managed deployment के लिए सुरक्षित है। बाद में `ngmusic setup` चलाया जा सकता है।
 
-MSI Program Files में install करता है, upgrade/uninstall metadata register करता है और system `PATH` में NgMusic जोड़ता है। वर्तमान installer Start-menu shortcut नहीं बनाता।
-
-Portable ZIP extract करके `ngmusic.exe` चलाएँ। Portable mode Program Files या `PATH` नहीं बदलता।
-
-Official releases self-contained हैं; runtime के लिए .NET install करने की जरूरत नहीं।
+Portable mode Program Files या PATH नहीं बदलता।

@@ -1,18 +1,15 @@
 # NgMusic
 
-**Windows के लिए PowerShell-inspired terminal music controller।**
+**Windows के लिए PowerShell-inspired terminal music player।**
 
-Recommended option अब graphical `Setup.exe` है।
+तीन supported packages हैं:
 
-Wizard standard **Next → Next → Install** flow में Google OAuth Desktop Client ID, Program Files installation, PATH और optional shortcuts configure करता है।
+- Setup.exe: recommended graphical wizard
+- MSI: native Windows installer, interactive install के बाद configurator
+- Portable ZIP: extract and run
 
-Install के बाद सामान्य flow:
+Interactive MSI और Setup.exe एक ही functional state बनाते हैं: Program Files install, PATH, OAuth Client ID और optional shortcuts।
 
-```text
-ngmusic
-login
-search "..."
-play 1
-```
+Silent MSI enterprise deployment के लिए silent रहता है।
 
-Direct MSI और portable ZIP भी उपलब्ध रहेंगे।
+फिर सामान्य flow: `ngmusic → login → search → play`
