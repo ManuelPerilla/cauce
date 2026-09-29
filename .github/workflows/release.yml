@@ -95,26 +95,29 @@ jobs:
             Get-ChildItem $releaseDir -File | ForEach-Object { $_.FullName }
           ) + @($bundle)
 
+          $notesPath = Join-Path $PWD 'release-notes.md'
+          @(
+            "# NgMusic $version"
+            ""
+            "First packaged Windows release."
+            ""
+            "Included:"
+            "- MSI installers for x64, ARM64 and x86"
+            "- Portable self-contained ZIPs for x64, ARM64 and x86"
+            "- Combined Windows package bundle"
+            "- SHA-256 checksums"
+            ""
+            "The portable and installed editions use the same application payload."
+            "Google OAuth configuration is documented in the repository."
+          ) | Set-Content $notesPath -Encoding utf8
+
           gh release view $tag --repo $env:GITHUB_REPOSITORY *> $null
           if ($LASTEXITCODE -eq 0) {
             gh release upload $tag @assets --clobber --repo $env:GITHUB_REPOSITORY
           } else {
-            $notes = @"
-NgMusic $version
-
-First packaged Windows release.
-
-Included:
-- MSI installers for x64, ARM64 and x86
-- Portable self-contained ZIPs for x64, ARM64 and x86
-- Combined Windows package bundle
-- SHA-256 checksums
-
-The portable and installed editions use the same application payload. Google OAuth configuration is documented in the repository.
-"@
             gh release create $tag @assets `
               --repo $env:GITHUB_REPOSITORY `
               --target '${{ github.sha }}' `
               --title "NgMusic v$version" `
-              --notes $notes
+              --notes-file $notesPath
           }
