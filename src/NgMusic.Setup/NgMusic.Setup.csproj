@@ -25,4 +25,7 @@
     <Error Condition="'$(MsiPath)' == ''" Text="MsiPath must point to the architecture-matching NgMusic MSI." />
     <Error Condition="'$(MsiPath)' != '' and !Exists('$(MsiPath)')" Text="The MSI specified by MsiPath does not exist: $(MsiPath)" />
   </Target>
+  <ItemGroup>
+    <Compile Include="..\Shared\WindowsCredentialSecretStore.cs" Link="Shared\WindowsCredentialSecretStore.cs" />
+  </ItemGroup>
 </Project>

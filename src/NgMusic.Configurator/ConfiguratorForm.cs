@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.Win32;
+using NgMusic.Shared;
 
 namespace NgMusic.Configurator;
 
@@ -11,6 +12,7 @@ internal sealed class ConfiguratorForm : Form
         "https://github.com/ManuelPerilla/ngmusic/blob/main/docs/configuration.md";
 
     private readonly TextBox _clientId = new() { Width = 560 };
+    private readonly TextBox _clientSecret = new() { Width = 560, UseSystemPasswordChar = true };
     private readonly CheckBox _startMenu = new() { Text = "Create a Start menu shortcut", Checked = true, AutoSize = true };
     private readonly CheckBox _desktop = new() { Text = "Create a desktop shortcut", AutoSize = true };
     private readonly CheckBox _launch = new() { Text = "Launch NgMusic when finished", Checked = true, AutoSize = true };
@@ -19,8 +21,8 @@ internal sealed class ConfiguratorForm : Form
     {
         Text = "Finish setting up NgMusic";
         Width = 700;
-        Height = 455;
-        MinimumSize = MaximumSize = new Size(700, 455);
+        Height = 515;
+        MinimumSize = MaximumSize = new Size(700, 515);
         StartPosition = FormStartPosition.CenterScreen;
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
@@ -55,27 +57,40 @@ internal sealed class ConfiguratorForm : Form
         _clientId.Text = LoadClientId() ?? string.Empty;
         Controls.Add(_clientId);
 
-        var guide = new Button { Text = "Open setup guide", Left = 34, Top = 194, Width = 150, Height = 30 };
+        var secretLabel = new Label
+        {
+            Text = "Google OAuth Client Secret (optional)",
+            AutoSize = true,
+            Left = 34,
+            Top = 194
+        };
+        Controls.Add(secretLabel);
+
+        _clientSecret.Left = 34;
+        _clientSecret.Top = 218;
+        Controls.Add(_clientSecret);
+
+        var guide = new Button { Text = "Open setup guide", Left = 34, Top = 258, Width = 150, Height = 30 };
         guide.Click += (_, _) => OpenUrl(SetupGuideUrl);
         Controls.Add(guide);
 
         _startMenu.Left = 34;
-        _startMenu.Top = 244;
+        _startMenu.Top = 302;
         Controls.Add(_startMenu);
 
         _desktop.Left = 34;
-        _desktop.Top = 274;
+        _desktop.Top = 332;
         Controls.Add(_desktop);
 
         _launch.Left = 34;
-        _launch.Top = 304;
+        _launch.Top = 362;
         Controls.Add(_launch);
 
-        var skip = new Button { Text = "Skip for now", Left = 380, Top = 355, Width = 110, Height = 32 };
+        var skip = new Button { Text = "Skip for now", Left = 380, Top = 415, Width = 110, Height = 32 };
         skip.Click += (_, _) => Close();
         Controls.Add(skip);
 
-        var save = new Button { Text = "Save && Finish", Left = 500, Top = 355, Width = 130, Height = 32 };
+        var save = new Button { Text = "Save && Finish", Left = 500, Top = 415, Width = 130, Height = 32 };
         save.Click += (_, _) => SaveAndFinish();
         Controls.Add(save);
         AcceptButton = save;
@@ -108,6 +123,10 @@ internal sealed class ConfiguratorForm : Form
         }
 
         SaveClientId(clientId);
+
+        var clientSecret = _clientSecret.Text.Trim();
+        if (!string.IsNullOrWhiteSpace(clientSecret))
+            new WindowsCredentialSecretStore("NgMusic.GoogleOAuth.ClientSecret").Write(clientSecret);
 
         var exe = ResolveInstalledExecutable();
         if (!string.IsNullOrWhiteSpace(exe) && File.Exists(exe))

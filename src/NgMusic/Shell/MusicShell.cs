@@ -250,9 +250,45 @@ public sealed class MusicShell(
 
         credentials.SetLocalClientId(clientId);
         Success("Google OAuth Client ID saved.");
+
+        Console.Write("Google OAuth Client Secret (optional, press Enter if Google did not provide one): ");
+        var clientSecret = ReadSecretFromConsole();
+        if (!string.IsNullOrWhiteSpace(clientSecret))
+        {
+            credentials.SetLocalClientSecret(clientSecret);
+            Success("Google OAuth Client Secret saved securely in Windows Credential Manager.");
+        }
+
         Muted($"config: {credentials.ConfigPath}");
-        Muted("Only the non-secret Client ID is stored there. OAuth tokens remain in Windows Credential Manager.");
+        Muted("Client ID is stored in local config. Client Secret and OAuth tokens are stored in Windows Credential Manager.");
         return true;
+    }
+
+    private static string ReadSecretFromConsole()
+    {
+        if (Console.IsInputRedirected)
+            return Console.ReadLine()?.Trim() ?? string.Empty;
+
+        var value = new System.Text.StringBuilder();
+        while (true)
+        {
+            var key = Console.ReadKey(intercept: true);
+            if (key.Key == ConsoleKey.Enter)
+            {
+                Console.WriteLine();
+                return value.ToString().Trim();
+            }
+
+            if (key.Key == ConsoleKey.Backspace)
+            {
+                if (value.Length > 0)
+                    value.Length--;
+                continue;
+            }
+
+            if (!char.IsControl(key.KeyChar))
+                value.Append(key.KeyChar);
+        }
     }
 
     private static void OpenSetupInstructions()
@@ -281,7 +317,7 @@ public sealed class MusicShell(
             case "show":
                 Console.WriteLine($"OAuth Client ID : {(credentials.IsOAuthConfigured ? MaskClientId(credentials.ClientId!) : "not configured")}");
                 Console.WriteLine($"Source          : {credentials.ClientIdSource}");
-                Console.WriteLine($"Client secret   : {(string.IsNullOrWhiteSpace(credentials.ClientSecret) ? "not configured" : "configured via environment")}");
+                Console.WriteLine($"Client secret   : {(string.IsNullOrWhiteSpace(credentials.ClientSecret) ? "not configured" : $"configured via {credentials.ClientSecretSource}")}");
                 Console.WriteLine($"YouTube API key : {(string.IsNullOrWhiteSpace(credentials.ApiKey) ? "not configured" : "configured via environment")}");
                 Console.WriteLine($"Config file     : {credentials.ConfigPath}");
                 break;

@@ -1,65 +1,59 @@
 # Configuration and Google OAuth
 
-[Documentation home](../README.md) · [Installation](installation.md) · [Security](security.md)
+NgMusic supports Google OAuth Desktop clients that use only a Client ID and clients that also require a Client Secret.
 
-NgMusic uses Google's OAuth 2.0 Desktop application flow and YouTube Data API v3.
+## Values from Google Cloud
 
-## Easiest configuration: graphical installer
+From **Google Auth Platform → Clients → your Desktop client**, copy:
 
-The recommended `Setup.exe` asks for the Google OAuth **Desktop app Client ID** during installation.
+- **Client ID**
+- **Client Secret**, if Google shows/provides one
 
-The value normally ends with:
-
-```text
-.apps.googleusercontent.com
-```
-
-The installer saves only this non-secret Client ID to:
-
-```text
-%LOCALAPPDATA%\NgMusic\config.json
-```
-
-After that, launch NgMusic and run:
-
-```text
-PS Music:\> login
-```
-
-Google authorization opens in the system browser.
-
-## Terminal fallback
-
-If the graphical installer did not configure OAuth, `login` automatically starts the terminal setup wizard.
-
-You can also run:
-
-```text
-setup
-config show
-config path
-config reset
-```
-
-## Environment-variable override
-
-Advanced or centrally managed deployments can still use:
-
-```powershell
-$env:NGMUSIC_GOOGLE_CLIENT_ID="your-client-id"
-$env:NGMUSIC_GOOGLE_CLIENT_SECRET="your-client-secret"
-$env:NGMUSIC_YOUTUBE_API_KEY="your-api-key"
-```
-
-Environment configuration takes precedence over the local Client ID.
+Google documents `client_secret` as optional for installed-app token exchange, but some client configurations can require it.
 
 ## Storage model
 
-| Data | Storage |
+| Value | Storage |
 | --- | --- |
-| OAuth Desktop Client ID | Local JSON config or environment |
+| OAuth Client ID | `%LOCALAPPDATA%\NgMusic\config.json` |
+| OAuth Client Secret | Windows Credential Manager |
 | OAuth access/refresh token | Windows Credential Manager |
-| Optional Client Secret | Environment only |
-| Optional YouTube API key | Environment only |
+| Optional YouTube API key | Environment variable |
 
-NgMusic never requests or stores the user's Google password.
+The Client Secret is never written to NgMusic's JSON configuration.
+
+## Setup.exe and MSI configurator
+
+Both graphical configuration flows now include:
+
+- Google OAuth Client ID
+- Google OAuth Client Secret (optional)
+
+If Google provided a Client Secret for your client, paste it. Otherwise leave the field empty.
+
+## Terminal setup
+
+Run:
+
+```text
+PS Music:\> setup
+```
+
+NgMusic asks for the Client ID and then:
+
+```text
+Google OAuth Client Secret (optional, press Enter if Google did not provide one):
+```
+
+The secret is typed without being echoed to the terminal.
+
+## Environment overrides
+
+Advanced deployments may still use:
+
+```powershell
+$env:NGMUSIC_GOOGLE_CLIENT_ID="..."
+$env:NGMUSIC_GOOGLE_CLIENT_SECRET="..."
+```
+
+Environment values take precedence over locally stored values.

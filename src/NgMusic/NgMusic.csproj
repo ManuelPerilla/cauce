@@ -18,4 +18,7 @@
     <DebugSymbols Condition="'$(Configuration)' == 'Release'">false</DebugSymbols>
     <SatelliteResourceLanguages>en;es</SatelliteResourceLanguages>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\Shared\WindowsCredentialSecretStore.cs" Link="Shared\WindowsCredentialSecretStore.cs" />
+  </ItemGroup>
 </Project>

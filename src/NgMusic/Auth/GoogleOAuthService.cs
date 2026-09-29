@@ -307,7 +307,13 @@ public sealed class GoogleOAuthService(
         if (!string.IsNullOrWhiteSpace(description))
             details += $": {description}";
 
-        return new InvalidOperationException($"Google OAuth {stage} failed ({details}).");
+        var hint = error == "invalid_request" &&
+                   !string.IsNullOrWhiteSpace(description) &&
+                   description.Contains("client_secret", StringComparison.OrdinalIgnoreCase)
+            ? " Run 'setup' and enter the Google OAuth Client Secret shown for this client."
+            : string.Empty;
+
+        return new InvalidOperationException($"Google OAuth {stage} failed ({details}).{hint}");
     }
 
     private static async Task WriteBrowserResultAsync(

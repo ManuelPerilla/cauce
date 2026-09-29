@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.2
+
+- Added secure Google OAuth Client Secret support.
+- Client Secret is stored in Windows Credential Manager.
+- Added optional Client Secret fields to Setup.exe and MSI configurator.
+- Terminal setup now accepts hidden Client Secret input.
+- Missing-client-secret OAuth errors now include an actionable hint.
+- Documented recovery for `client_secret is missing`.
+
 ## 0.5.1
 
 - Fixed misleading OAuth browser success page shown before token exchange completed.
@@ -7,7 +16,6 @@
 - Made OpenID profile lookup non-fatal after a successful token exchange.
 - Improved OAuth troubleshooting documentation.
 
-# Changelog
 
 ## 0.5.0
 

@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.Win32;
+using NgMusic.Shared;
 
 namespace NgMusic.Setup;
 
@@ -19,6 +20,7 @@ internal sealed class WizardForm : Form
     private readonly Button _cancel = new() { Text = "Cancel", Width = 95, Height = 32 };
 
     private readonly TextBox _clientId = new() { Width = 590 };
+    private readonly TextBox _clientSecret = new() { Width = 590, UseSystemPasswordChar = true };
     private readonly CheckBox _startMenu = new() { Text = "Create a Start menu shortcut", Checked = true, AutoSize = true };
     private readonly CheckBox _desktop = new() { Text = "Create a desktop shortcut", Checked = false, AutoSize = true };
     private readonly CheckBox _launch = new() { Text = "Launch NgMusic when setup finishes", Checked = true, AutoSize = true };
@@ -131,13 +133,28 @@ internal sealed class WizardForm : Form
         panel.Controls.Add(_clientId);
         y += 45;
 
+        var secretLabel = new Label
+        {
+            Text = "Google OAuth Client Secret (optional)",
+            AutoSize = true,
+            Left = 0,
+            Top = y
+        };
+        panel.Controls.Add(secretLabel);
+        y += 24;
+
+        _clientSecret.Left = 0;
+        _clientSecret.Top = y;
+        panel.Controls.Add(_clientSecret);
+        y += 45;
+
         var guide = new Button { Text = "Open setup guide", Width = 150, Height = 32, Left = 0, Top = y };
         guide.Click += (_, _) => OpenUrl(SetupGuideUrl);
         panel.Controls.Add(guide);
         y += 48;
 
         AddParagraph(panel,
-            "NgMusic stores only this Client ID in your local configuration. OAuth access and refresh tokens stay in Windows Credential Manager. No Google password is stored.",
+            "Client ID is stored in local config. If Google provides a Client Secret, NgMusic stores it securely in Windows Credential Manager. OAuth tokens also stay there. No Google password is stored.",
             ref y);
 
         return panel;
@@ -344,6 +361,10 @@ internal sealed class WizardForm : Form
 
             _installStatus.Text = "Saving Google OAuth configuration...";
             SaveClientId(_clientId.Text.Trim());
+
+            var clientSecret = _clientSecret.Text.Trim();
+            if (!string.IsNullOrWhiteSpace(clientSecret))
+                new WindowsCredentialSecretStore("NgMusic.GoogleOAuth.ClientSecret").Write(clientSecret);
 
             _installedExe = ResolveInstalledExecutable();
             if (!string.IsNullOrWhiteSpace(_installedExe) && File.Exists(_installedExe))

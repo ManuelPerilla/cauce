@@ -24,3 +24,10 @@ play 1
 ```
 
 [Instalación](docs/i18n/es/installation.md)
+
+
+## Client Secret de Google
+
+Algunos clientes OAuth de Google exigen también un **Client Secret** durante el intercambio del token.
+
+Desde NgMusic 0.5.2 puedes configurarlo con `setup`, Setup.exe o el configurador del MSI. El secret se guarda en **Windows Credential Manager**, nunca en `config.json`.

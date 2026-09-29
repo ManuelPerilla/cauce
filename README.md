@@ -89,3 +89,10 @@ Use the [latest GitHub Release](https://github.com/ManuelPerilla/ngmusic/release
 SignPath Foundation approval is pending. When official signing is enabled:
 
 **Free code signing provided by SignPath.io, certificate by SignPath Foundation.**
+
+
+## Google OAuth Client Secret
+
+Some Google OAuth clients require a Client Secret during token exchange. NgMusic 0.5.2+ supports this securely through Setup.exe, the MSI configurator, or the `setup` command.
+
+The Client Secret is stored in Windows Credential Manager and is never written to `config.json`.

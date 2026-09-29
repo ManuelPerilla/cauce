@@ -1,31 +1,29 @@
 # Troubleshooting
 
-## OAuth browser says success but terminal reports an error
+## `invalid_request: client_secret is missing`
 
-NgMusic 0.5.1 and later only shows a successful browser page after the authorization code has been exchanged for tokens and saved.
+Google accepted browser authorization, but the token endpoint requires this OAuth client's Client Secret.
 
-If Google rejects the token exchange, NgMusic now prints Google's actual OAuth error code and description in the terminal, for example `invalid_grant` or `invalid_request`.
+In NgMusic 0.5.2 or later:
 
-This is important because a generic HTTP 400 is not specific enough to diagnose OAuth configuration.
+1. Open **Google Auth Platform → Clients**.
+2. Open the same OAuth client whose Client ID you configured.
+3. Copy its **Client Secret**.
+4. Run `setup`.
+5. Enter the Client ID and paste the Client Secret when requested.
+6. Run `login` again.
 
-## Common Google OAuth errors
+NgMusic stores the Client Secret in Windows Credential Manager, not plaintext JSON.
 
-- `invalid_grant`: authorization code, PKCE verifier/challenge, or redirect URI did not match what Google expected. Retry `login`; if it repeats, report the complete NgMusic error line.
-- `invalid_request`: a required OAuth parameter is missing or malformed.
-- `invalid_client`: verify that the Client ID is a **Desktop app** OAuth client and has not been deleted/disabled.
-- `redirect_uri_mismatch`: verify the OAuth client type is **Desktop app**, not Web application.
-- `access_denied`: the user or organization denied the requested permissions.
+If Google no longer displays the original secret, rotate/create a new secret when available and configure the new value in NgMusic.
 
-Google's Desktop flow supports loopback redirects on `127.0.0.1` with a dynamic port and PKCE.
+## Other OAuth errors
 
-## `ngmusic` is not recognized
+- `invalid_client`: wrong/deleted Client ID or incorrect Client Secret.
+- `invalid_grant`: retry login; the authorization code, PKCE verifier, or redirect may no longer be valid.
+- `redirect_uri_mismatch`: verify the client is appropriate for a Desktop/installed flow.
+- `access_denied`: consent or organization policy denied access.
 
-Open a new terminal after MSI/Setup installation so Windows reloads the system `PATH`.
+## Browser success page
 
-## Search requires authentication
-
-Run `login`, or configure the optional YouTube API key.
-
-## SmartScreen / Defender warning
-
-Use official GitHub Release artifacts and verify `SHA256SUMS.txt`. Do not disable antivirus globally.
+NgMusic 0.5.1+ only reports browser success after token exchange succeeds and tokens have been stored.
