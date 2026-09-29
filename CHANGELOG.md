@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.1
+
+- Fixed misleading OAuth browser success page shown before token exchange completed.
+- Added detailed Google OAuth error reporting instead of generic HTTP 400 messages.
+- Made OpenID profile lookup non-fatal after a successful token exchange.
+- Improved OAuth troubleshooting documentation.
+
+# Changelog
+
 ## 0.5.0
 
 - Aligned interactive MSI installation with the graphical Setup.exe flow.

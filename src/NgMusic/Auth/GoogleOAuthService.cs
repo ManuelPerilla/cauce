@@ -79,26 +79,53 @@ public sealed class GoogleOAuthService(
             query.TryGetValue("state", out var returnedState);
             query.TryGetValue("code", out var code);
             query.TryGetValue("error", out var error);
-
-            await LoopbackHttp.WriteResponseAsync(
-                client,
-                "text/html; charset=utf-8",
-                BrowserResponseHtml(error is null),
-                cancellationToken: timeout.Token);
+            query.TryGetValue("error_description", out var errorDescription);
 
             if (!string.IsNullOrWhiteSpace(error))
-                throw new InvalidOperationException($"Google OAuth returned: {error}");
+            {
+                var message = $"Google OAuth returned {error}" +
+                              (string.IsNullOrWhiteSpace(errorDescription) ? "." : $": {errorDescription}");
+                await WriteBrowserResultAsync(client, false, message, timeout.Token);
+                throw new InvalidOperationException(message);
+            }
+
             if (!string.Equals(returnedState, state, StringComparison.Ordinal))
-                throw new InvalidOperationException("OAuth state validation failed.");
+            {
+                const string message = "OAuth state validation failed.";
+                await WriteBrowserResultAsync(client, false, message, timeout.Token);
+                throw new InvalidOperationException(message);
+            }
+
             if (string.IsNullOrWhiteSpace(code))
-                throw new InvalidOperationException("Google did not return an authorization code.");
+            {
+                const string message = "Google did not return an authorization code.";
+                await WriteBrowserResultAsync(client, false, message, timeout.Token);
+                throw new InvalidOperationException(message);
+            }
 
-            var token = await ExchangeCodeAsync(code, verifier, redirectUri, cancellationToken);
-            var profile = await FetchProfileAsync(token.AccessToken, cancellationToken);
-            token = token with { DisplayName = profile.DisplayName, Email = profile.Email };
-            await tokenStore.WriteAsync(token, cancellationToken);
+            try
+            {
+                var token = await ExchangeCodeAsync(code, verifier, redirectUri, cancellationToken);
 
-            return new AuthStatus(true, token.DisplayName, token.Email);
+                // Profile lookup is convenient for the shell prompt but must never invalidate
+                // an otherwise successful OAuth grant.
+                var profile = await TryFetchProfileAsync(token.AccessToken, cancellationToken);
+                token = token with { DisplayName = profile.DisplayName, Email = profile.Email };
+
+                await tokenStore.WriteAsync(token, cancellationToken);
+                await WriteBrowserResultAsync(
+                    client,
+                    true,
+                    "La autorización de Google terminó correctamente. Puedes volver a la terminal.",
+                    timeout.Token);
+
+                return new AuthStatus(true, token.DisplayName, token.Email);
+            }
+            catch (Exception ex)
+            {
+                await WriteBrowserResultAsync(client, false, BrowserSafeError(ex), timeout.Token);
+                throw;
+            }
         }
     }
 
@@ -165,7 +192,9 @@ public sealed class GoogleOAuthService(
             new FormUrlEncodedContent(values),
             cancellationToken);
         var json = await response.Content.ReadAsStringAsync(cancellationToken);
-        response.EnsureSuccessStatusCode();
+
+        if (!response.IsSuccessStatusCode)
+            throw BuildGoogleOAuthException("token exchange", response.StatusCode, json);
 
         using var doc = JsonDocument.Parse(json);
         var root = doc.RootElement;
@@ -200,7 +229,9 @@ public sealed class GoogleOAuthService(
             new FormUrlEncodedContent(values),
             cancellationToken);
         var json = await response.Content.ReadAsStringAsync(cancellationToken);
-        response.EnsureSuccessStatusCode();
+
+        if (!response.IsSuccessStatusCode)
+            throw BuildGoogleOAuthException("token refresh", response.StatusCode, json);
 
         using var doc = JsonDocument.Parse(json);
         var root = doc.RootElement;
@@ -216,23 +247,87 @@ public sealed class GoogleOAuthService(
         };
     }
 
-    private async Task<(string? DisplayName, string? Email)> FetchProfileAsync(
+    private async Task<(string? DisplayName, string? Email)> TryFetchProfileAsync(
         string accessToken,
         CancellationToken cancellationToken)
     {
-        using var request = new HttpRequestMessage(
-            HttpMethod.Get,
-            "https://openidconnect.googleapis.com/v1/userinfo");
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+        try
+        {
+            using var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                "https://openidconnect.googleapis.com/v1/userinfo");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
-        using var response = await http.SendAsync(request, cancellationToken);
-        response.EnsureSuccessStatusCode();
-        using var doc = JsonDocument.Parse(await response.Content.ReadAsStringAsync(cancellationToken));
-        var root = doc.RootElement;
+            using var response = await http.SendAsync(request, cancellationToken);
+            if (!response.IsSuccessStatusCode)
+                return (null, null);
 
-        return (
-            root.TryGetProperty("name", out var name) ? name.GetString() : null,
-            root.TryGetProperty("email", out var email) ? email.GetString() : null);
+            using var doc = JsonDocument.Parse(
+                await response.Content.ReadAsStringAsync(cancellationToken));
+            var root = doc.RootElement;
+
+            return (
+                root.TryGetProperty("name", out var name) ? name.GetString() : null,
+                root.TryGetProperty("email", out var email) ? email.GetString() : null);
+        }
+        catch when (!cancellationToken.IsCancellationRequested)
+        {
+            return (null, null);
+        }
+    }
+
+    private static Exception BuildGoogleOAuthException(
+        string stage,
+        HttpStatusCode statusCode,
+        string body)
+    {
+        string? error = null;
+        string? description = null;
+
+        try
+        {
+            using var doc = JsonDocument.Parse(body);
+            var root = doc.RootElement;
+
+            if (root.TryGetProperty("error", out var errorElement))
+                error = errorElement.GetString();
+
+            if (root.TryGetProperty("error_description", out var descriptionElement))
+                description = descriptionElement.GetString();
+        }
+        catch
+        {
+            // Google normally returns JSON. Keep the HTTP status if it does not.
+        }
+
+        var details = !string.IsNullOrWhiteSpace(error)
+            ? error
+            : $"HTTP {(int)statusCode} {statusCode}";
+
+        if (!string.IsNullOrWhiteSpace(description))
+            details += $": {description}";
+
+        return new InvalidOperationException($"Google OAuth {stage} failed ({details}).");
+    }
+
+    private static async Task WriteBrowserResultAsync(
+        TcpClient client,
+        bool success,
+        string detail,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await LoopbackHttp.WriteResponseAsync(
+                client,
+                "text/html; charset=utf-8",
+                BrowserResponseHtml(success, detail),
+                cancellationToken: cancellationToken);
+        }
+        catch
+        {
+            // The terminal still receives the authoritative result.
+        }
     }
 
     private static Dictionary<string, string> ParseQuery(string query)
@@ -250,12 +345,33 @@ public sealed class GoogleOAuthService(
         return result;
     }
 
-    private static string BrowserResponseHtml(bool success)
+    private static string BrowserResponseHtml(bool success, string detail)
     {
-        var text = success
-            ? "<h1>NgMusic conectado.</h1><p>Puedes cerrar esta pestaña y volver a la terminal.</p>"
-            : "<h1>NgMusic no pudo iniciar sesión.</h1><p>Vuelve a la terminal para ver el detalle.</p>";
-        return $"<!doctype html><html><meta charset=\"utf-8\"><title>NgMusic</title><body style=\"font-family:Consolas;background:#0c0c0c;color:#ddd;padding:40px\">{text}</body></html>";
+        var title = success ? "NgMusic conectado." : "NgMusic no pudo completar el login.";
+        var encodedDetail = WebUtility.HtmlEncode(detail);
+        var accent = success ? "#4ec9b0" : "#f48771";
+
+        return $"""
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>NgMusic OAuth</title>
+</head>
+<body style="font-family:Consolas;background:#0c0c0c;color:#ddd;padding:40px">
+  <h1 style="color:{accent}">{title}</h1>
+  <p>{encodedDetail}</p>
+  <p style="color:#858585">Puedes cerrar esta pestaña y volver a la terminal.</p>
+</body>
+</html>
+""";
+    }
+
+    private static string BrowserSafeError(Exception ex)
+    {
+        var message = ex.Message;
+        const int maxLength = 350;
+        return message.Length <= maxLength ? message : message[..maxLength] + "…";
     }
 
     private static string Base64Url(byte[] bytes) =>
