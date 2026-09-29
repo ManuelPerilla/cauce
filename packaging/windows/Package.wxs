@@ -4,35 +4,20 @@
       Name="NgMusic"
       Manufacturer="NgMusic"
       Version="$(Version)"
-      Scope="perUser">
+      Scope="perMachine">
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of NgMusic is already installed." />
     <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
 
-    <StandardDirectory Id="PerUserProgramFilesFolder">
+    <StandardDirectory Id="ProgramFiles6432Folder">
       <Directory Id="INSTALLFOLDER" Name="NgMusic">
         <Files Include="$(PayloadDir)\**" />
       </Directory>
     </StandardDirectory>
 
-    <StandardDirectory Id="ProgramMenuFolder">
-      <Directory Id="NgMusicMenuFolder" Name="NgMusic">
-        <Component Id="StartMenuShortcut" Guid="*">
-          <Shortcut
-              Id="NgMusicStartMenuShortcut"
-              Name="NgMusic"
-              Description="PowerShell-style personal YouTube music controller"
-              Target="[INSTALLFOLDER]ngmusic.exe"
-              WorkingDirectory="INSTALLFOLDER" />
-          <RemoveFolder Id="RemoveNgMusicMenuFolder" On="uninstall" />
-          <RegistryValue Root="HKCU" Key="Software\NgMusic" Name="StartMenuShortcut" Type="integer" Value="1" KeyPath="yes" />
-        </Component>
-      </Directory>
-    </StandardDirectory>
-
     <Component Id="PathRegistration" Directory="INSTALLFOLDER" Guid="*">
-      <Environment Id="NgMusicPath" Name="PATH" Value="[INSTALLFOLDER]" Part="last" Action="set" System="no" Permanent="no" />
-      <RegistryValue Root="HKCU" Key="Software\NgMusic" Name="InstallPath" Type="string" Value="[INSTALLFOLDER]" KeyPath="yes" />
+      <Environment Id="NgMusicPath" Name="PATH" Value="[INSTALLFOLDER]" Part="last" Action="set" System="yes" Permanent="no" />
+      <RegistryValue Root="HKLM" Key="Software\NgMusic" Name="InstallPath" Type="string" Value="[INSTALLFOLDER]" KeyPath="yes" />
     </Component>
   </Package>
 </Wix>
