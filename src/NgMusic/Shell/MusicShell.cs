@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using NgMusic.Auth;
 using NgMusic.Core;
 
 namespace NgMusic.Shell;
@@ -5,8 +7,12 @@ namespace NgMusic.Shell;
 public sealed class MusicShell(
     IGoogleAuthService auth,
     IMusicProvider provider,
-    IPlayer player)
+    IPlayer player,
+    GoogleCredentials credentials)
 {
+    private const string SetupGuideUrl =
+        "https://github.com/ManuelPerilla/ngmusic/blob/main/docs/configuration.md";
+
     private IReadOnlyList<MusicTrack> _searchResults = [];
     private readonly Queue<MusicTrack> _queue = new();
     private readonly Stack<MusicTrack> _history = new();
@@ -54,6 +60,13 @@ public sealed class MusicShell(
             case "help":
             case "?":
                 Help();
+                break;
+            case "setup":
+            case "configure":
+                RunSetupWizard(force: true);
+                break;
+            case "config":
+                Config(args.Skip(1).ToArray());
                 break;
             case "login":
                 await LoginAsync(cancellationToken);
@@ -127,9 +140,175 @@ public sealed class MusicShell(
 
     private async Task LoginAsync(CancellationToken cancellationToken)
     {
+        credentials.Reload();
+
+        if (!credentials.IsOAuthConfigured && !RunSetupWizard(force: false))
+            return;
+
         Muted("Opening Google OAuth in your browser...");
         var status = await auth.LoginAsync(cancellationToken);
         Success($"Connected as {status.DisplayName ?? status.Email ?? "Google user"}");
+    }
+
+    private bool RunSetupWizard(bool force)
+    {
+        credentials.Reload();
+
+        Console.WriteLine();
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine("Google OAuth setup");
+        Console.WriteLine("------------------");
+        Console.ResetColor();
+
+        if (credentials.IsOAuthConfigured)
+        {
+            Success($"OAuth is configured via {credentials.ClientIdSource}.");
+
+            if (credentials.HasEnvironmentClientId)
+            {
+                Muted("NGMUSIC_GOOGLE_CLIENT_ID currently takes precedence over local config.");
+                Muted("Remove that environment variable if you want NgMusic to use a locally saved Client ID.");
+                return true;
+            }
+
+            if (!force)
+                return true;
+
+            Console.Write("Replace the saved Client ID? [y/N]: ");
+            var replace = Console.ReadLine()?.Trim();
+            if (!string.Equals(replace, "y", StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(replace, "yes", StringComparison.OrdinalIgnoreCase))
+            {
+                Muted("configuration unchanged");
+                return true;
+            }
+        }
+        else
+        {
+            Console.WriteLine("NgMusic needs a Google OAuth Client ID of type Desktop app.");
+        }
+
+        while (true)
+        {
+            Console.WriteLine();
+            Console.WriteLine(" [1] Paste Google OAuth Client ID");
+            Console.WriteLine(" [2] Open step-by-step setup instructions");
+            Console.WriteLine(" [3] Cancel");
+            Console.WriteLine();
+            Console.Write("Choose an option: ");
+
+            var choice = Console.ReadLine()?.Trim();
+            switch (choice)
+            {
+                case "1":
+                    return ReadAndSaveClientId();
+
+                case "2":
+                    OpenSetupInstructions();
+                    Muted("Instructions opened in your browser. Return here when your Desktop Client ID is ready.");
+                    break;
+
+                case "3":
+                case "":
+                    Muted("OAuth setup cancelled.");
+                    return false;
+
+                default:
+                    Error("Choose 1, 2, or 3.");
+                    break;
+            }
+        }
+    }
+
+    private bool ReadAndSaveClientId()
+    {
+        Console.WriteLine();
+        Console.Write("Google OAuth Client ID: ");
+        var clientId = Console.ReadLine()?.Trim();
+
+        if (string.IsNullOrWhiteSpace(clientId))
+        {
+            Error("Client ID cannot be empty.");
+            return false;
+        }
+
+        if (!clientId.EndsWith(".apps.googleusercontent.com", StringComparison.OrdinalIgnoreCase))
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("! That does not look like a standard Google OAuth Client ID.");
+            Console.ResetColor();
+            Console.Write("Save it anyway? [y/N]: ");
+
+            var saveAnyway = Console.ReadLine()?.Trim();
+            if (!string.Equals(saveAnyway, "y", StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(saveAnyway, "yes", StringComparison.OrdinalIgnoreCase))
+            {
+                Muted("Client ID was not saved.");
+                return false;
+            }
+        }
+
+        credentials.SetLocalClientId(clientId);
+        Success("Google OAuth Client ID saved.");
+        Muted($"config: {credentials.ConfigPath}");
+        Muted("Only the non-secret Client ID is stored there. OAuth tokens remain in Windows Credential Manager.");
+        return true;
+    }
+
+    private static void OpenSetupInstructions()
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo(SetupGuideUrl)
+            {
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            Error($"Could not open the browser: {ex.Message}");
+            Muted(SetupGuideUrl);
+        }
+    }
+
+    private void Config(IReadOnlyList<string> args)
+    {
+        var subcommand = args.FirstOrDefault()?.ToLowerInvariant() ?? "show";
+        credentials.Reload();
+
+        switch (subcommand)
+        {
+            case "show":
+                Console.WriteLine($"OAuth Client ID : {(credentials.IsOAuthConfigured ? MaskClientId(credentials.ClientId!) : "not configured")}");
+                Console.WriteLine($"Source          : {credentials.ClientIdSource}");
+                Console.WriteLine($"Client secret   : {(string.IsNullOrWhiteSpace(credentials.ClientSecret) ? "not configured" : "configured via environment")}");
+                Console.WriteLine($"YouTube API key : {(string.IsNullOrWhiteSpace(credentials.ApiKey) ? "not configured" : "configured via environment")}");
+                Console.WriteLine($"Config file     : {credentials.ConfigPath}");
+                break;
+
+            case "path":
+                Console.WriteLine(credentials.ConfigPath);
+                break;
+
+            case "reset":
+                credentials.ClearLocalConfig();
+                Success("Local NgMusic configuration removed.");
+                if (credentials.HasEnvironmentClientId)
+                    Muted("NGMUSIC_GOOGLE_CLIENT_ID is still set and will continue to be used.");
+                break;
+
+            default:
+                Error("Usage: config [show|path|reset]");
+                break;
+        }
+    }
+
+    private static string MaskClientId(string value)
+    {
+        if (value.Length <= 18)
+            return value;
+
+        return value[..8] + "…" + value[^18..];
     }
 
     private async Task WhoAmIAsync(CancellationToken cancellationToken)
@@ -318,7 +497,11 @@ public sealed class MusicShell(
             return true;
 
         var parts = value.Split(':');
-        if (parts.Length == 2 && int.TryParse(parts[0], out var minutes) && int.TryParse(parts[1], out var secs) && minutes >= 0 && secs is >= 0 and < 60)
+        if (parts.Length == 2 &&
+            int.TryParse(parts[0], out var minutes) &&
+            int.TryParse(parts[1], out var secs) &&
+            minutes >= 0 &&
+            secs is >= 0 and < 60)
         {
             seconds = checked(minutes * 60 + secs);
             return true;
@@ -338,9 +521,11 @@ public sealed class MusicShell(
     private static void Help()
     {
         Console.WriteLine("""
- login                     Connect Google/YouTube via OAuth
- logout                    Remove the saved OAuth token
- whoami                    Show the connected Google account
+ setup                      Configure Google OAuth interactively
+ config [show|path|reset]   Inspect/reset local configuration
+ login                      Connect Google/YouTube via OAuth
+ logout                     Remove the saved OAuth token
+ whoami                     Show the connected Google account
  search <query>             Search music videos (alias: s)
  play <n>                   Play a search result (alias: p)
  pause | resume | stop      Playback controls

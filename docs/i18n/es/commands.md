@@ -2,25 +2,19 @@
 
 | Comando | Descripción |
 | --- | --- |
-| `help`, `?` | Mostrar ayuda |
-| `login` | Iniciar sesión con Google |
-| `logout` | Eliminar credenciales guardadas |
-| `whoami` | Mostrar cuenta conectada |
-| `search <consulta>`, `s` | Buscar música |
-| `play <n>`, `p <n>` | Reproducir resultado n |
-| `pause` | Pausar |
-| `resume` | Reanudar |
-| `stop` | Detener |
-| `next`, `n` | Siguiente en cola |
-| `prev`, `previous` | Anterior |
-| `seek <segundos|mm:ss>` | Saltar a una posición |
-| `volume <0-100>`, `vol` | Volumen |
-| `queue`, `q` | Mostrar cola |
-| `queue add <n>` | Añadir resultado |
-| `queue clear` | Vaciar cola |
-| `queue play` | Reproducir siguiente |
-| `now`, `np` | Mostrar canción actual |
-| `clear`, `cls` | Limpiar terminal |
-| `exit`, `quit` | Salir |
-
-La sintaxis de pipelines estilo `search ... | play 1` está en roadmap y aún no está implementada.
+| `setup`, `configure` | Ejecutar el asistente OAuth |
+| `config show` | Ver configuración |
+| `config path` | Ver ruta del archivo local |
+| `config reset` | Eliminar configuración local |
+| `login` | Login Google; ejecuta setup si hace falta |
+| `logout` | Eliminar token OAuth |
+| `whoami` | Cuenta conectada |
+| `search <consulta>` | Buscar música |
+| `play <n>` | Reproducir resultado |
+| `pause`, `resume`, `stop` | Controles |
+| `next`, `prev` | Navegación |
+| `seek <seg|mm:ss>` | Saltar |
+| `volume <0-100>` | Volumen |
+| `queue` | Cola |
+| `now` | Canción actual |
+| `exit` | Salir |

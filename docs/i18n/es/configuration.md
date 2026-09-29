@@ -1,32 +1,31 @@
 # Configuración y OAuth de Google
 
-NgMusic utiliza OAuth 2.0 para aplicaciones Desktop y YouTube Data API v3.
+La forma recomendada ya no requiere variables de entorno.
 
-## Variables
+Ejecuta:
 
-| Variable | Uso |
-| --- | --- |
-| `NGMUSIC_GOOGLE_CLIENT_ID` | Obligatoria para login |
-| `NGMUSIC_GOOGLE_CLIENT_SECRET` | Solo si Google entrega uno |
-| `NGMUSIC_YOUTUBE_API_KEY` | Opcional para búsquedas sin OAuth |
-
-```powershell
-$env:NGMUSIC_GOOGLE_CLIENT_ID="tu-client-id"
-$env:NGMUSIC_GOOGLE_CLIENT_SECRET="tu-client-secret"
-$env:NGMUSIC_YOUTUBE_API_KEY="tu-api-key"
+```text
+PS Music:\> login
 ```
 
-## Flujo OAuth
+Si falta el Client ID, NgMusic abre el asistente automáticamente. Pega el OAuth Client ID de una aplicación Google de tipo **Desktop app**.
 
-1. NgMusic genera PKCE y un estado aleatorio.
-2. Abre un listener temporal en `127.0.0.1`.
-3. Abre Google en el navegador del sistema.
-4. Google redirige al listener local.
-5. NgMusic valida el estado y canjea el código.
-6. El token se guarda en Windows Credential Manager como `NgMusic.GoogleOAuth`.
+El Client ID se guarda en:
+
+```text
+%LOCALAPPDATA%\NgMusic\config.json
+```
+
+El Client ID no es un secreto. Los tokens OAuth se guardan por separado en Windows Credential Manager.
+
+## Comandos
+
+- `setup`: configurar o reemplazar el Client ID local.
+- `config show`: mostrar estado y origen.
+- `config path`: mostrar ubicación del JSON.
+- `config reset`: eliminar configuración local.
+- `logout`: eliminar el token OAuth guardado.
+
+Las variables `NGMUSIC_GOOGLE_CLIENT_ID`, `NGMUSIC_GOOGLE_CLIENT_SECRET` y `NGMUSIC_YOUTUBE_API_KEY` siguen soportadas. El Client ID de entorno tiene prioridad sobre el guardado localmente.
 
 NgMusic nunca solicita ni almacena tu contraseña de Google.
-
-`logout` elimina el token guardado de NgMusic.
-
-Nunca subas secretos, claves API, certificados de firma ni tokens al repositorio.

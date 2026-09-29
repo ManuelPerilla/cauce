@@ -1,17 +1,18 @@
 # 配置与 Google OAuth
 
-NgMusic 使用 Google OAuth 2.0 Desktop 流程和 YouTube Data API v3。
+运行 `login`。如果没有 Client ID，NgMusic 自动启动交互式设置向导。
 
-| 变量 | 用途 |
-| --- | --- |
-| `NGMUSIC_GOOGLE_CLIENT_ID` | 登录必需 |
-| `NGMUSIC_GOOGLE_CLIENT_SECRET` | Google 提供时使用 |
-| `NGMUSIC_YOUTUBE_API_KEY` | 可选，无 OAuth 搜索时使用 |
+粘贴 Google OAuth **Desktop app** Client ID 后，它会保存到：
 
-登录时 NgMusic 会生成 PKCE，监听 `127.0.0.1` 的临时端口，打开系统浏览器，验证回调状态并交换 token。
+`%LOCALAPPDATA%\NgMusic\config.json`
 
-token 保存在 Windows Credential Manager 的 `NgMusic.GoogleOAuth` 项中。
+OAuth access/refresh token 不会写入该 JSON，而是保存在 Windows Credential Manager。
 
-NgMusic 不会请求或保存 Google 密码。
+命令：
+- `setup`: 配置或替换 Client ID
+- `config show`: 查看配置状态
+- `config path`: 查看配置文件路径
+- `config reset`: 删除本地配置
+- `logout`: 删除 OAuth token
 
-不要提交 OAuth secret、API key、签名证书或 token。
+环境变量仍然支持，并优先于本地配置。

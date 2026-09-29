@@ -1,17 +1,17 @@
 # Configuration et Google OAuth
 
-NgMusic utilise OAuth 2.0 pour application Desktop et YouTube Data API v3.
+Exécutez `login`. Si le Client ID manque, NgMusic lance automatiquement l'assistant interactif.
 
-| Variable | Usage |
-| --- | --- |
-| `NGMUSIC_GOOGLE_CLIENT_ID` | Requise pour login |
-| `NGMUSIC_GOOGLE_CLIENT_SECRET` | Si Google en fournit un |
-| `NGMUSIC_YOUTUBE_API_KEY` | Facultative pour recherche sans OAuth |
+Collez le Client ID Google OAuth de type **Desktop app**. Il est enregistré dans :
 
-Lors du login, NgMusic génère PKCE, ouvre un listener temporaire sur `127.0.0.1`, lance le navigateur système, valide le callback et échange le code OAuth.
+`%LOCALAPPDATA%\NgMusic\config.json`
 
-Les tokens sont stockés dans Windows Credential Manager sous `NgMusic.GoogleOAuth`.
+Les tokens OAuth ne sont pas stockés dans ce JSON mais dans Windows Credential Manager.
 
-NgMusic ne demande ni ne stocke le mot de passe Google.
+- `setup` : configurer/remplacer le Client ID
+- `config show` : voir l'état
+- `config path` : chemin du fichier
+- `config reset` : supprimer la configuration locale
+- `logout` : supprimer le token OAuth
 
-Ne commitez jamais secrets OAuth, API keys, certificats de signature ou tokens.
+Les variables d'environnement sont toujours prises en charge et prioritaires.

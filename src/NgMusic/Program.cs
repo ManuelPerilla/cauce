@@ -2,6 +2,7 @@ using NgMusic.Auth;
 using NgMusic.Playback;
 using NgMusic.Core;
 using NgMusic.Providers;
+using NgMusic.Settings;
 using NgMusic.Shell;
 
 if (!OperatingSystem.IsWindows())
@@ -16,12 +17,13 @@ using var http = new HttpClient
 };
 http.DefaultRequestHeaders.UserAgent.ParseAdd($"NgMusic/{AppInfo.Version}");
 
-var credentials = GoogleCredentials.FromEnvironment();
+var settingsStore = new UserSettingsStore();
+var credentials = new GoogleCredentials(settingsStore);
 var tokenStore = new WindowsCredentialTokenStore("NgMusic.GoogleOAuth");
 var auth = new GoogleOAuthService(http, credentials, tokenStore);
 var provider = new YouTubeProvider(http, credentials, auth);
 await using var player = new YouTubeIframePlayer();
-var shell = new MusicShell(auth, provider, player);
+var shell = new MusicShell(auth, provider, player, credentials);
 
 using var quit = new CancellationTokenSource();
 Console.CancelKeyPress += (_, eventArgs) =>

@@ -13,29 +13,35 @@ NgMusic is a personal Windows music shell designed for people who prefer a keybo
 Playback remains inside YouTube's visible official IFrame player. NgMusic does not extract raw media streams, download tracks, or create a hidden audio-scraping layer.
 
 ```text
-NgMusic 0.2.0
+NgMusic 0.3.0
 
 PS Music:\> login
-✓ Connected as you
 
-PS Music:\> search "Massive Attack Teardrop"
- [ 1] Massive Attack - Teardrop  —  Massive Attack
+Google OAuth setup
+------------------
+NgMusic needs a Google OAuth Client ID of type Desktop app.
 
-PS Music:\> play 1
-✓ ▶ Massive Attack — Massive Attack - Teardrop
+ [1] Paste Google OAuth Client ID
+ [2] Open step-by-step setup instructions
+ [3] Cancel
 
-PS Music:\> volume 42
-volume 42%
+Choose an option: 1
+Google OAuth Client ID: ...apps.googleusercontent.com
+✓ Google OAuth Client ID saved.
+Opening Google OAuth in your browser...
 ```
 
 ## Features
 
+- Interactive first-run Google OAuth setup. No manual environment-variable setup is required for the Client ID.
 - Google OAuth 2.0 desktop authentication with PKCE and loopback redirect.
-- OAuth tokens stored in **Windows Credential Manager**, not plaintext files.
+- Non-secret OAuth Client ID saved locally in `%LOCALAPPDATA%\NgMusic\config.json`.
+- OAuth tokens stored in **Windows Credential Manager**, not plaintext config.
+- Environment-variable overrides remain available for managed/advanced setups.
 - Search through YouTube Data API v3.
 - Visible YouTube IFrame playback controlled from the terminal.
 - Queue and playback history.
-- Commands including `play`, `pause`, `resume`, `stop`, `seek`, `volume`, `next`, `prev`, `queue`, and `now`.
+- Commands including `setup`, `config`, `play`, `pause`, `resume`, `stop`, `seek`, `volume`, `next`, `prev`, `queue`, and `now`.
 - Self-contained Windows releases: the end user does not need to install .NET.
 - MSI and portable ZIP distributions for x64, ARM64, and x86.
 - Reproducible release pipeline on GitHub Actions with SHA-256 checksums.
@@ -52,11 +58,26 @@ Use the [latest GitHub Release](https://github.com/ManuelPerilla/ngmusic/release
 
 The MSI is a per-machine installation under Program Files and adds NgMusic to the system `PATH`. It may require administrator approval. The portable ZIP modifies neither Program Files nor `PATH`.
 
-See [Installation](docs/installation.md).
+## First-time setup
 
-## First-time configuration
+The simplest path is now:
 
-NgMusic needs a Google OAuth Desktop application client and YouTube Data API v3 access.
+```text
+PS Music:\> login
+```
+
+If OAuth is not configured, NgMusic starts the setup wizard automatically. Paste the Google OAuth **Desktop app Client ID** once and NgMusic saves it locally.
+
+You can also run:
+
+```text
+PS Music:\> setup
+PS Music:\> config show
+PS Music:\> config path
+PS Music:\> config reset
+```
+
+Environment variables are still supported and take precedence:
 
 ```powershell
 $env:NGMUSIC_GOOGLE_CLIENT_ID="your-client-id"
@@ -64,7 +85,7 @@ $env:NGMUSIC_GOOGLE_CLIENT_SECRET="your-client-secret" # only if provided
 $env:NGMUSIC_YOUTUBE_API_KEY="your-api-key"            # optional after OAuth login
 ```
 
-Do not commit credentials to the repository. See [Configuration](docs/configuration.md).
+See [Configuration](docs/configuration.md).
 
 ## Documentation
 
@@ -81,7 +102,9 @@ Translated documentation is available under [docs/i18n](docs/i18n/).
 
 ## Security and privacy
 
-NgMusic has no project-operated analytics or telemetry backend. Network requests are made only as part of user-facing functionality such as Google login, YouTube search, and video playback. OAuth tokens are stored in Windows Credential Manager.
+NgMusic has no project-operated analytics or telemetry backend. Network requests are made only as part of user-facing functionality such as Google login, YouTube search, and video playback.
+
+The saved local configuration contains the Google OAuth Client ID only. OAuth access/refresh tokens remain in Windows Credential Manager. Client secrets and API keys are not written to the local NgMusic JSON configuration.
 
 The local player and OAuth redirect servers bind only to loopback (`127.0.0.1`) on ephemeral ports.
 
@@ -103,32 +126,12 @@ Development requires the .NET 10 SDK.
 .\build\dev.ps1
 ```
 
-Or:
-
-```powershell
-dotnet run --project .\src\NgMusic\NgMusic.csproj
-```
-
-## Release builds
-
-```powershell
-.\build\release.ps1 -Version 0.2.0
-```
-
-The release pipeline produces architecture-specific MSI installers, portable ZIP files, a combined Windows package, and SHA-256 checksums. See [Building and releasing](docs/releasing.md).
-
 ## Current limitations
 
 - Playback currently opens a visible browser-hosted IFrame player rather than an integrated WebView2 window.
 - Playlist-management commands are not yet implemented.
 - Public code signing is not active until a signing provider approves the project.
 - x86 is maintained primarily for legacy compatibility.
-
-## Contributing
-
-Issues and pull requests are welcome. Keep changes focused, avoid committing credentials or generated release binaries, and document user-visible behavior.
-
-External pull requests require maintainer review before merge.
 
 ## Project links
 

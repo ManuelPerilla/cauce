@@ -1,17 +1,17 @@
 # Configuration और Google OAuth
 
-NgMusic Google OAuth 2.0 Desktop flow और YouTube Data API v3 इस्तेमाल करता है।
+`login` चलाएँ। Client ID missing होने पर NgMusic setup wizard automatically खोलता है।
 
-| Variable | Purpose |
-| --- | --- |
-| `NGMUSIC_GOOGLE_CLIENT_ID` | Login के लिए जरूरी |
-| `NGMUSIC_GOOGLE_CLIENT_SECRET` | Google दे तो |
-| `NGMUSIC_YOUTUBE_API_KEY` | Optional search key |
+Google OAuth **Desktop app** Client ID paste करने के बाद यह यहाँ save होता है:
 
-Login पर NgMusic PKCE बनाता है, `127.0.0.1` पर temporary listener खोलता है, browser में Google authorization खोलता है और callback validate करता है।
+`%LOCALAPPDATA%\NgMusic\config.json`
 
-Tokens Windows Credential Manager में `NgMusic.GoogleOAuth` नाम से store होते हैं।
+OAuth tokens JSON में नहीं, Windows Credential Manager में store होते हैं।
 
-NgMusic Google password मांगता या store नहीं करता।
+- `setup`: Client ID configure/replace
+- `config show`: status
+- `config path`: config path
+- `config reset`: local config delete
+- `logout`: OAuth token delete
 
-Secrets, API keys, signing certificates या tokens repository में commit न करें।
+Environment variables supported हैं और local config से higher priority रखते हैं।

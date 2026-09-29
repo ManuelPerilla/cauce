@@ -2,13 +2,14 @@
 
 [Documentation home](../README.md)
 
-NgMusic uses a compact PowerShell-inspired command line.
-
 | Command | Description |
 | --- | --- |
-| `help`, `?` | Show built-in help |
-| `login` | Authenticate with Google |
-| `logout` | Remove saved OAuth credentials |
+| `setup`, `configure` | Run interactive Google OAuth configuration |
+| `config show` | Show configuration source/status |
+| `config path` | Show local configuration file path |
+| `config reset` | Remove local JSON configuration |
+| `login` | Authenticate with Google; runs setup automatically if needed |
+| `logout` | Remove saved OAuth token |
 | `whoami` | Show current authenticated account |
 | `search <query>`, `s <query>` | Search YouTube music videos |
 | `play <n>`, `p <n>` | Play result number `n` |
@@ -23,29 +24,21 @@ NgMusic uses a compact PowerShell-inspired command line.
 | `queue`, `q` | Show current queue |
 | `queue add <n>` | Add search result `n` to queue |
 | `queue clear` | Clear queue |
-| `queue play` | Play the next queued item |
+| `queue play` | Play next queued item |
 | `now`, `np` | Show current track |
 | `clear`, `cls` | Clear terminal |
 | `exit`, `quit` | Exit NgMusic |
 
-## Example session
+## First login
 
 ```text
 PS Music:\> login
-PS Music:\> search "Nujabes Feather"
-PS Music:\> queue add 1
-PS Music:\> queue add 3
-PS Music:\> queue
-PS Music:\> queue play
-PS Music:\> volume 55
-PS Music:\> seek 1:20
-PS Music:\> now
+
+Google OAuth setup
+------------------
+ [1] Paste Google OAuth Client ID
+ [2] Open step-by-step setup instructions
+ [3] Cancel
 ```
 
-Quoted search terms are supported:
-
-```text
-PS Music:\> search "Boards of Canada Dayvan Cowboy"
-```
-
-Pipeline syntax such as `search ... | play 1` is a roadmap item and is not implemented yet.
+After the Client ID has been saved, future `login` commands skip the wizard unless configuration is reset or replaced.

@@ -1,24 +1,13 @@
 # Référence des commandes
 
+Nouvelles commandes de configuration :
+
 | Commande | Description |
 | --- | --- |
-| `help` | Aide |
-| `login` | Connexion Google |
-| `logout` | Supprimer le token |
-| `whoami` | Compte connecté |
-| `search <query>` | Rechercher |
-| `play <n>` | Lire le résultat n |
-| `pause` | Pause |
-| `resume` | Reprendre |
-| `stop` | Arrêter |
-| `next` | Suivant |
-| `prev` | Précédent |
-| `seek <sec|mm:ss>` | Se déplacer |
-| `volume <0-100>` | Volume |
-| `queue` | Voir la file |
-| `queue add <n>` | Ajouter |
-| `queue clear` | Vider |
-| `now` | Piste actuelle |
-| `exit` | Quitter |
+| `setup` | Assistant OAuth |
+| `config show` | Afficher la configuration |
+| `config path` | Afficher le chemin |
+| `config reset` | Supprimer la config locale |
+| `login` | Login, avec setup automatique si nécessaire |
 
-La syntaxe pipeline n'est pas encore implémentée.
+Les autres commandes de lecture, recherche et queue restent disponibles.

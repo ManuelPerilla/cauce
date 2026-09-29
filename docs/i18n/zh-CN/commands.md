@@ -1,24 +1,13 @@
 # 命令参考
 
+新增配置命令：
+
 | 命令 | 说明 |
 | --- | --- |
-| `help`, `?` | 显示帮助 |
-| `login` | Google 登录 |
-| `logout` | 删除保存的 OAuth token |
-| `whoami` | 显示当前账户 |
-| `search <query>`, `s` | 搜索音乐 |
-| `play <n>`, `p <n>` | 播放第 n 个结果 |
-| `pause` | 暂停 |
-| `resume` | 继续 |
-| `stop` | 停止 |
-| `next`, `n` | 下一首 |
-| `prev` | 上一首 |
-| `seek <秒|mm:ss>` | 跳转 |
-| `volume <0-100>` | 设置音量 |
-| `queue` | 查看队列 |
-| `queue add <n>` | 加入队列 |
-| `queue clear` | 清空队列 |
-| `now` | 当前曲目 |
-| `exit` | 退出 |
+| `setup` | OAuth 设置向导 |
+| `config show` | 查看配置 |
+| `config path` | 配置文件路径 |
+| `config reset` | 删除本地配置 |
+| `login` | 登录，必要时自动运行设置向导 |
 
-类似 `search ... | play 1` 的管道语法尚未实现。
+其他播放、搜索、队列命令保持不变。

@@ -4,66 +4,69 @@
 
 [English](README.md) · [Español](README.es.md) · [简体中文](README.zh-CN.md) · [हिन्दी](README.hi.md) · [Français](README.fr.md)
 
-> **Estado del proyecto:** etapa temprana pero utilizable. Las versiones públicas se compilan automáticamente con GitHub Actions para Windows x64, ARM64 y x86.
+> **Estado del proyecto:** etapa temprana pero utilizable.
 
-## Qué es NgMusic
+## Configuración sin variables de entorno
 
-NgMusic es un shell musical personal para Windows, pensado para quienes prefieren teclado y terminal antes que una interfaz multimedia convencional. Ofrece comandos inspirados en PowerShell para buscar música, controlar reproducción, volumen, posición, cola y autenticación con Google.
+Desde la versión 0.3, lo normal es simplemente ejecutar:
 
-La reproducción permanece dentro del reproductor IFrame oficial y visible de YouTube. NgMusic no extrae flujos multimedia, no descarga pistas y no crea una capa oculta de extracción de audio.
+```text
+PS Music:\> login
+```
+
+Si falta configuración, NgMusic abre automáticamente el asistente:
+
+```text
+Google OAuth setup
+------------------
+ [1] Paste Google OAuth Client ID
+ [2] Open step-by-step setup instructions
+ [3] Cancel
+```
+
+Pega una vez tu Google OAuth Client ID de tipo **Desktop app**. NgMusic guarda únicamente ese identificador no secreto en:
+
+```text
+%LOCALAPPDATA%\NgMusic\config.json
+```
+
+Los tokens OAuth siguen guardándose en **Windows Credential Manager**.
+
+También puedes usar:
+
+```text
+setup
+config show
+config path
+config reset
+```
+
+Las variables de entorno siguen disponibles para configuración avanzada y tienen prioridad sobre el archivo local.
 
 ## Funciones
 
-- OAuth 2.0 de Google con PKCE y redirección loopback.
-- Tokens OAuth guardados en **Windows Credential Manager**.
+- OAuth 2.0 de Google con PKCE.
+- Asistente interactivo de configuración.
+- Tokens OAuth en Windows Credential Manager.
 - Búsqueda mediante YouTube Data API v3.
-- Reproducción visible con YouTube IFrame controlada desde terminal.
-- Cola e historial de reproducción.
-- Distribuciones MSI y ZIP portable para x64, ARM64 y x86.
-- Releases self-contained, sin requerir .NET en el equipo del usuario.
-- Pipeline reproducible en GitHub Actions con hashes SHA-256.
+- Player IFrame visible controlado desde terminal.
+- Cola e historial.
+- MSI y portable para x64, ARM64 y x86.
+- Builds reproducibles con SHA-256.
 
 ## Descargar
 
-Usa la [última Release de GitHub](https://github.com/ManuelPerilla/ngmusic/releases/latest).
-
-| Arquitectura | Instalador | Portable |
-| --- | --- | --- |
-| x64 | `*-win-x64.msi` | `*-win-x64-portable.zip` |
-| ARM64 | `*-win-arm64.msi` | `*-win-arm64-portable.zip` |
-| x86 | `*-win-x86.msi` | `*-win-x86-portable.zip` |
-
-El MSI instala NgMusic en Program Files y agrega `ngmusic` al `PATH` del sistema. Puede pedir permisos de administrador. La versión portable no modifica Program Files ni el `PATH`.
-
-Consulta [Instalación](docs/i18n/es/installation.md).
-
-## Configuración inicial
-
-NgMusic necesita un cliente OAuth de Google de tipo Desktop y acceso a YouTube Data API v3.
-
-```powershell
-$env:NGMUSIC_GOOGLE_CLIENT_ID="tu-client-id"
-$env:NGMUSIC_GOOGLE_CLIENT_SECRET="tu-client-secret"
-$env:NGMUSIC_YOUTUBE_API_KEY="tu-api-key"
-```
-
-No subas credenciales al repositorio.
+[Última Release](https://github.com/ManuelPerilla/ngmusic/releases/latest)
 
 ## Documentación
 
 - [Instalación](docs/i18n/es/installation.md)
 - [Configuración y OAuth](docs/i18n/es/configuration.md)
-- [Referencia de comandos](docs/i18n/es/commands.md)
+- [Comandos](docs/i18n/es/commands.md)
 - [Arquitectura](docs/i18n/es/architecture.md)
-- [Seguridad y privacidad](docs/i18n/es/security.md)
-- [Solución de problemas](docs/i18n/es/troubleshooting.md)
-- [Builds y releases](docs/i18n/es/releasing.md)
-- [Política de firma de código](docs/i18n/es/code-signing-policy.md)
+- [Seguridad](docs/i18n/es/security.md)
+- [Troubleshooting](docs/i18n/es/troubleshooting.md)
+- [Releases](docs/i18n/es/releasing.md)
+- [Firma de código](docs/i18n/es/code-signing-policy.md)
 
-La versión inglesa es la fuente canónica. Si una traducción discrepa de ella, prevalece la documentación inglesa.
-
-## Estado de firma
-
-La aprobación de SignPath Foundation está pendiente. Cuando la firma esté habilitada para releases oficiales:
-
-**Free code signing provided by SignPath.io, certificate by SignPath Foundation.**
+La documentación inglesa es canónica.
