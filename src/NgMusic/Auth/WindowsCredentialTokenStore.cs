@@ -32,7 +32,7 @@ public sealed class WindowsCredentialTokenStore(string targetName) : ITokenStore
             if (credential.CredentialBlob == IntPtr.Zero || credential.CredentialBlobSize == 0)
                 return Task.FromResult<StoredToken?>(null);
 
-            var bytes = new byte[credential.CredentialBlobSize];
+            var bytes = new byte[checked((int)credential.CredentialBlobSize)];
             Marshal.Copy(credential.CredentialBlob, bytes, 0, bytes.Length);
             var json = Encoding.UTF8.GetString(bytes);
             return Task.FromResult(JsonSerializer.Deserialize<StoredToken>(json));
