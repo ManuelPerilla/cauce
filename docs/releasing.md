@@ -2,65 +2,44 @@
 
 [Documentation home](../README.md) · [Architecture](architecture.md) · [Code signing policy](code-signing-policy.md)
 
-## Requirements for maintainers
+## Release outputs
 
-- Windows build environment or GitHub Actions Windows runner.
-- .NET 10 SDK.
-- Network access for package restore.
-- WiX Toolset SDK used by the installer project.
+For every selected Windows architecture, the release script produces:
 
-End users do not need the SDK or .NET runtime.
+- graphical `Setup.exe`;
+- direct MSI installer;
+- portable ZIP.
 
-## Local release build
+The graphical setup executable embeds the matching MSI, so each setup binary is architecture-specific.
+
+## Build
 
 ```powershell
-.\build\release.ps1 -Version 0.2.0
+.\build\release.ps1 -Version 0.4.0
 ```
 
-Outputs are written to `artifacts/release/`.
+For each architecture the pipeline:
 
-The build produces MSI and portable packages for x64, ARM64, and x86.
+1. publishes the self-contained NgMusic application;
+2. creates the portable ZIP;
+3. builds an architecture-specific MSI;
+4. builds an architecture-specific WinForms Setup.exe embedding that MSI;
+5. generates SHA-256 checksums;
+6. uploads the GitHub Actions package;
+7. publishes GitHub Release assets.
 
-## Build characteristics
+## Release validation
 
-Release publishing uses:
+The release must verify that:
 
-- Release configuration;
-- self-contained deployment;
-- single-file publishing;
-- ReadyToRun;
-- no debug symbols in distributed builds;
-- no trimming until trim compatibility is verified;
-- isolated WiX intermediate directories per architecture.
+- x64, ARM64, and x86 application payloads differ where expected;
+- each MSI embeds the correct architecture;
+- each Setup.exe embeds its matching MSI;
+- the graphical setup can save the current user's OAuth Client ID;
+- installation completes after UAC approval;
+- `ngmusic` resolves from a newly opened terminal;
+- uninstall works through Windows Settings.
 
-The MSI and portable ZIP for a given architecture are generated from the same published application payload.
+## Signing
 
-## GitHub Actions
-
-The release workflow builds on a Windows runner, generates SHA-256 checksums, uploads an Actions artifact, and publishes release assets.
-
-Build outputs must not be manually edited after the automated build.
-
-## Versioning
-
-NgMusic uses semantic-style versions: `MAJOR.MINOR.PATCH`.
-
-Binary release files belong in GitHub Releases, not in source-control commits.
-
-## Release checklist
-
-1. Review source/build-script changes.
-2. Confirm version metadata.
-3. Build all architectures.
-4. Confirm each architecture has distinct, expected artifacts.
-5. Generate and publish SHA-256 checksums.
-6. Run signing/approval when code signing is available.
-7. Publish GitHub Release.
-8. Verify download links and signatures/checksums.
-9. Smoke-test x64 at minimum and architecture-specific builds where hardware/emulation is available.
-
-## Code signing
-
-Signing keys must never be committed to the repository.
-
-When SignPath signing is active, signing requests require explicit human approval and must originate from verifiable automated builds. See [Code signing policy](code-signing-policy.md).
+When code signing is active, sign the NgMusic application payload and installation artifacts in the approved pipeline. Setup executables and MSI packages should both receive Authenticode signatures before public release.

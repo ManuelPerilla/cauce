@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: Release version (for example 0.2.0)
+        description: Release version (for example 0.4.0)
         required: true
-        default: 0.2.0
+        default: 0.4.0
   push:
     branches:
       - main
@@ -52,7 +52,7 @@ jobs:
           "version=$version" >> $env:GITHUB_OUTPUT
           Write-Host "Release version: $version"
 
-      - name: Build MSI and portable packages
+      - name: Build setup, MSI and portable packages
         shell: pwsh
         run: ./build/release.ps1 -Version '${{ steps.version.outputs.version }}'
 
@@ -99,16 +99,16 @@ jobs:
           @(
             "# NgMusic $version"
             ""
-            "First packaged Windows release."
+            "Recommended installation:"
+            "- Graphical Setup.exe for x64, ARM64 and x86"
             ""
-            "Included:"
-            "- MSI installers for x64, ARM64 and x86"
-            "- Portable self-contained ZIPs for x64, ARM64 and x86"
+            "Also included:"
+            "- Direct MSI installers"
+            "- Portable self-contained ZIPs"
             "- Combined Windows package bundle"
             "- SHA-256 checksums"
             ""
-            "The portable and installed editions use the same application payload."
-            "Google OAuth configuration is documented in the repository."
+            "The graphical installer collects the non-secret Google OAuth Desktop Client ID during setup so the normal first session can be login → search → play."
           ) | Set-Content $notesPath -Encoding utf8
 
           gh release view $tag --repo $env:GITHUB_REPOSITORY *> $null

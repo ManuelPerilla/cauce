@@ -2,30 +2,17 @@
 
 **Contrôleur musical Windows orienté terminal et inspiré de PowerShell.**
 
-[English](README.md) · [Español](README.es.md) · [简体中文](README.zh-CN.md) · [हिन्दी](README.hi.md) · [Français](README.fr.md)
+L'option recommandée devient le `Setup.exe` graphique.
 
-## Configuration OAuth simplifiée
+L'assistant suit le flux classique **Suivant → Suivant → Installer** et configure le Client ID Google OAuth Desktop, l'installation dans Program Files, le PATH et les raccourcis optionnels.
 
-Il suffit maintenant d'exécuter :
+Après installation :
 
 ```text
-PS Music:\> login
+ngmusic
+login
+search "..."
+play 1
 ```
 
-Si aucun Client ID Google OAuth n'est configuré, NgMusic lance automatiquement l'assistant. Collez une fois le Client ID d'une application **Desktop app**.
-
-Le Client ID non secret est enregistré dans :
-
-`%LOCALAPPDATA%\NgMusic\config.json`
-
-Les tokens OAuth restent dans Windows Credential Manager.
-
-Commandes :
-
-`setup`, `config show`, `config path`, `config reset`
-
-Les variables d'environnement restent prises en charge et ont priorité sur la configuration locale.
-
-[Dernière Release](https://github.com/ManuelPerilla/ngmusic/releases/latest)
-
-La documentation anglaise reste canonique.
+Le MSI direct et le ZIP portable restent disponibles.

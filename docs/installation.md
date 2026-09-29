@@ -2,59 +2,59 @@
 
 [Documentation home](../README.md) · [Configuration](configuration.md) · [Troubleshooting](troubleshooting.md)
 
-NgMusic targets modern Windows 10 and Windows 11 systems.
+NgMusic targets modern Windows 10 and Windows 11.
 
-## Choose the correct package
+## Recommended: graphical Setup.exe
+
+Download the setup executable matching your architecture:
 
 | System type | Recommended package |
 | --- | --- |
-| Intel/AMD 64-bit | `NgMusic-<version>-win-x64.msi` |
-| Windows on ARM | `NgMusic-<version>-win-arm64.msi` |
-| 32-bit Windows | `NgMusic-<version>-win-x86.msi` |
+| Intel/AMD 64-bit | `NgMusic-<version>-win-x64-setup.exe` |
+| Windows on ARM | `NgMusic-<version>-win-arm64-setup.exe` |
+| 32-bit Windows | `NgMusic-<version>-win-x86-setup.exe` |
 
-Portable ZIP files use the same architecture names.
+The graphical installer is designed for a normal **Next → Next → Install** flow.
 
-To check your architecture, open **Settings → System → About → System type**.
+### What the wizard does
 
-## MSI installation
+- Explains the prerequisites.
+- Collects the Google OAuth Desktop Client ID.
+- Can open the step-by-step OAuth guide.
+- Installs the architecture-matching MSI silently after Windows UAC approval.
+- Installs NgMusic under Program Files.
+- Adds the NgMusic directory to system `PATH`.
+- Saves the Client ID for the current user in `%LOCALAPPDATA%\NgMusic\config.json`.
+- Optionally creates a Start-menu shortcut.
+- Optionally creates a desktop shortcut.
+- Optionally launches NgMusic when setup finishes.
 
-1. Download the MSI matching your architecture from GitHub Releases.
-2. Verify the SHA-256 digest if desired using `SHA256SUMS.txt`.
-3. Run the MSI.
-4. Approve administrator elevation if Windows requests it.
-5. Open a **new** terminal after installation.
-6. Run `ngmusic`.
+The installer does not store Google passwords, OAuth access/refresh tokens, API keys, or signing secrets.
 
-The MSI installs NgMusic under Program Files, registers Windows Installer upgrade/uninstall metadata, and appends the NgMusic installation directory to the system `PATH`.
+### Why UAC appears only during install
 
-The current installer does **not** create a Start-menu shortcut.
+The setup wizard runs initially as the current user so the Client ID is saved to the correct Windows profile. It elevates only the MSI installation step that needs access to Program Files and the system `PATH`.
 
-### Uninstall
+## Direct MSI installation
 
-Use **Settings → Apps → Installed apps → NgMusic → Uninstall**, or uninstall the MSI through standard Windows Installer tools.
+The MSI remains available for managed deployment or users who prefer Windows Installer directly.
 
-## Portable installation
+It installs NgMusic under Program Files and adds it to the system `PATH`.
 
-1. Download the matching `*-portable.zip`.
-2. Extract it to a folder you control.
-3. Run `ngmusic.exe`.
+If you use the MSI directly, configure OAuth on first `login` through NgMusic's terminal wizard, or use the documented environment variables.
 
-Portable mode does not modify Program Files or `PATH`. Authentication tokens are still stored in Windows Credential Manager rather than inside the portable folder.
+## Portable ZIP
+
+Extract the portable ZIP anywhere and run `ngmusic.exe`.
+
+Portable mode does not modify Program Files, shortcuts, or `PATH`. On first login, the terminal setup wizard can save the Google OAuth Client ID for the current user.
 
 ## Runtime requirements
 
-Official releases are self-contained. A user running a release does not need to install the .NET runtime or SDK.
+Official releases are self-contained. No separate .NET installation is required.
 
-Developers building from source need the .NET 10 SDK.
+## Uninstall
 
-## First run
+For Setup.exe or MSI installations, use **Settings → Apps → Installed apps → NgMusic → Uninstall**.
 
-After setting the Google OAuth configuration described in [Configuration](configuration.md):
-
-```text
-PS Music:\> login
-PS Music:\> search "massive attack teardrop"
-PS Music:\> play 1
-```
-
-The `login` command opens the system browser. Playback opens a visible YouTube player in the browser.
+Portable installations are removed by deleting the extracted folder. Use `logout` first if you also want to remove NgMusic's OAuth token from Windows Credential Manager.

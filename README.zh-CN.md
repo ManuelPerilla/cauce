@@ -1,38 +1,24 @@
 # NgMusic
 
-**面向 Windows 的 PowerShell 风格终端音乐控制器。**
+**Windows PowerShell 风格终端音乐控制器。**
 
-[English](README.md) · [Español](README.es.md) · [简体中文](README.zh-CN.md) · [हिन्दी](README.hi.md) · [Français](README.fr.md)
-
-## 更简单的 OAuth 设置
-
-现在只需要运行：
+推荐使用图形安装程序：
 
 ```text
-PS Music:\> login
+NgMusic-<version>-win-x64-setup.exe
+NgMusic-<version>-win-arm64-setup.exe
+NgMusic-<version>-win-x86-setup.exe
 ```
 
-如果没有配置 Google OAuth Client ID，NgMusic 会自动启动设置向导。粘贴一次 **Desktop app** Client ID 即可。
+安装向导提供标准的“下一步 → 下一步 → 安装”流程，并配置 Google OAuth Desktop Client ID、Program Files 安装、系统 PATH 和可选快捷方式。
 
-非敏感的 Client ID 保存到：
+安装后通常只需要：
 
 ```text
-%LOCALAPPDATA%\NgMusic\config.json
+ngmusic
+login
+search "..."
+play 1
 ```
 
-OAuth token 仍保存在 Windows Credential Manager。
-
-可用命令：
-
-```text
-setup
-config show
-config path
-config reset
-```
-
-环境变量仍然支持，并且优先级更高。
-
-[最新 Release](https://github.com/ManuelPerilla/ngmusic/releases/latest)
-
-英文文档是规范来源。
+MSI 和 portable ZIP 仍然保留。

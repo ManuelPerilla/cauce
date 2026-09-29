@@ -1,72 +1,43 @@
 # NgMusic
 
-**Controlador musical para Windows inspirado en PowerShell, centrado en terminal, con OAuth de Google y reproducción mediante el reproductor embebido compatible de YouTube.**
+**Controlador musical para Windows inspirado en PowerShell y centrado en terminal.**
 
 [English](README.md) · [Español](README.es.md) · [简体中文](README.zh-CN.md) · [हिन्दी](README.hi.md) · [Français](README.fr.md)
 
-> **Estado del proyecto:** etapa temprana pero utilizable.
+## Instalación recomendada: Setup.exe
 
-## Configuración sin variables de entorno
-
-Desde la versión 0.3, lo normal es simplemente ejecutar:
+La opción recomendada ahora es el instalador gráfico:
 
 ```text
-PS Music:\> login
+NgMusic-<versión>-win-x64-setup.exe
+NgMusic-<versión>-win-arm64-setup.exe
+NgMusic-<versión>-win-x86-setup.exe
 ```
 
-Si falta configuración, NgMusic abre automáticamente el asistente:
+El asistente hace el flujo típico **Siguiente → Siguiente → Instalar** y deja preparado:
+
+- NgMusic en Program Files.
+- `ngmusic` en el `PATH`.
+- Google OAuth Desktop Client ID.
+- Acceso directo en Inicio opcional.
+- Acceso directo en escritorio opcional.
+- Lanzar NgMusic al terminar.
+
+El Client ID no es secreto y se guarda en:
+
+`%LOCALAPPDATA%\NgMusic\config.json`
+
+Los tokens OAuth siguen en Windows Credential Manager.
+
+Después de instalar, la idea es:
 
 ```text
-Google OAuth setup
-------------------
- [1] Paste Google OAuth Client ID
- [2] Open step-by-step setup instructions
- [3] Cancel
+ngmusic
+login
+search "..."
+play 1
 ```
 
-Pega una vez tu Google OAuth Client ID de tipo **Desktop app**. NgMusic guarda únicamente ese identificador no secreto en:
+MSI directo y ZIP portable siguen disponibles como opciones alternativas.
 
-```text
-%LOCALAPPDATA%\NgMusic\config.json
-```
-
-Los tokens OAuth siguen guardándose en **Windows Credential Manager**.
-
-También puedes usar:
-
-```text
-setup
-config show
-config path
-config reset
-```
-
-Las variables de entorno siguen disponibles para configuración avanzada y tienen prioridad sobre el archivo local.
-
-## Funciones
-
-- OAuth 2.0 de Google con PKCE.
-- Asistente interactivo de configuración.
-- Tokens OAuth en Windows Credential Manager.
-- Búsqueda mediante YouTube Data API v3.
-- Player IFrame visible controlado desde terminal.
-- Cola e historial.
-- MSI y portable para x64, ARM64 y x86.
-- Builds reproducibles con SHA-256.
-
-## Descargar
-
-[Última Release](https://github.com/ManuelPerilla/ngmusic/releases/latest)
-
-## Documentación
-
-- [Instalación](docs/i18n/es/installation.md)
-- [Configuración y OAuth](docs/i18n/es/configuration.md)
-- [Comandos](docs/i18n/es/commands.md)
-- [Arquitectura](docs/i18n/es/architecture.md)
-- [Seguridad](docs/i18n/es/security.md)
-- [Troubleshooting](docs/i18n/es/troubleshooting.md)
-- [Releases](docs/i18n/es/releasing.md)
-- [Firma de código](docs/i18n/es/code-signing-policy.md)
-
-La documentación inglesa es canónica.
+[Documentación de instalación](docs/i18n/es/installation.md)

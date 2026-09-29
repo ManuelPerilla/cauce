@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [string]$Version = "0.2.0",
+    [string]$Version = "0.4.0",
     [ValidateSet("x64", "arm64", "x86")]
     [string[]]$Architectures = @("x64", "arm64", "x86"),
     [switch]$SkipInstaller
@@ -12,6 +12,7 @@ Set-StrictMode -Version Latest
 $Root = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $Project = Join-Path $Root "src\NgMusic\NgMusic.csproj"
 $InstallerProject = Join-Path $Root "packaging\windows\NgMusic.Setup.wixproj"
+$GuiSetupProject = Join-Path $Root "src\NgMusic.Setup\NgMusic.Setup.csproj"
 $Artifacts = Join-Path $Root "artifacts"
 $PublishRoot = Join-Path $Artifacts "publish"
 $ReleaseRoot = Join-Path $Artifacts "release"
@@ -63,12 +64,12 @@ NgMusic $Version portable ($Rid)
 ================================
 
 1. Put this folder anywhere you want.
-2. Read INSTALLATION.md once to configure your Google OAuth client.
-3. Run ngmusic.exe.
+2. Run ngmusic.exe.
+3. The first 'login' starts the OAuth setup wizard if needed.
 
 No .NET runtime installation is required. This build is self-contained.
 Nothing is added to Program Files, the Start menu, or PATH.
-OAuth tokens are still stored in Windows Credential Manager for the current Windows user.
+OAuth tokens are stored in Windows Credential Manager for the current Windows user.
 "@
     Set-Content -Path (Join-Path $PortableStage "README-PORTABLE.txt") -Value $PortableReadme -Encoding UTF8
     Copy-Item (Join-Path $Root "docs\installation.md") (Join-Path $PortableStage "INSTALLATION.md") -Force
@@ -97,7 +98,29 @@ OAuth tokens are still stored in Windows Credential Manager for the current Wind
 
         $Msi = Get-ChildItem -Path $MsiOut -Filter "*.msi" -Recurse | Select-Object -First 1
         if (-not $Msi) { throw "MSI build completed but no MSI was found for $Rid." }
-        Copy-Item $Msi.FullName (Join-Path $ReleaseRoot "NgMusic-$Version-$Rid.msi") -Force
+
+        $ReleaseMsi = Join-Path $ReleaseRoot "NgMusic-$Version-$Rid.msi"
+        Copy-Item $Msi.FullName $ReleaseMsi -Force
+
+        Write-Host "[$Rid] Building graphical Setup.exe..."
+        $GuiSetupOut = Join-Path $Artifacts "gui-setup\$Rid"
+        New-CleanDirectory $GuiSetupOut
+
+        & dotnet publish $GuiSetupProject `
+            --configuration Release `
+            --runtime $Rid `
+            --self-contained true `
+            -p:Version=$Version `
+            "-p:MsiPath=$($Msi.FullName)" `
+            "-p:PublishDir=$GuiSetupOut\" `
+            -p:PublishSingleFile=true `
+            -p:PublishTrimmed=false
+        if ($LASTEXITCODE -ne 0) { throw "Graphical setup build failed for $Rid." }
+
+        $SetupExe = Get-ChildItem -Path $GuiSetupOut -Filter "NgMusicSetup.exe" -File | Select-Object -First 1
+        if (-not $SetupExe) { throw "Graphical setup build completed but NgMusicSetup.exe was not found for $Rid." }
+
+        Copy-Item $SetupExe.FullName (Join-Path $ReleaseRoot "NgMusic-$Version-$Rid-setup.exe") -Force
     }
 }
 

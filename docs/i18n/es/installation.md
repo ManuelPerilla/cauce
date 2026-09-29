@@ -1,34 +1,29 @@
 # Instalación
 
-NgMusic está pensado para Windows 10 y Windows 11 modernos.
+## Recomendado: Setup.exe gráfico
 
-## Elegir paquete
+Descarga el `*-setup.exe` correspondiente a x64, ARM64 o x86.
 
-| Sistema | Paquete recomendado |
-| --- | --- |
-| Intel/AMD 64-bit | `NgMusic-<versión>-win-x64.msi` |
-| Windows ARM | `NgMusic-<versión>-win-arm64.msi` |
-| Windows 32-bit | `NgMusic-<versión>-win-x86.msi` |
+El asistente:
 
-## MSI
+1. muestra bienvenida;
+2. pide el Google OAuth Client ID tipo Desktop app;
+3. permite elegir accesos directos;
+4. instala NgMusic tras pedir UAC;
+5. guarda el Client ID en tu perfil;
+6. puede lanzar NgMusic.
 
-1. Descarga el MSI de tu arquitectura.
-2. Opcionalmente verifica el hash con `SHA256SUMS.txt`.
-3. Ejecuta el MSI.
-4. Acepta la elevación de administrador si Windows la solicita.
-5. Abre una terminal nueva.
-6. Ejecuta `ngmusic`.
+No necesitas instalar .NET.
 
-El MSI instala NgMusic en Program Files, registra upgrade/desinstalación y añade su carpeta al `PATH` del sistema. La versión actual no crea acceso directo en Inicio.
+El Client ID queda en `%LOCALAPPDATA%\NgMusic\config.json`. Los tokens OAuth se guardan en Windows Credential Manager.
 
-## Portable
+El MSI directo y el ZIP portable siguen disponibles.
 
-Descarga el ZIP portable, extráelo y ejecuta `ngmusic.exe`. No modifica Program Files ni `PATH`.
+Después del Setup.exe:
 
-Los tokens de autenticación siguen guardándose en Windows Credential Manager.
-
-## Runtime
-
-Las releases oficiales son self-contained. No necesitas instalar .NET para ejecutarlas. Para compilar desde código sí necesitas .NET 10 SDK.
-
-Consulta también [Configuración](configuration.md).
+```text
+ngmusic
+login
+search "Massive Attack Teardrop"
+play 1
+```

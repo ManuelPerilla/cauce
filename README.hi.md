@@ -1,31 +1,18 @@
 # NgMusic
 
-**Windows के लिए PowerShell-प्रेरित terminal music controller।**
+**Windows के लिए PowerShell-inspired terminal music controller।**
 
-[English](README.md) · [Español](README.es.md) · [简体中文](README.zh-CN.md) · [हिन्दी](README.hi.md) · [Français](README.fr.md)
+Recommended option अब graphical `Setup.exe` है।
 
-## आसान OAuth setup
+Wizard standard **Next → Next → Install** flow में Google OAuth Desktop Client ID, Program Files installation, PATH और optional shortcuts configure करता है।
 
-अब बस चलाएँ:
+Install के बाद सामान्य flow:
 
 ```text
-PS Music:\> login
+ngmusic
+login
+search "..."
+play 1
 ```
 
-अगर Google OAuth Client ID configured नहीं है, NgMusic interactive setup wizard खोलता है। **Desktop app** Client ID एक बार paste करें।
-
-Non-secret Client ID यहाँ save होता है:
-
-`%LOCALAPPDATA%\NgMusic\config.json`
-
-OAuth tokens Windows Credential Manager में रहते हैं।
-
-Commands:
-
-`setup`, `config show`, `config path`, `config reset`
-
-Environment variables अभी भी supported हैं और local config से priority लेते हैं।
-
-[Latest Release](https://github.com/ManuelPerilla/ngmusic/releases/latest)
-
-English documentation canonical है।
+Direct MSI और portable ZIP भी उपलब्ध रहेंगे।
