@@ -1,9 +1,13 @@
 # Architecture
 
+[Documentation home](../README.md) · [Security](security.md)
+
+NgMusic is intentionally split into replaceable layers so the terminal UX is not tightly coupled to one playback implementation.
+
 ```text
 ┌────────────────────────────────────┐
 │            MusicShell              │
-│ PowerShell-ish parser + queue UX   │
+│ parser · commands · queue/history  │
 └───────────┬───────────────┬────────┘
             │               │
             ▼               ▼
@@ -16,7 +20,7 @@
 ┌──────────────────────────┐
 │ IGoogleAuthService       │
 │ OAuth 2.0 + PKCE         │
-│ refresh-token lifecycle  │
+│ token refresh lifecycle  │
 └────────────┬─────────────┘
              ▼
 ┌──────────────────────────┐
@@ -24,33 +28,42 @@
 └──────────────────────────┘
 ```
 
-The main seam is `IPlayer`. The current implementation uses a browser-hosted visible IFrame player; a future WebView2 implementation can replace it without changing shell commands or provider code.
+## Shell
 
-## Distribution architecture
+`MusicShell` owns user interaction, parsing, queue/history behavior, and presentation. It depends on interfaces rather than concrete provider/player implementations.
 
-The application is published once per Windows architecture:
+## Provider
+
+`YouTubeProvider` uses YouTube Data API v3 for search. It can authenticate requests with an OAuth access token and optionally use an API key for unauthenticated search.
+
+## Authentication
+
+`GoogleOAuthService` implements the installed-app authorization-code flow with PKCE. The redirect listener binds only to loopback on an ephemeral port.
+
+`WindowsCredentialTokenStore` persists OAuth token data in Windows Credential Manager.
+
+## Playback
+
+`YouTubeIframePlayer` hosts a small local HTTP bridge and launches a visible browser page containing the official YouTube IFrame player.
+
+Terminal commands are translated into small local player commands such as load, pause, play, stop, seek, and volume.
+
+The current `IPlayer` abstraction makes a future WebView2 player possible without redesigning the shell.
+
+## Distribution
+
+For each architecture, the same published payload is used by both MSI and portable packaging:
 
 ```text
 source
-  │
-  ├── dotnet publish win-x64   ─┬─> x64 MSI
-  │                             └─> x64 portable ZIP
-  ├── dotnet publish win-arm64 ─┬─> ARM64 MSI
-  │                             └─> ARM64 portable ZIP
-  └── dotnet publish win-x86   ─┬─> x86 MSI
-                                └─> x86 portable ZIP
+  ├─ win-x64   ─┬─ MSI
+  │             └─ portable ZIP
+  ├─ win-arm64 ─┬─ MSI
+  │             └─ portable ZIP
+  └─ win-x86   ─┬─ MSI
+                └─ portable ZIP
 ```
 
-The MSI and portable ZIP for a given architecture consume the **same publish directory**. This keeps runtime behavior identical regardless of whether NgMusic is installed or extracted.
+Release publishing is self-contained, single-file, and ReadyToRun. Trimming remains disabled until all runtime/reflection paths are demonstrated to be trim-safe.
 
-### Release choices
-
-- **Self-contained:** users do not install .NET separately.
-- **Single-file:** minimizes loose runtime files and makes portable use simple.
-- **ReadyToRun:** improves cold startup at the cost of some binary size.
-- **No trimming yet:** avoids removing reflection/interop-reachable code before trim compatibility is verified.
-- **Architecture-specific RIDs:** `win-x64`, `win-arm64`, and `win-x86` are built independently.
-
-## State
-
-Application binaries can be portable, but credentials should not be. OAuth tokens are stored in Windows Credential Manager for the current user. This prevents a copied portable folder from carrying reusable plaintext authentication tokens to another machine.
+WiX build intermediates are isolated per architecture to prevent cross-architecture package reuse.

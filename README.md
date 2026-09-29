@@ -1,16 +1,25 @@
 # NgMusic
 
-A tiny personal Windows music shell: PowerShell-ish commands in the terminal, with YouTube doing playback through its visible official IFrame player.
+**A PowerShell-inspired, terminal-first music controller for Windows, using Google OAuth and YouTube's supported embedded player.**
+
+[English](README.md) · [Español](README.es.md) · [简体中文](README.zh-CN.md) · [हिन्दी](README.hi.md) · [Français](README.fr.md)
+
+> **Project status:** early-stage but usable. Public releases are built automatically on GitHub Actions for Windows x64, ARM64, and x86.
+
+## What NgMusic is
+
+NgMusic is a personal Windows music shell designed for people who prefer a keyboard and a terminal over a conventional media-player UI. It provides PowerShell-like commands for search, playback, volume, seeking, queue management, and Google authentication.
+
+Playback remains inside YouTube's visible official IFrame player. NgMusic does not extract raw media streams, download tracks, or create a hidden audio-scraping layer.
 
 ```text
-NgMusic 0.2  // PowerShell-ish YouTube music controller
+NgMusic 0.2.0
 
 PS Music:\> login
 ✓ Connected as you
 
 PS Music:\> search "Massive Attack Teardrop"
  [ 1] Massive Attack - Teardrop  —  Massive Attack
- [ 2] Teardrop (Live)           —  Massive Attack
 
 PS Music:\> play 1
 ✓ ▶ Massive Attack — Massive Attack - Teardrop
@@ -19,86 +28,110 @@ PS Music:\> volume 42
 volume 42%
 ```
 
-## Current features
+## Features
 
-- Google OAuth 2.0 desktop login with PKCE and a loopback redirect.
-- OAuth/refresh tokens stored in **Windows Credential Manager**, not plaintext config.
-- YouTube Data API search.
-- Visible YouTube IFrame player hosted on localhost and controlled from the terminal.
-- `play`, `pause`, `resume`, `stop`, `seek`, `volume`, `next`, `prev`, `queue`, and `now`.
-- No media-stream extraction, downloading, or hidden audio scraping.
+- Google OAuth 2.0 desktop authentication with PKCE and loopback redirect.
+- OAuth tokens stored in **Windows Credential Manager**, not plaintext files.
+- Search through YouTube Data API v3.
+- Visible YouTube IFrame playback controlled from the terminal.
+- Queue and playback history.
+- Commands including `play`, `pause`, `resume`, `stop`, `seek`, `volume`, `next`, `prev`, `queue`, and `now`.
+- Self-contained Windows releases: the end user does not need to install .NET.
+- MSI and portable ZIP distributions for x64, ARM64, and x86.
+- Reproducible release pipeline on GitHub Actions with SHA-256 checksums.
 
-## Windows support
+## Download
 
-Release packages target the portable Windows RIDs:
+Use the [latest GitHub Release](https://github.com/ManuelPerilla/ngmusic/releases/latest).
 
-| Platform | Release |
-| --- | --- |
-| Windows x64 | ✅ MSI + portable ZIP |
-| Windows ARM64 | ✅ MSI + portable ZIP |
-| Windows x86 | ✅ MSI + portable ZIP (legacy) |
+| Windows architecture | Installer | Portable |
+| --- | --- | --- |
+| x64 | `*-win-x64.msi` | `*-win-x64-portable.zip` |
+| ARM64 | `*-win-arm64.msi` | `*-win-arm64-portable.zip` |
+| x86 | `*-win-x86.msi` | `*-win-x86-portable.zip` |
 
-NgMusic targets modern Windows 10/11. Each release is architecture-specific because self-contained .NET single-file applications are platform/architecture-specific.
+The MSI is a per-machine installation under Program Files and adds NgMusic to the system `PATH`. It may require administrator approval. The portable ZIP modifies neither Program Files nor `PATH`.
 
-## Two ways to use it
+See [Installation](docs/installation.md).
 
-### 1. MSI installer
+## First-time configuration
 
-Use the MSI matching your machine. It installs NgMusic under Program Files, creates a Start-menu entry, adds `ngmusic` to `PATH`, and supports normal Windows upgrades/uninstall.
+NgMusic needs a Google OAuth Desktop application client and YouTube Data API v3 access.
 
-### 2. Portable
+```powershell
+$env:NGMUSIC_GOOGLE_CLIENT_ID="your-client-id"
+$env:NGMUSIC_GOOGLE_CLIENT_SECRET="your-client-secret" # only if provided
+$env:NGMUSIC_YOUTUBE_API_KEY="your-api-key"            # optional after OAuth login
+```
 
-Download the matching `*-portable.zip`, extract it anywhere, and run `ngmusic.exe`. It does not modify Program Files, shortcuts, or `PATH`.
+Do not commit credentials to the repository. See [Configuration](docs/configuration.md).
 
-Both formats are **self-contained**: end users do not need to install .NET separately.
+## Documentation
 
-See [Installation](docs/installation.md) for architecture selection and Google OAuth setup.
+- [Installation](docs/installation.md)
+- [Configuration and Google OAuth](docs/configuration.md)
+- [Command reference](docs/commands.md)
+- [Architecture](docs/architecture.md)
+- [Security and privacy](docs/security.md)
+- [Troubleshooting](docs/troubleshooting.md)
+- [Building and releasing](docs/releasing.md)
+- [Code signing policy](docs/code-signing-policy.md)
+
+Translated documentation is available under [docs/i18n](docs/i18n/).
+
+## Security and privacy
+
+NgMusic has no project-operated analytics or telemetry backend. Network requests are made only as part of user-facing functionality such as Google login, YouTube search, and video playback. OAuth tokens are stored in Windows Credential Manager.
+
+The local player and OAuth redirect servers bind only to loopback (`127.0.0.1`) on ephemeral ports.
+
+Read the full [security and privacy documentation](docs/security.md).
+
+## Code signing policy
+
+NgMusic maintains a documented release-signing policy and separates source control, automated builds, release artifacts, and signing approval.
+
+**Code signing status:** SignPath Foundation approval is pending. If code signing is enabled for official releases: **Free code signing provided by SignPath.io, certificate by SignPath Foundation.**
+
+See [Code signing policy](docs/code-signing-policy.md).
 
 ## Development
 
-Development requires the **.NET 10 SDK**:
+Development requires the .NET 10 SDK.
 
 ```powershell
 .\build\dev.ps1
 ```
 
-Or directly:
+Or:
 
 ```powershell
 dotnet run --project .\src\NgMusic\NgMusic.csproj
 ```
 
-## Build releases
+## Release builds
 
 ```powershell
 .\build\release.ps1 -Version 0.2.0
 ```
 
-That produces MSI installers and portable ZIPs for x64, ARM64, and x86 under `artifacts/release/`. See [Release process](docs/releasing.md).
+The release pipeline produces architecture-specific MSI installers, portable ZIP files, a combined Windows package, and SHA-256 checksums. See [Building and releasing](docs/releasing.md).
 
-Release settings use self-contained single-file publishing plus ReadyToRun. Trimming is intentionally disabled until the full dependency graph is proven trim-safe.
+## Current limitations
 
-## Why a visible player?
+- Playback currently opens a visible browser-hosted IFrame player rather than an integrated WebView2 window.
+- Playlist-management commands are not yet implemented.
+- Public code signing is not active until a signing provider approves the project.
+- x86 is maintained primarily for legacy compatibility.
 
-YouTube's public APIs do not provide a general raw-audio YouTube Music playback endpoint. NgMusic keeps playback inside the official embedded player instead of extracting media streams. The terminal controls that player through a small localhost command bridge.
+## Contributing
 
-## Security notes
+Issues and pull requests are welcome. Keep changes focused, avoid committing credentials or generated release binaries, and document user-visible behavior.
 
-- NgMusic never asks for your Google password.
-- Google login happens in your system browser.
-- OAuth redirects listen only on loopback (`127.0.0.1`).
-- Saved OAuth data lives in Windows Credential Manager under `NgMusic.GoogleOAuth`.
-- `logout` removes that saved credential.
-- Client IDs/secrets and signing credentials must never be committed.
+External pull requests require maintainer review before merge.
 
-## Architecture
+## Project links
 
-See [Architecture](docs/architecture.md).
-
-## Roadmap
-
-- Move the visible player from a browser tab into a WebView2 window while preserving the `IPlayer` contract.
-- Playlist commands through the YouTube Data API.
-- Richer queue state and playback events.
-- Aliases/pipeline-ish syntax (`search ... | play 1`).
-- Authenticode signing for public release binaries.
+- Repository: https://github.com/ManuelPerilla/ngmusic
+- Releases: https://github.com/ManuelPerilla/ngmusic/releases
+- Build history: https://github.com/ManuelPerilla/ngmusic/actions

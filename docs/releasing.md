@@ -1,64 +1,66 @@
-# Building releases
+# Building and releasing
 
-The release pipeline creates self-contained Windows packages for `win-x64`, `win-arm64`, and `win-x86`.
+[Documentation home](../README.md) · [Architecture](architecture.md) · [Code signing policy](code-signing-policy.md)
 
 ## Requirements for maintainers
 
-- Windows 10/11 build machine or GitHub Actions Windows runner.
+- Windows build environment or GitHub Actions Windows runner.
 - .NET 10 SDK.
-- Internet access during restore so NuGet can obtain the WiX SDK.
+- Network access for package restore.
+- WiX Toolset SDK used by the installer project.
 
-Users installing a release do **not** need the .NET SDK or runtime.
+End users do not need the SDK or .NET runtime.
 
-## Build all release formats
-
-From PowerShell at the repository root:
+## Local release build
 
 ```powershell
 .\build\release.ps1 -Version 0.2.0
 ```
 
-Outputs appear under `artifacts/release/`:
+Outputs are written to `artifacts/release/`.
 
-```text
-NgMusic-0.2.0-win-x64.msi
-NgMusic-0.2.0-win-x64-portable.zip
-NgMusic-0.2.0-win-arm64.msi
-NgMusic-0.2.0-win-arm64-portable.zip
-NgMusic-0.2.0-win-x86.msi
-NgMusic-0.2.0-win-x86-portable.zip
-```
+The build produces MSI and portable packages for x64, ARM64, and x86.
 
-To build only portable packages:
+## Build characteristics
 
-```powershell
-.\build\release.ps1 -Version 0.2.0 -SkipInstaller
-```
+Release publishing uses:
 
-To target one architecture:
+- Release configuration;
+- self-contained deployment;
+- single-file publishing;
+- ReadyToRun;
+- no debug symbols in distributed builds;
+- no trimming until trim compatibility is verified;
+- isolated WiX intermediate directories per architecture.
 
-```powershell
-.\build\release.ps1 -Version 0.2.0 -Architectures x64
-```
+The MSI and portable ZIP for a given architecture are generated from the same published application payload.
 
-## Release optimization policy
+## GitHub Actions
 
-Release publishing enables:
+The release workflow builds on a Windows runner, generates SHA-256 checksums, uploads an Actions artifact, and publishes release assets.
 
-- self-contained deployment so the target PC does not need .NET installed;
-- single-file output;
-- ReadyToRun for faster startup;
-- Release compilation with debug symbols removed;
-- architecture-specific output for x64, ARM64, and x86.
-
-`PublishTrimmed` is intentionally disabled. Trimming is useful only after the entire dependency graph has been validated for trim compatibility; enabling it blindly can remove code reached through reflection or interop.
-
-The installed and portable packages use the same published application payload. That prevents the two distribution modes from drifting apart.
+Build outputs must not be manually edited after the automated build.
 
 ## Versioning
 
-Use semantic versions (`MAJOR.MINOR.PATCH`). Keep release work grouped into meaningful commits rather than generating a commit per build artifact. Binary release files should be attached to GitHub Releases, not committed to Git.
+NgMusic uses semantic-style versions: `MAJOR.MINOR.PATCH`.
 
-## Signing
+Binary release files belong in GitHub Releases, not in source-control commits.
 
-The project is ready to add Authenticode signing later. Signing should happen after build and before publishing release artifacts. Never place signing certificates or private keys in the repository.
+## Release checklist
+
+1. Review source/build-script changes.
+2. Confirm version metadata.
+3. Build all architectures.
+4. Confirm each architecture has distinct, expected artifacts.
+5. Generate and publish SHA-256 checksums.
+6. Run signing/approval when code signing is available.
+7. Publish GitHub Release.
+8. Verify download links and signatures/checksums.
+9. Smoke-test x64 at minimum and architecture-specific builds where hardware/emulation is available.
+
+## Code signing
+
+Signing keys must never be committed to the repository.
+
+When SignPath signing is active, signing requests require explicit human approval and must originate from verifiable automated builds. See [Code signing policy](code-signing-policy.md).

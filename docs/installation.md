@@ -1,67 +1,55 @@
-# Installation and portable builds
+# Installation
 
-NgMusic ships in two forms. Both contain the .NET runtime and do **not** require a separate .NET runtime installation on the target PC.
+[Documentation home](../README.md) · [Configuration](configuration.md) · [Troubleshooting](troubleshooting.md)
 
-## Option 1: MSI installer
+NgMusic targets modern Windows 10 and Windows 11 systems.
 
-Choose the MSI matching the Windows architecture:
+## Choose the correct package
 
-| Windows architecture | Package |
+| System type | Recommended package |
 | --- | --- |
-| x64 | `NgMusic-<version>-win-x64.msi` |
-| ARM64 | `NgMusic-<version>-win-arm64.msi` |
-| x86 (legacy) | `NgMusic-<version>-win-x86.msi` |
+| Intel/AMD 64-bit | `NgMusic-<version>-win-x64.msi` |
+| Windows on ARM | `NgMusic-<version>-win-arm64.msi` |
+| 32-bit Windows | `NgMusic-<version>-win-x86.msi` |
 
-The MSI installs NgMusic under Program Files, creates a Start-menu entry, adds the install folder to `PATH`, and registers normal Windows uninstall/upgrade metadata.
+Portable ZIP files use the same architecture names.
 
-After installing, open a **new** terminal and run:
+To check your architecture, open **Settings → System → About → System type**.
 
-```powershell
-ngmusic
-```
+## MSI installation
 
-## Option 2: portable ZIP
+1. Download the MSI matching your architecture from GitHub Releases.
+2. Verify the SHA-256 digest if desired using `SHA256SUMS.txt`.
+3. Run the MSI.
+4. Approve administrator elevation if Windows requests it.
+5. Open a **new** terminal after installation.
+6. Run `ngmusic`.
 
-Portable releases have the form:
+The MSI installs NgMusic under Program Files, registers Windows Installer upgrade/uninstall metadata, and appends the NgMusic installation directory to the system `PATH`.
 
-```text
-NgMusic-<version>-win-x64-portable.zip
-NgMusic-<version>-win-arm64-portable.zip
-NgMusic-<version>-win-x86-portable.zip
-```
+The current installer does **not** create a Start-menu shortcut.
 
-Extract the ZIP anywhere and launch `ngmusic.exe`. Portable mode does not write to Program Files, create shortcuts, or modify `PATH`.
+### Uninstall
 
-Portable does **not** mean stateless: login tokens are deliberately kept in Windows Credential Manager so they are not left as plaintext next to the executable.
+Use **Settings → Apps → Installed apps → NgMusic → Uninstall**, or uninstall the MSI through standard Windows Installer tools.
 
-## Which architecture do I need?
+## Portable installation
 
-Open **Settings → System → About → System type**. Most Windows PCs are x64. Snapdragon/Copilot+ PCs are commonly ARM64. x86 is kept only for older 32-bit Windows machines.
+1. Download the matching `*-portable.zip`.
+2. Extract it to a folder you control.
+3. Run `ngmusic.exe`.
 
-## Google / YouTube configuration
+Portable mode does not modify Program Files or `PATH`. Authentication tokens are still stored in Windows Credential Manager rather than inside the portable folder.
 
-NgMusic requires a Google Cloud OAuth **Desktop app** client and YouTube Data API v3 access.
+## Runtime requirements
 
-Set these environment variables before starting NgMusic:
+Official releases are self-contained. A user running a release does not need to install the .NET runtime or SDK.
 
-```powershell
-$env:NGMUSIC_GOOGLE_CLIENT_ID="your-desktop-client-id"
-$env:NGMUSIC_GOOGLE_CLIENT_SECRET="your-desktop-client-secret" # only if your client has one
-
-# Optional. OAuth can authorize search after login.
-$env:NGMUSIC_YOUTUBE_API_KEY="your-api-key"
-```
-
-For a persistent per-user setting:
-
-```powershell
-[Environment]::SetEnvironmentVariable("NGMUSIC_GOOGLE_CLIENT_ID", "your-desktop-client-id", "User")
-[Environment]::SetEnvironmentVariable("NGMUSIC_GOOGLE_CLIENT_SECRET", "your-desktop-client-secret", "User")
-```
-
-Do not commit these values to the repository.
+Developers building from source need the .NET 10 SDK.
 
 ## First run
+
+After setting the Google OAuth configuration described in [Configuration](configuration.md):
 
 ```text
 PS Music:\> login
@@ -69,4 +57,4 @@ PS Music:\> search "massive attack teardrop"
 PS Music:\> play 1
 ```
 
-Google login opens in the system browser. Playback uses a visible official YouTube IFrame player on localhost.
+The `login` command opens the system browser. Playback opens a visible YouTube player in the browser.
