@@ -44,3 +44,12 @@ The player also reports the IFrame error code directly in the terminal:
 NgMusic sends an explicit `strict-origin-when-cross-origin` referrer policy, matching YouTube's recommendation for embedded players.
 
 If autoplay is blocked by the browser, NgMusic reports that separately in the terminal.
+
+
+## Player error 2 with a valid 11-character video ID
+
+NgMusic 0.5.4 fixes a startup race in which the terminal could send `loadVideoById` after the `YT.Player` object existed but before YouTube's `onReady` event had fired.
+
+YouTube documents `onReady` as the point at which the player is ready to receive API calls. NgMusic now waits for that event before it polls and consumes queued terminal commands.
+
+If error 2 still appears on 0.5.4+, report the video ID and the complete terminal line.

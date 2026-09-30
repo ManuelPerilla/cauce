@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.4
+
+- Fixed a race where the first queued playback command could reach the YouTube player before its onReady event.
+- NgMusic now waits for the IFrame player to be ready before consuming terminal commands.
+- Switched loadVideoById to explicit object syntax with videoId and startSeconds.
+- Prevents valid 11-character YouTube IDs from incorrectly surfacing player error 2 during startup.
+
 ## 0.5.3
 
 - Search now returns only videos YouTube marks as embeddable and syndicated.

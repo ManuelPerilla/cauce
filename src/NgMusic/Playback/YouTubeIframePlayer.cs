@@ -262,6 +262,7 @@ public sealed class YouTubeIframePlayer : IPlayer
   <script src="https://www.youtube.com/iframe_api"></script>
   <script>
     let player;
+    let playerReady = false;
     let currentVideoId = '';
 
     function report(type, code = '') {
@@ -282,6 +283,10 @@ public sealed class YouTubeIframePlayer : IPlayer
           origin: window.location.origin
         },
         events: {
+          onReady: () => {
+            playerReady = true;
+            report('ready');
+          },
           onError: event => report('error', event.data),
           onAutoplayBlocked: () => report('autoplayBlocked')
         }
@@ -290,12 +295,20 @@ public sealed class YouTubeIframePlayer : IPlayer
 
     async function tick() {
       try {
+        // Do not consume queued commands until YouTube explicitly says the
+        // player is ready to receive API calls. Otherwise the first play can
+        // race the iframe initialization and surface error 2 even for a valid ID.
+        if (!player || !playerReady) return;
+
         const command = await fetch('/api/command', { cache: 'no-store' }).then(r => r.json());
-        if (!player || !command || command.type === 'noop') return;
+        if (!command || command.type === 'noop') return;
 
         if (command.type === 'load' && command.videoId) {
           currentVideoId = command.videoId;
-          player.loadVideoById(command.videoId);
+          player.loadVideoById({
+            videoId: command.videoId,
+            startSeconds: 0
+          });
         }
         if (command.type === 'play') player.playVideo();
         if (command.type === 'pause') player.pauseVideo();
