@@ -27,3 +27,20 @@ If Google no longer displays the original secret, rotate/create a new secret whe
 ## Browser success page
 
 NgMusic 0.5.1+ only reports browser success after token exchange succeeds and tokens have been stored.
+
+
+## YouTube player says "An error occurred. Please try again later"
+
+NgMusic 0.5.3+ filters search results with YouTube's `videoEmbeddable=true` and `videoSyndicated=true` flags so results should be playable in the embedded player.
+
+The player also reports the IFrame error code directly in the terminal:
+
+- `101` / `150`: the video owner blocks embedded playback.
+- `153`: YouTube did not receive the required HTTP Referer or equivalent client identity.
+- `100`: the video was removed or is private.
+- `5`: HTML5 playback failure.
+- `2`: invalid video parameter.
+
+NgMusic sends an explicit `strict-origin-when-cross-origin` referrer policy, matching YouTube's recommendation for embedded players.
+
+If autoplay is blocked by the browser, NgMusic reports that separately in the terminal.

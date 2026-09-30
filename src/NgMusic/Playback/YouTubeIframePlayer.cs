@@ -12,6 +12,7 @@ public sealed class YouTubeIframePlayer : IPlayer
 {
     private readonly ConcurrentQueue<PlayerCommand> _commands = new();
     private readonly CancellationTokenSource _lifetime = new();
+    private static readonly object ConsoleLock = new();
     private TcpListener? _listener;
     private Task? _serverTask;
 
@@ -115,6 +116,17 @@ public sealed class YouTubeIframePlayer : IPlayer
                     return;
                 }
 
+                if (path.Equals("/api/event", StringComparison.OrdinalIgnoreCase))
+                {
+                    HandlePlayerEvent(target);
+                    await LoopbackHttp.WriteResponseAsync(
+                        client,
+                        "text/plain; charset=utf-8",
+                        "ok",
+                        cancellationToken: _lifetime.Token);
+                    return;
+                }
+
                 if (path is "/" or "/index.html")
                 {
                     await LoopbackHttp.WriteResponseAsync(
@@ -142,6 +154,70 @@ public sealed class YouTubeIframePlayer : IPlayer
         }
     }
 
+    private static void HandlePlayerEvent(string target)
+    {
+        var uri = new Uri("http://127.0.0.1" + target);
+        var query = ParseQuery(uri.Query);
+
+        query.TryGetValue("type", out var type);
+        query.TryGetValue("code", out var code);
+        query.TryGetValue("videoId", out var videoId);
+
+        if (string.Equals(type, "error", StringComparison.OrdinalIgnoreCase))
+        {
+            var message = code switch
+            {
+                "2" => "invalid video parameter",
+                "5" => "HTML5 playback error",
+                "100" => "video removed or private",
+                "101" or "150" => "video owner does not allow embedded playback",
+                "153" => "YouTube did not receive the required Referer/client identity",
+                _ => "unknown player error"
+            };
+
+            WritePlayerMessage(
+                $"YouTube player error {code ?? "?"}: {message}" +
+                (string.IsNullOrWhiteSpace(videoId) ? string.Empty : $" (video {videoId})"),
+                ConsoleColor.Red);
+            return;
+        }
+
+        if (string.Equals(type, "autoplayBlocked", StringComparison.OrdinalIgnoreCase))
+        {
+            WritePlayerMessage(
+                "YouTube/browser blocked scripted autoplay. Click the player once, then retry 'play' or 'resume'.",
+                ConsoleColor.Yellow);
+        }
+    }
+
+    private static Dictionary<string, string> ParseQuery(string query)
+    {
+        var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var pair in query.TrimStart('?').Split('&', StringSplitOptions.RemoveEmptyEntries))
+        {
+            var pieces = pair.Split('=', 2);
+            var key = Uri.UnescapeDataString(pieces[0].Replace('+', ' '));
+            var value = pieces.Length == 2
+                ? Uri.UnescapeDataString(pieces[1].Replace('+', ' '))
+                : string.Empty;
+            result[key] = value;
+        }
+        return result;
+    }
+
+    private static void WritePlayerMessage(string text, ConsoleColor color)
+    {
+        lock (ConsoleLock)
+        {
+            var previous = Console.ForegroundColor;
+            Console.ForegroundColor = color;
+            Console.WriteLine();
+            Console.WriteLine($"! {text}");
+            Console.ForegroundColor = previous;
+            Console.Write("PS Music:\\> ");
+        }
+    }
+
     public async ValueTask DisposeAsync()
     {
         _lifetime.Cancel();
@@ -153,7 +229,11 @@ public sealed class YouTubeIframePlayer : IPlayer
         _lifetime.Dispose();
     }
 
-    private sealed record PlayerCommand(string Type, string? VideoId = null, int? Seconds = null, int? Volume = null);
+    private sealed record PlayerCommand(
+        string Type,
+        string? VideoId = null,
+        int? Seconds = null,
+        int? Volume = null);
 
     private const string PlayerHtml = """
 <!doctype html>
@@ -161,6 +241,7 @@ public sealed class YouTubeIframePlayer : IPlayer
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
   <title>NgMusic Player</title>
   <style>
     :root { color-scheme: dark; }
@@ -181,12 +262,29 @@ public sealed class YouTubeIframePlayer : IPlayer
   <script src="https://www.youtube.com/iframe_api"></script>
   <script>
     let player;
+    let currentVideoId = '';
+
+    function report(type, code = '') {
+      const url = '/api/event?type=' + encodeURIComponent(type)
+        + '&code=' + encodeURIComponent(String(code))
+        + '&videoId=' + encodeURIComponent(currentVideoId || '');
+      fetch(url, { cache: 'no-store' }).catch(() => {});
+    }
+
     window.onYouTubeIframeAPIReady = () => {
       player = new YT.Player('player', {
         width: 960,
         height: 540,
         videoId: '',
-        playerVars: { playsinline: 1, origin: window.location.origin }
+        playerVars: {
+          enablejsapi: 1,
+          playsinline: 1,
+          origin: window.location.origin
+        },
+        events: {
+          onError: event => report('error', event.data),
+          onAutoplayBlocked: () => report('autoplayBlocked')
+        }
       });
     };
 
@@ -194,7 +292,11 @@ public sealed class YouTubeIframePlayer : IPlayer
       try {
         const command = await fetch('/api/command', { cache: 'no-store' }).then(r => r.json());
         if (!player || !command || command.type === 'noop') return;
-        if (command.type === 'load' && command.videoId) player.loadVideoById(command.videoId);
+
+        if (command.type === 'load' && command.videoId) {
+          currentVideoId = command.videoId;
+          player.loadVideoById(command.videoId);
+        }
         if (command.type === 'play') player.playVideo();
         if (command.type === 'pause') player.pauseVideo();
         if (command.type === 'stop') player.stopVideo();
@@ -202,6 +304,7 @@ public sealed class YouTubeIframePlayer : IPlayer
         if (command.type === 'volume' && Number.isFinite(command.volume)) player.setVolume(command.volume);
       } catch (_) { }
     }
+
     setInterval(tick, 300);
   </script>
 </body>

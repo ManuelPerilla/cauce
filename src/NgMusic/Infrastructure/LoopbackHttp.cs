@@ -43,6 +43,7 @@ internal static class LoopbackHttp
             $"Content-Type: {contentType}\r\n" +
             $"Content-Length: {body.Length}\r\n" +
             "Cache-Control: no-store\r\n" +
+            "Referrer-Policy: strict-origin-when-cross-origin\r\n" +
             "Connection: close\r\n\r\n");
 
         var stream = client.GetStream();

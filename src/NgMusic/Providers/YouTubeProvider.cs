@@ -25,9 +25,14 @@ public sealed class YouTubeProvider(
                 "Search needs either an authenticated session ('login') or NGMUSIC_YOUTUBE_API_KEY.");
         }
 
+        // Only return videos that YouTube says can be embedded and played
+        // outside youtube.com. This prevents search results that are valid on
+        // YouTube itself but fail immediately in the IFrame player.
         var url = "https://www.googleapis.com/youtube/v3/search" +
-                  "?part=snippet&type=video&videoCategoryId=10&maxResults=8" +
+                  "?part=snippet&type=video&videoCategoryId=10" +
+                  "&videoEmbeddable=true&videoSyndicated=true&maxResults=8" +
                   $"&q={Uri.EscapeDataString(query)}";
+
         if (string.IsNullOrWhiteSpace(accessToken))
             url += $"&key={Uri.EscapeDataString(credentials.ApiKey!)}";
 

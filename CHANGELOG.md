@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.3
+
+- Search now returns only videos YouTube marks as embeddable and syndicated.
+- Added explicit strict-origin-when-cross-origin Referrer-Policy for the embedded player.
+- Added terminal diagnostics for YouTube IFrame player errors 2, 5, 100, 101/150 and 153.
+- Added terminal notification when browser autoplay policy blocks scripted playback.
+- Explicitly enables the JavaScript IFrame API and preserves the local origin.
+
 ## 0.5.2
 
 - Added secure Google OAuth Client Secret support.
