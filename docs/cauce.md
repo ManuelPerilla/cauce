@@ -57,6 +57,9 @@ The desktop has explicit product/version metadata, an `asInvoker` manifest and n
 
 Public signing remains an external release prerequisite: a valid certificate, an approved SignPath Foundation project, or a Microsoft Store/MSIX submission. The existing NgMusic signing policy is not evidence that Cauce is already signed. Store packaging and submission are future work; do not describe this ZIP as a Store package. See [Microsoft signing guidance](https://learn.microsoft.com/en-us/windows/msix/package/signing-package-overview) and [SignPath requirements](https://signpath.org/terms.html).
 
+The repository does not currently contain a LICENSE file. The owner must choose an appropriate open-source license before pursuing the SignPath Foundation route; this change does not grant or invent a license for their work. Signing requests under the existing policy still require the maintainer's explicit approval.
+
 ## Boundaries before a public release
 
 Real Google/Apple/Facebook/Microsoft login requires configured provider accounts and an HTTPS identity service. Live sign-ins, expiry, logout and error paths must be tested against those real registrations. Streaming integrations, cloud sync, ID3v2/FLAC tagging, verified catalog equivalence and a signed installer are not implemented by this foundation. Preserve this distinction in product copy and release notes.
+
