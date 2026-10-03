@@ -1,0 +1,43 @@
+name: Cauce desktop checks
+
+on:
+  pull_request:
+    paths: ['src/Cauce.*/**', 'tests/Cauce.*/**', 'build/cauce.ps1', 'NuGet.Config', '.github/workflows/cauce.yml']
+  push:
+    branches: ['codex/cauce-desktop-foundation']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Test library and queue invariants
+        run: dotnet run --project tests/Cauce.Core.Tests -c Release
+      - name: Test authentication protocol and loopback boundaries
+        run: dotnet run --project tests/Cauce.Auth.Tests -c Release
+      - name: Build desktop
+        run: dotnet build src/Cauce.Desktop -c Release
+      - name: Verify desktop behavior and capture themes
+        run: dotnet run --project tests/Cauce.Desktop.Smoke -c Release -- artifacts/cauce-smoke
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cauce-ui-verification
+          path: artifacts/cauce-smoke
+          retention-days: 7
+      - name: Prepare unsigned review package
+        shell: pwsh
+        run: ./build/cauce.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cauce-windows-x64-unsigned
+          path: artifacts/cauce/*.zip
+          retention-days: 7

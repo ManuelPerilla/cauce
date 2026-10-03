@@ -9,3 +9,7 @@ artifacts/
 *.msi
 *.zip
 .env
+auth.json
+*.pfx
+*.p12
+*.key
