@@ -24,7 +24,7 @@ internal static class Program
         app.Resources["BooleanToVisibility"] = new BooleanToVisibilityConverter();
         ThemeManager.Apply("Claro", false);
         var model = new MainViewModel(data);
-        var window = new MainWindow { DataContext = model, ShowActivated = false, ShowInTaskbar = false, Left = -16000, Top = -16000 };
+        var window = new MainWindow { DataContext = model, ShowActivated = false, ShowInTaskbar = false, WindowStartupLocation = WindowStartupLocation.Manual, Left = -16000, Top = -16000 };
         app.MainWindow = window;
         var errors = new BindingErrors();
         PresentationTraceSources.DataBindingSource.Listeners.Add(errors);
@@ -36,15 +36,34 @@ internal static class Program
             {
                 await model.InitializeAsync();
                 await SettleAsync();
+                AssertGenreSelection(window, model);
                 Capture(window, Path.Combine(destination, "01-introduction.png"));
                 model.FinishTutorialCommand.Execute(null);
                 await SettleAsync();
                 model.SelectedTheme = "Claro";
+                await SettleAsync();
                 Capture(window, Path.Combine(destination, "02-listen-light.png"));
                 var tabs = Descendants(window).OfType<TabControl>().Single();
                 tabs.SelectedIndex = 1;
                 await SettleAsync();
                 Capture(window, Path.Combine(destination, "03-library.png"));
+                // Synthetic references exercise availability and metadata bindings; no user music is read.
+                var samplePath = Path.Combine(data, "sample.wav");
+                WriteSilentWave(samplePath);
+                var sample = new Track { Id = "sample-local", Title = "Tarde tranquila (prueba)", Artist = "Artista de prueba", Genre = "Jazz", Location = samplePath, Source = TrackSource.LocalFile, IsAvailable = true };
+                model.Tracks.Add(sample);
+                model.Tracks.Add(new Track { Id = "sample-missing", Title = "Archivo fuera de su carpeta", Artist = "Otro artista", Genre = "Jazz", Location = Path.Combine(data, "missing.mp3"), Source = TrackSource.LocalFile, IsAvailable = false });
+                model.Tracks.Add(new Track { Id = "sample-service", Title = "Referencia de servicio", Artist = "music.youtube.com", Genre = "Jazz", Location = "https://music.youtube.com/", Source = TrackSource.ExternalLink, IsAvailable = false });
+                model.SelectedTrack = sample;
+                model.ApplyGenreCommand.Execute(null);
+                await SettleAsync();
+                Capture(window, Path.Combine(destination, "03b-library-synthetic.png"));
+                tabs.SelectedIndex = 0;
+                model.SelectedGenre = "Jazz";
+                await SettleAsync();
+                AssertGenreSelection(window, model);
+                if (!model.QueueReason.Contains("Jazz", StringComparison.OrdinalIgnoreCase)) throw new Exception("Genre queue did not reflect the selected genre.");
+                Capture(window, Path.Combine(destination, "02b-listen-synthetic.png"));
                 tabs.SelectedIndex = 2;
                 foreach (var theme in model.Themes)
                 {
@@ -77,6 +96,10 @@ internal static class Program
                     model.ToggleCompactCommand.Execute(null);
                     await Dispatcher.Yield(DispatcherPriority.Background);
                 }
+                model.SelectedTheme = "Bosque";
+                if (model.IsCompact) model.ToggleCompactCommand.Execute(null);
+                tabs.SelectedIndex = 0;
+                await SettleAsync();
                 if (!await model.TryCloseAsync()) throw new Exception("Could not flush preferences.");
                 using (var savedStore = new LibraryStore(data))
                 {
@@ -85,13 +108,17 @@ internal static class Program
                         throw new Exception("Changed preferences were not persisted.");
                 }
                 if (errors.Messages.Count != 0) throw new Exception("WPF binding errors: " + string.Join("\n", errors.Messages));
-                var process = Process.GetCurrentProcess();
-                var initialCpu = process.TotalProcessorTime;
+                // Let queued rendering and saves settle before sampling; elapsed time is measured, not assumed.
                 await Task.Delay(3000);
-                process.Refresh();
-                var metrics = new { Context = "Windows CI/offscreen smoke, empty library, after captures and 20 theme/view changes; not a production benchmark", PrivateBytes = process.PrivateMemorySize64, WorkingSetBytes = process.WorkingSet64, IdleWindowSeconds = 3, CpuSecondsDuringIdle = (process.TotalProcessorTime - initialCpu).TotalSeconds };
-                await File.WriteAllTextAsync(Path.Combine(destination, "metrics.json"), JsonSerializer.Serialize(metrics, new JsonSerializerOptions { WriteIndented = true }));
-                Console.WriteLine("PASS: desktop resources, all tabs/themes, compact view, reduced motion, disabled unconfigured auth, preference persistence, no binding errors.");
+                var visibleMetrics = await MeasureIdleAsync();
+                window.Hide();
+                await Task.Delay(2000);
+                var hiddenMetrics = await MeasureIdleAsync();
+                var metrics = new { Context = "Windows CI/offscreen UI smoke, three synthetic references, no playback, after screenshots and 20 view changes; not a representative hardware benchmark", Visible = visibleMetrics, Hidden = hiddenMetrics };
+                var metricsJson = JsonSerializer.Serialize(metrics, new JsonSerializerOptions { WriteIndented = true });
+                await File.WriteAllTextAsync(Path.Combine(destination, "metrics.json"), metricsJson);
+                Console.WriteLine(metricsJson);
+                Console.WriteLine("PASS: desktop resources, all tabs/themes, compact view, genre selection after load/edit, mixed reference library, reduced motion, disabled unconfigured auth, preference persistence, no binding errors.");
             }
             catch (Exception error) { exitCode = 1; Console.Error.WriteLine(error); }
             finally { model.Dispose(); app.Shutdown(exitCode); }
@@ -107,9 +134,37 @@ internal static class Program
         window.UpdateLayout();
         if (visual.ActualWidth < 1 || visual.ActualHeight < 1) throw new Exception("Empty rendered window.");
         var bitmap = new RenderTargetBitmap((int)Math.Ceiling(visual.ActualWidth), (int)Math.Ceiling(visual.ActualHeight), 96, 96, PixelFormats.Pbgra32);
+        // Content is transparent: include the actual Window brush in the render, as the native window does.
+        var background = new DrawingVisual();
+        using (var drawing = background.RenderOpen()) drawing.DrawRectangle(window.Background, null, new Rect(0, 0, visual.ActualWidth, visual.ActualHeight));
+        bitmap.Render(background);
         bitmap.Render(visual);
         var png = new PngBitmapEncoder(); png.Frames.Add(BitmapFrame.Create(bitmap));
         using var stream = File.Create(path); png.Save(stream);
+    }
+    private static void AssertGenreSelection(Window window, MainViewModel model)
+    {
+        var picker = (ComboBox)window.FindName("GenrePicker");
+        if (!Equals(picker.SelectedItem, model.SelectedGenre) || !Equals(picker.SelectionBoxItem, model.SelectedGenre))
+            throw new Exception($"Genre picker lost its selection: model={model.SelectedGenre}, selected={picker.SelectedItem}, displayed={picker.SelectionBoxItem}.");
+    }
+    private static void WriteSilentWave(string path)
+    {
+        using var writer = new BinaryWriter(File.Create(path));
+        writer.Write("RIFF"u8); writer.Write(36 + 16000); writer.Write("WAVEfmt "u8);
+        writer.Write(16); writer.Write((short)1); writer.Write((short)1); writer.Write(8000);
+        writer.Write(16000); writer.Write((short)2); writer.Write((short)16);
+        writer.Write("data"u8); writer.Write(16000); writer.Write(new byte[16000]);
+    }
+    private static async Task<object> MeasureIdleAsync()
+    {
+        using var process = Process.GetCurrentProcess();
+        process.Refresh();
+        var initialCpu = process.TotalProcessorTime;
+        var elapsed = Stopwatch.StartNew();
+        await Task.Delay(5000);
+        elapsed.Stop(); process.Refresh();
+        return new { PrivateBytes = process.PrivateMemorySize64, WorkingSetBytes = process.WorkingSet64, ElapsedSeconds = elapsed.Elapsed.TotalSeconds, CpuSeconds = (process.TotalProcessorTime - initialCpu).TotalSeconds };
     }
     private static IEnumerable<DependencyObject> Descendants(DependencyObject node)
     {
@@ -123,3 +178,4 @@ internal static class Program
         public override void WriteLine(string? message) => Write(message);
     }
 }
+

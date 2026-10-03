@@ -101,7 +101,7 @@
           <Grid>
             <ToggleButton Focusable="False" IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" ClickMode="Press">
               <ToggleButton.Template>
-                <ControlTemplate TargetType="ToggleButton"><Border Background="{DynamicResource SolidSurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="9"><TextBlock Text="⌄" FontSize="19" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,13,4" /></Border></ControlTemplate>
+                <ControlTemplate TargetType="ToggleButton"><Border Background="{DynamicResource SolidSurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="9"><TextBlock Text="⌄" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="19" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,13,4" /></Border></ControlTemplate>
               </ToggleButton.Template>
             </ToggleButton>
             <ContentPresenter Margin="12,8,36,8" VerticalAlignment="Center" IsHitTestVisible="False" Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" />
@@ -153,9 +153,9 @@
     <Setter Property="FocusVisualStyle" Value="{StaticResource VisibleFocus}" />
     <Setter Property="Template"><Setter.Value>
       <ControlTemplate TargetType="TabItem">
-        <Border x:Name="TabChrome" Background="Transparent" BorderBrush="Transparent" BorderThickness="1" CornerRadius="11" Padding="{TemplateBinding Padding}"><ContentPresenter ContentSource="Header" /></Border>
+        <Border x:Name="TabChrome" Background="Transparent" BorderBrush="Transparent" BorderThickness="1" CornerRadius="11" Padding="{TemplateBinding Padding}"><ContentPresenter x:Name="HeaderPresenter" ContentSource="Header" /></Border>
         <ControlTemplate.Triggers>
-          <Trigger Property="IsSelected" Value="True"><Setter TargetName="TabChrome" Property="Background" Value="{DynamicResource AccentSoftBrush}" /><Setter TargetName="TabChrome" Property="BorderBrush" Value="{DynamicResource BorderBrush}" /><Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" /><Setter Property="FontWeight" Value="SemiBold" /></Trigger>
+          <Trigger Property="IsSelected" Value="True"><Setter TargetName="TabChrome" Property="Background" Value="{DynamicResource AccentSoftBrush}" /><Setter TargetName="TabChrome" Property="BorderBrush" Value="{DynamicResource BorderBrush}" /><Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" /><Setter TargetName="HeaderPresenter" Property="TextElement.FontWeight" Value="SemiBold" /></Trigger>
           <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="TabChrome" Property="BorderBrush" Value="{DynamicResource AccentBrush}" /></Trigger>
         </ControlTemplate.Triggers>
       </ControlTemplate>
@@ -195,3 +195,4 @@
     <Style.Triggers><Trigger Property="IsSelected" Value="True"><Setter Property="Background" Value="{DynamicResource SelectionBrush}" /><Setter Property="Foreground" Value="{DynamicResource SelectionTextBrush}" /></Trigger></Style.Triggers>
   </Style>
 </ResourceDictionary>
+

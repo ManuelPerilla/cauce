@@ -287,10 +287,25 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
     private void NotifyTutorial() { Changed(nameof(TutorialTitle)); Changed(nameof(TutorialBody)); Changed(nameof(TutorialProgress)); }
     private void RebuildGenres()
     {
-        var all = Tracks.Select(t => t.Genre).Where(g => !string.IsNullOrWhiteSpace(g)).Distinct(StringComparer.OrdinalIgnoreCase).Order(StringComparer.CurrentCultureIgnoreCase).ToList();
+        var all = Tracks.Select(t => t.Genre)
+            .Where(g => !string.IsNullOrWhiteSpace(g) && !g.Equals("Todos", StringComparison.OrdinalIgnoreCase))
+            .Distinct(StringComparer.OrdinalIgnoreCase).Order(StringComparer.CurrentCultureIgnoreCase).ToList();
+        all.Insert(0, "Todos");
         var previous = preferences.Genre;
-        Genres.Clear(); Genres.Add("Todos"); foreach (var genre in all.Where(g => g != "Todos")) Genres.Add(genre);
-        preferences = preferences with { Genre = Genres.Contains(previous) ? previous : "Todos" };
+        var desired = new HashSet<string>(all, StringComparer.OrdinalIgnoreCase);
+        // Preserve existing items so the ComboBox does not lose its selected item during a reset.
+        for (var i = Genres.Count - 1; i >= 0; i--)
+            if (!desired.Contains(Genres[i])) Genres.RemoveAt(i);
+        for (var i = 0; i < all.Count; i++)
+        {
+            var existing = -1;
+            for (var j = i; j < Genres.Count; j++)
+                if (Genres[j].Equals(all[i], StringComparison.OrdinalIgnoreCase)) { existing = j; break; }
+            if (existing < 0) Genres.Insert(i, all[i]);
+            else if (existing != i) Genres.Move(existing, i);
+        }
+        var selected = Genres.FirstOrDefault(g => g.Equals(previous, StringComparison.OrdinalIgnoreCase)) ?? "Todos";
+        preferences = preferences with { Genre = selected };
         Changed(nameof(SelectedGenre));
     }
     private LibraryState Snapshot() => new() { Tracks = Tracks.ToList(), Preferences = preferences };
@@ -299,7 +314,10 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
     private void ApplyAppearance() => ThemeManager.Apply(SelectedTheme, ReducedTransparency);
     private void OnSystemPreferencesChanged(object? sender, PropertyChangedEventArgs e)
     {
-        Application.Current.Dispatcher.InvokeAsync(() => { if (!disposed) { ApplyAppearance(); Changed(nameof(MotionEnabled)); } });
+        if (e.PropertyName is not nameof(SystemParameters.ClientAreaAnimation) and not nameof(SystemParameters.HighContrast)) return;
+        var dispatcher = Application.Current?.Dispatcher;
+        if (dispatcher is null || dispatcher.HasShutdownStarted) return;
+        dispatcher.InvokeAsync(() => { if (!disposed) Changed(nameof(MotionEnabled)); });
     }
 
     private async Task ExportAsync()
