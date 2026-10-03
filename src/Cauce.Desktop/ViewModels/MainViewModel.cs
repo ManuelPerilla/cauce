@@ -122,7 +122,7 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
         ExportDataCommand = Async(_ => ExportAsync());
         ClearDataCommand = Async(_ => ClearAsync());
         OpenBugReportCommand = Action(_ => OpenBugReport());
-        OpenSupportCommand = Action(_ => OpenHttps("https://github.com/ManuelPerilla/ngmusic/blob/main/docs/cauce.md"));
+        OpenSupportCommand = Action(_ => OpenHttps("https://github.com/ManuelPerilla/ngmusic/issues"));
         SignInCommand = Async(async provider =>
         {
             if (!authentication.IsConfigured) { AccountStatus = authentication.ConfigurationStatus; return; }
@@ -357,3 +357,4 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
         lifetime.Cancel(); player.Dispose(); authentication.Dispose(); lifetime.Dispose(); store.Dispose();
     }
 }
+

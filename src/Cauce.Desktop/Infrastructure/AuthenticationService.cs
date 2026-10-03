@@ -66,7 +66,7 @@ public sealed class AuthenticationService : IDisposable
             _configuration = configuration;
             ConfigurationStatus = "Inicio de sesión disponible en tu navegador. La sesión se conserva sólo mientras Cauce está abierto.";
         }
-        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException or ArgumentException)
+        catch (Exception exception) when (exception is IOException or InvalidDataException or UnauthorizedAccessException or JsonException or ArgumentException)
         {
             ConfigurationStatus = "La configuración de cuentas no es válida. Tu biblioteca local sigue disponible.";
         }
@@ -395,3 +395,4 @@ public sealed class AuthenticationService : IDisposable
         public void Dispose() => _listener.Stop();
     }
 }
+

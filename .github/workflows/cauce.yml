@@ -3,8 +3,6 @@ name: Cauce desktop checks
 on:
   pull_request:
     paths: ['src/Cauce.*/**', 'tests/Cauce.*/**', 'build/cauce.ps1', 'NuGet.Config', '.github/workflows/cauce.yml']
-  push:
-    branches: ['codex/cauce-desktop-foundation']
   workflow_dispatch:
 
 permissions:
@@ -41,3 +39,4 @@ jobs:
           name: cauce-windows-x64-unsigned
           path: artifacts/cauce/*.zip
           retention-days: 7
+
