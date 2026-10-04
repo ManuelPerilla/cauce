@@ -5,7 +5,9 @@ artifacts/
 *.user
 *.suo
 *.pdb
-*.wixpdb
-*.msi
 *.zip
 .env
+auth.json
+*.pfx
+*.p12
+*.key

@@ -1,62 +1,37 @@
-# Security and privacy
+# Cauce security and privacy
 
-[Documentation home](../README.md) · [Configuration](configuration.md) · [Code signing policy](code-signing-policy.md)
+[Documentation](README.md) · [Accounts](cauce-accounts.md) · [Signing policy](code-signing-policy.md)
 
-## Threat model and trust boundaries
+Cauce plays local music without an account and has no telemetry backend, ad identifiers or automatic bug uploads. Optional account integration and user-opened links create separate network boundaries.
 
-NgMusic is a desktop client. It does not operate a project-controlled backend service.
+## Data handled
 
-The most important security boundaries are:
+| Data | Handling |
+| --- | --- |
+| Local audio | Opened in its original location for native playback; never copied or edited |
+| Library metadata | Paths, service URLs, title/artist/genre and preferences in `%LOCALAPPDATA%\Cauce\library.json` |
+| Listening session | Selection history in memory; not persisted |
+| Account identity | Display identity in memory for the current process; no cloud sync |
+| OIDC tokens/codes | Temporarily processed to validate sign-in; not persisted, refreshed or included in reports |
+| Bug report | GitHub draft for user review, with app/Windows versions and editable prompts; no attached logs or files |
+| Export | User-chosen JSON with references and preferences, including paths and URLs |
 
-- Google OAuth authentication in the system browser.
-- OAuth token storage in Windows Credential Manager.
-- Local HTTP listeners restricted to `127.0.0.1`.
-- Requests to Google/YouTube services over HTTPS.
-- GitHub Actions release builds and, when available, release code signing.
+Metadata is limited to 10,000 references and 16 MiB. The versioned JSON schema has field validation, atomic replacement and bounded recovery copies. A newer schema is not overwritten. Exports and screenshots can reveal personal paths or URLs; review them before sharing.
 
-## Data handled by NgMusic
+## Network activity
 
-NgMusic may process:
+Local playback, genre selection and themes do not require remote requests. Account sign-in, when configured and requested, opens the system browser and uses HTTPS to the selected identity broker and its providers. Discovery/JWKS requests belong to that flow. The temporary callback listener binds only to IPv4 loopback and closes on completion, cancellation or timeout.
 
-- search queries entered by the user;
-- Google OAuth access/refresh tokens;
-- basic Google profile information returned by OpenID Connect;
-- YouTube video IDs, titles, channel names, and playback commands.
+Opening a saved HTTPS music link delegates the action to the system browser; that service governs its own playback and privacy. Cauce does not query streaming catalogs, fetch artwork, validate subscriptions or automatically test links. Preparing a support report opens GitHub; submission requires the user's action there.
 
-NgMusic does not intentionally collect project analytics, advertising identifiers, or first-party telemetry.
+## Account safeguards
 
-## Network behavior
+The native client is public and has no embedded secret. Provider secrets and private keys belong at the broker. The client fixes its scope to `openid profile`, does not request `offline_access`, verifies PKCE/state/nonce and requires signed identity tokens with the expected issuer/audience and valid expiry. Never weaken those checks or TLS validation to make login pass.
 
-Network activity occurs as part of user-visible functionality:
+Account sign-in does not authorize a music service. Sign-out removes local identity and cancels pending sign-in; browser cookies and the provider's global session remain governed by the browser/provider. Callback limits and registration prerequisites are documented in [accounts](cauce-accounts.md).
 
-- Google account authorization;
-- OAuth token exchange and refresh;
-- OpenID Connect profile lookup;
-- YouTube Data API searches;
-- loading and playing YouTube's embedded player.
+## Release and reporting boundaries
 
-The local OAuth callback and player command bridge bind only to loopback and use dynamically selected ports.
+The preview is unsigned. Build artifacts and draft releases use SHA-256 checksums, which are integrity values rather than publisher signatures. Secrets and signing keys must not appear in commits, logs or packages. See [releasing](releasing.md) and [the signing policy](code-signing-policy.md).
 
-Third-party services may process data under their own policies. Users should review Google's privacy policy and YouTube terms when using those services.
-
-## Credential storage
-
-OAuth tokens are stored in Windows Credential Manager under `NgMusic.GoogleOAuth`.
-
-Google client IDs, optional client secrets, and API keys are supplied through environment variables and must not be committed to Git.
-
-## Privacy statement
-
-**NgMusic itself will not transfer information to project-operated network systems because the project operates no telemetry or account backend.** Information is transferred to Google/YouTube only when the user invokes functionality that requires those services, such as login, search, or playback.
-
-## Vulnerability reporting
-
-Do not publish sensitive credentials, access tokens, or exploitable security details in a public issue.
-
-For non-sensitive bugs, use GitHub Issues. For a security-sensitive report, contact the repository owner privately through an appropriate GitHub contact channel until a dedicated security advisory/contact process is configured.
-
-## Release integrity
-
-Official releases are produced by the repository's GitHub Actions workflow and publish SHA-256 checksums.
-
-When code signing becomes active, signed artifacts must originate from the same automated build/release process described in the [code signing policy](code-signing-policy.md).
+Use [GitHub Issues](https://github.com/ManuelPerilla/cauce/issues) for ordinary bugs. Sensitive details follow [SECURITY.md](../SECURITY.md); do not post exploitable details or credentials publicly.

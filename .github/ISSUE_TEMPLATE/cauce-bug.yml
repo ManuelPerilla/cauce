@@ -1,0 +1,31 @@
+name: Cauce — reportar un error
+description: Cuéntanos qué ocurrió y cómo reproducirlo.
+title: '[Cauce] '
+body:
+  - type: markdown
+    attributes:
+      value: 'Gracias por ayudarnos a cuidar Cauce. No compartas contraseñas, tokens, rutas personales ni archivos de música. Revisa las capturas antes de adjuntarlas.'
+  - type: textarea
+    id: behavior
+    attributes:
+      label: ¿Qué ocurrió y qué esperabas?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Pasos para reproducirlo
+      placeholder: '1. Abrí…'
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Versión de Cauce y Windows
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Sección
+      options: [Reproducción, Biblioteca, Apariencia, Cuenta, Tutorial, Otra]

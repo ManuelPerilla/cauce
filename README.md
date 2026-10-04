@@ -1,98 +1,60 @@
-# NgMusic
+# Cauce
 
-**PowerShell-inspired terminal music player for Windows with Google OAuth, YouTube playback, graphical/MSI installers, and portable builds.**
+**Tu música, sin perder el hilo.**
 
-[English](README.md) · [Español](README.es.md) · [简体中文](README.zh-CN.md) · [हिन्दी](README.hi.md) · [Français](README.fr.md)
+A native Windows music player built with C#/.NET 10 and WPF. Cauce keeps listening sessions within the genre you choose, explains its queue decisions and distinguishes playable local files from external service links.
 
-> **Repository description:** PowerShell-inspired terminal music player for Windows with Google OAuth, YouTube playback, MSI/Setup.exe and portable builds.
+> **0.6.0-alpha.1 — development preview.** The portable preview is unsigned. Account sign-in requires an identity broker and real provider registrations. Integrated streaming and cloud synchronization are not available.
 
-## Installation options
+[Español](README.es.md) · [简体中文](README.zh-CN.md) · [हिन्दी](README.hi.md) · [Français](README.fr.md) · [Documentation](docs/README.md)
 
-All three distribution channels are supported and lead to the same usable NgMusic configuration.
+## What Cauce does
 
-| Package | Experience | OAuth setup |
-| --- | --- | --- |
-| `*-setup.exe` | Recommended graphical Next → Next → Install wizard | During installer wizard |
-| `*.msi` | Native Windows Installer | Post-install configurator opens automatically for interactive installs |
-| `*-portable.zip` | Extract and run | First `login` launches terminal setup |
+- Plays local MP3, WAV and M4A using Windows media support. Importing stores references; it never copies or edits your audio.
+- Applies deterministic genre, artist-spacing and repeat rules. If no song meets them, the player explains why instead of silently changing the session.
+- Saves HTTPS service links separately. Opening a link delegates playback to that service; it does not add a stream to Cauce's local queue.
+- Offers a compact player, notification-area controls and the optional **Alt+Shift+C** restore shortcut.
+- Includes system, light, dark, forest and high-contrast themes, reduced motion and opaque surfaces.
+- Provides a repeatable introduction, optional tips, a guide and bug-report drafts you review before sending.
+- Stores bounded metadata and preferences locally, with export and reset controls. There is no persistent listening history or telemetry.
 
-### Graphical Setup.exe
+## Run and verify
 
-The recommended option. It collects the Google OAuth Desktop Client ID, installs the matching MSI, configures shortcuts, adds NgMusic to `PATH`, and can launch NgMusic when finished.
+Development requires Windows and the .NET 10 SDK. From the repository root:
 
-### Direct MSI
-
-The MSI now installs the same application payload and also includes the same configuration capability.
-
-When you double-click the MSI interactively, Windows installs NgMusic and then opens **Finish setting up NgMusic**, where you can:
-
-- enter the Google OAuth Desktop Client ID;
-- create a Start-menu shortcut;
-- create a desktop shortcut;
-- launch NgMusic.
-
-For managed silent deployments, the MSI remains silent and does not unexpectedly open configuration windows. Administrators can provide environment configuration or users can run `setup` later.
-
-### Portable
-
-Extract and run `ngmusic.exe`. No Program Files or `PATH` changes. If OAuth is not configured, the first `login` opens the terminal setup wizard.
-
-## Ready-to-use flow
-
-After either Setup.exe or an interactive MSI installation:
-
-```text
-PS C:\> ngmusic
-
-PS Music:\> login
-PS Music:\> search "Massive Attack Teardrop"
-PS Music:\> play 1
+```powershell
+./build/dev.ps1
 ```
 
-Official releases are self-contained, so users do not need to install .NET separately.
+Run the checks and create an unsigned, self-contained review ZIP:
 
-## OAuth storage
-
-The non-secret Google OAuth Desktop Client ID is stored in:
-
-```text
-%LOCALAPPDATA%\NgMusic\config.json
+```powershell
+dotnet run --project tests/Cauce.Core.Tests -c Release
+dotnet run --project tests/Cauce.Auth.Tests -c Release
+dotnet run --project tests/Cauce.Desktop.Smoke -c Release -- artifacts/cauce-smoke
+./build/cauce.ps1 -Runtime win-x64
 ```
 
-OAuth access/refresh tokens remain in **Windows Credential Manager**.
+The portable package includes its .NET runtime. Extract the complete ZIP and run `Cauce.exe`; no account or administrator installation is needed for local playback. See [installation](docs/installation.md) and [building and releasing](docs/releasing.md).
 
-Client secrets and API keys are not written to NgMusic's JSON configuration.
+## Accounts and data
 
-## Windows packages
+The library lives in `%LOCALAPPDATA%\Cauce`. Cauce stores file paths, service URLs, small text metadata and preferences, capped at 10,000 references and 16 MiB. Audio remains in its original location. Exports contain paths and URLs, so review them before sharing.
 
-NgMusic releases x64, ARM64, and x86 variants of:
+Google, Apple, Facebook and Microsoft buttons use an optional configurable OIDC identity broker. They remain disabled without valid configuration; provider credentials belong on the broker, never inside the Windows client. The account identifies you only during the running process and does not synchronize your library or authorize a music subscription. Read [accounts and prerequisites](docs/cauce-accounts.md) and [security and privacy](docs/security.md).
 
-- graphical Setup.exe;
-- MSI;
-- portable ZIP.
+## Project structure
 
-Use the [latest GitHub Release](https://github.com/ManuelPerilla/ngmusic/releases/latest).
+| Path | Responsibility |
+| --- | --- |
+| `src/Cauce.Core` | Library models, bounded persistence, reference import and deterministic queue rules |
+| `src/Cauce.Desktop` | WPF interface, native audio, themes, tray controls and optional account adapter |
+| `tests/Cauce.Core.Tests` | Queue, import and storage checks |
+| `tests/Cauce.Auth.Tests` | Identity and callback checks using synthetic data |
+| `tests/Cauce.Desktop.Smoke` | Rendered interface, bindings, themes and preference checks |
+| `build` | Development, portable review and release packaging |
+| `.github/workflows` | Windows verification and draft release delivery |
 
-## Documentation
+The `archive/` directory contains reference code excluded from the maintained builds and distributed packages.
 
-- [Installation and package behavior](docs/installation.md)
-- [Google OAuth configuration](docs/configuration.md)
-- [Command reference](docs/commands.md)
-- [Architecture](docs/architecture.md)
-- [Security and privacy](docs/security.md)
-- [Troubleshooting](docs/troubleshooting.md)
-- [Building and releasing](docs/releasing.md)
-- [Code signing policy](docs/code-signing-policy.md)
-
-## Code signing
-
-SignPath Foundation approval is pending. When official signing is enabled:
-
-**Free code signing provided by SignPath.io, certificate by SignPath Foundation.**
-
-
-## Google OAuth Client Secret
-
-Some Google OAuth clients require a Client Secret during token exchange. NgMusic 0.5.2+ supports this securely through Setup.exe, the MSI configurator, or the `setup` command.
-
-The Client Secret is stored in Windows Credential Manager and is never written to `config.json`.
+Start with the [detailed guide](docs/cauce.md), [contribution guide](CONTRIBUTING.md) or [security policy](SECURITY.md). The repository currently has no `LICENSE` file; public access to source does not imply an open-source license.

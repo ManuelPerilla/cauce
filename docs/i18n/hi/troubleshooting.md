@@ -1,21 +1,14 @@
-# Troubleshooting
+# समस्याओं का समाधान
 
-## `ngmusic` command नहीं मिलता
+| समस्या | क्या जाँचें |
+| --- | --- |
+| उपलब्ध गीत नहीं हैं | फ़ाइलें जोड़ें, उनके मौजूद होने की पुष्टि करें और चुना गया genre भरें। बाहरी लिंक स्थानीय ऑडियो नहीं है। |
+| सत्र रुक जाता है | कारण पढ़ें: genre समाप्त, कलाकारों का अंतर या दोहराव बंद होना। अपनी पसंद का नियम बदलें। |
+| प्लेबैक त्रुटि | Windows में फ़ाइल और codec का समर्थन जाँचें। MP3, WAV या M4A एक्सटेंशन अकेले वैध फ़ाइल की गारंटी नहीं है। |
+| साइन-इन बंद है | वास्तविक broker और पंजीकरण के बिना यह अपेक्षित है। स्थानीय फ़ाइलों के लिए खाता नहीं चाहिए। |
+| मिनिमाइज़ के बाद विंडो नहीं दिखती | ट्रे या उपलब्ध होने पर Alt+Shift+C से वापस खोलें। |
+| लाइब्रेरी पढ़ी नहीं जाती या नया schema है | ऐप का संदेश देखें, एक कॉपी सुरक्षित रखें और नए schema को ओवरराइट न करें। |
 
-MSI install के बाद नई terminal खोलें। Portable build में extracted folder से `ngmusic.exe` चलाएँ।
+**Soporte → Reportar un error** में समस्या के चरण, अपेक्षित परिणाम और संस्करण लिखें। ड्राफ़्ट से टोकन, पासवर्ड, निजी पथ और संगीत हटा दें। यदि Windows निष्पादन रोकता है, उसे पार करने के लिए सुरक्षा बंद न करें।
 
-## OAuth configure नहीं है
-
-`NGMUSIC_GOOGLE_CLIENT_ID` सेट करें।
-
-## Login पूरा नहीं होता
-
-देखें कि browser `127.0.0.1` access कर सकता है और firewall loopback block नहीं कर रहा।
-
-## Search auth/API key मांगता है
-
-`login` चलाएँ या `NGMUSIC_YOUTUBE_API_KEY` सेट करें।
-
-## SmartScreen/Defender warning
-
-Antivirus globally disable न करें। Official Release से download करें, SHA-256 verify करें और signing उपलब्ध होने पर Authenticode signature verify करें।
+[मुख्य पृष्ठ](../../../README.hi.md) · [अंग्रेज़ी गाइड](../../troubleshooting.md)

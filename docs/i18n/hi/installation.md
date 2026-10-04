@@ -1,9 +1,20 @@
-# Installation
+# Cauce की स्थापना
 
-Setup.exe, MSI और Portable ZIP सभी supported हैं।
+प्रीव्यू 0.6.0-alpha.1 Windows x64 और ARM64 के लिए पोर्टेबल ZIP के रूप में उपलब्ध कराया जाता है। बाहरी कोड-साइनिंग आवश्यकताएँ पूरी होने तक यह **बिना डिजिटल हस्ताक्षर** वाला संस्करण है। अपने कंप्यूटर के अनुसार आर्किटेक्चर चुनें।
 
-Interactive MSI install के बाद NgMusic configurator खोलता है ताकि Google OAuth Desktop Client ID और shortcuts configure किए जा सकें। इसलिए final state Setup.exe के बराबर है।
+1. आधिकारिक रिलीज़ से ZIP लें और उसका SHA-256 मिलाएँ।
+2. उसे ऐसी फ़ोल्डर में निकालें जहाँ आप लिख सकते हों।
+3. `Cauce.exe` खोलें। पैकेज में .NET रनटाइम शामिल है।
+4. **Biblioteca → Añadir archivos** से MP3, WAV या M4A चुनें। उनका संगीत-शैली वाला genre भरें और **Escuchar** से सुनना शुरू करें।
 
-Silent MSI (/qn) कोई UI नहीं खोलता और managed deployment के लिए सुरक्षित है। बाद में `ngmusic setup` चलाया जा सकता है।
+खाते या एडमिन अधिकारों की ज़रूरत नहीं है; PATH नहीं बदला जाता। ऐप का डेटा `%LOCALAPPDATA%\Cauce` में रहता है। हटाने के लिए Cauce बंद करके उसकी प्रोग्राम फ़ोल्डर मिटाएँ। **Borrar datos locales** लाइब्रेरी और रिकवरी फ़ाइलें हटाता है, संगीत नहीं।
 
-Portable mode Program Files या PATH नहीं बदलता।
+सोर्स कोड से चलाने के लिए Windows और .NET 10 SDK चाहिए:
+
+```powershell
+dotnet run --project src/Cauce.Desktop
+```
+
+मौजूदा इंटरफ़ेस स्पेनिश में है। यह दस्तावेज़ निर्देशों का अनुवाद है, ऐप के इंटरफ़ेस का नहीं।
+
+[मुख्य पृष्ठ](../../../README.hi.md) · [अंग्रेज़ी गाइड](../../installation.md)

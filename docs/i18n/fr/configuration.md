@@ -1,17 +1,11 @@
-# Configuration et Google OAuth
+# Préférences et comptes
 
-Exécutez `login`. Si le Client ID manque, NgMusic lance automatiquement l'assistant interactif.
+**Apariencia** propose Sistema, Claro, Oscuro, Bosque et Alto contraste, avec réduction des animations et de la transparence. **Escuchar** permet de choisir le genre, l’espacement des artistes et les répétitions. Changer de genre démarre une nouvelle session.
 
-Collez le Client ID Google OAuth de type **Desktop app**. Il est enregistré dans :
+Cauce conserve références, métadonnées et préférences dans `%LOCALAPPDATA%\Cauce`, avec une limite de 10 000 références et 16 MiB. Les fichiers audio ne sont ni copiés ni modifiés. L’historique n’existe que pendant la session. Une exportation contient des chemins et URL : vérifiez-la avant de la partager.
 
-`%LOCALAPPDATA%\NgMusic\config.json`
+Les comptes sont facultatifs. Le distributeur peut placer un `auth.json` public à côté de `Cauce.exe` pour un broker OIDC HTTPS de confiance reliant Google, Apple, Facebook et Microsoft. Sans configuration réelle, la connexion est désactivée. Le navigateur système gère Authorization Code avec PKCE ; aucun jeton ni secret n’est conservé. Se connecter ne synchronise pas la bibliothèque et n’autorise aucun service musical.
 
-Les tokens OAuth ne sont pas stockés dans ce JSON mais dans Windows Credential Manager.
+Le [guide des comptes](../../cauce-accounts.md) décrit les inscriptions, callbacks et vérifications avec les fournisseurs réels. Écouter des fichiers locaux ne demande aucune configuration de compte.
 
-- `setup` : configurer/remplacer le Client ID
-- `config show` : voir l'état
-- `config path` : chemin du fichier
-- `config reset` : supprimer la configuration locale
-- `logout` : supprimer le token OAuth
-
-Les variables d'environnement sont toujours prises en charge et prioritaires.
+[Accueil](../../../README.fr.md) · [Guide en anglais](../../configuration.md)

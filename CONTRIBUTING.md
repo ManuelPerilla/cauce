@@ -1,26 +1,36 @@
-# Contributing to NgMusic
+# Contributing to Cauce
 
-Thanks for helping improve NgMusic.
+Cauce is a native Windows desktop preview. Keep contributions focused on dependable local playback, understandable listening rules, honest source availability and a small, intentional data footprint.
 
 ## Before opening a pull request
 
-- Keep the change focused.
-- Do not commit generated release binaries.
-- Do not commit OAuth credentials, API keys, tokens, certificates, or signing secrets.
-- Update documentation for user-visible behavior changes.
-- Prefer one coherent commit or a small number of meaningful commits over noisy incremental history.
-- Make sure the project builds for the affected Windows architecture when possible.
+- Read the [architecture](docs/architecture.md) and preserve the boundary between `Cauce.Core` and the WPF desktop adapters.
+- Describe the user-visible problem and resulting behavior. Update the affected guides and translations when behavior changes.
+- Run the relevant [checks](docs/releasing.md#verification). A successful build does not establish that tests executed successfully.
+- Keep generated binaries, local library files, personal account configuration, tokens, provider secrets, certificates and private signing material out of commits.
+- Document the purpose and limits of any new persistent data or network activity.
 
-## Pull requests
+External pull requests require maintainer review before merge. Changes to authentication, dependencies, release automation, storage boundaries and signing need particular care because they affect user data and release integrity.
 
-External pull requests require maintainer review before merge.
+## Development and verification
 
-Changes to authentication, release automation, installer configuration, dependency versions, security boundaries, or code signing deserve additional scrutiny because they affect supply-chain trust.
+Use Windows with the .NET 10 SDK:
 
-## Documentation translations
+```powershell
+./build/dev.ps1
+dotnet run --project tests/Cauce.Core.Tests -c Release
+dotnet run --project tests/Cauce.Auth.Tests -c Release
+dotnet run --project tests/Cauce.Desktop.Smoke -c Release -- artifacts/cauce-smoke
+```
 
-English is the canonical documentation source. Translation updates should preserve the same meaning and should be updated when the English source materially changes.
+Core checks use framework libraries and synthetic temporary data. Authentication checks use synthetic identities and loopback sockets, without provider credentials. Desktop smoke checks render the WPF interface using isolated data. Live account integration and real audio decoding need separate validation on representative Windows devices; record what was actually verified in the pull request.
 
-## Security issues
+## Documentation and licensing
 
-Do not disclose sensitive vulnerabilities or credentials in public issues. Follow [SECURITY.md](SECURITY.md).
+English is the canonical documentation source. Translations should describe the same current application, with working links and equivalent limitations. Do not present unsigned packages as signed or disabled account buttons as working provider integration.
+
+The repository does not currently contain a `LICENSE` file. The maintainer must choose a license before representing the project as licensed open-source software. Signing requests follow the explicit human approval requirement in the [code signing policy](docs/code-signing-policy.md).
+
+## Reporting problems
+
+Use [GitHub Issues](https://github.com/ManuelPerilla/cauce/issues) for ordinary bugs, with the app version, Windows architecture and reproduction steps. Review screenshots and exports for personal paths and URLs before sharing. Follow [SECURITY.md](SECURITY.md) for sensitive vulnerabilities.

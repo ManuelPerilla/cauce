@@ -1,33 +1,27 @@
-# NgMusic
+# Cauce
 
-**Reproductor musical de terminal para Windows inspirado en PowerShell, con Google OAuth y reproducción de YouTube.**
+**Tu música, sin perder el hilo.**
 
-## Paquetes
+Cauce es un reproductor nativo para Windows, escrito en C# con WPF y .NET 10. Su vista previa **0.6.0-alpha.1 está sin firma** y se prepara como ZIP portable para x64 y ARM64.
 
-| Paquete | Experiencia |
-| --- | --- |
-| Setup.exe | Recomendado: asistente gráfico |
-| MSI | Instalador nativo de Windows + configurador al terminar |
-| Portable ZIP | Extraer y ejecutar |
+- Reproduce MP3, WAV y M4A locales mediante Windows; la compatibilidad depende del archivo y del códec.
+- Mantiene el género elegido con reglas deterministas de repetición y separación de artistas. Explica cuándo la cola no puede continuar.
+- Guarda referencias y metadatos sin copiar ni modificar audio: hasta 10.000 referencias y 16 MiB.
+- Distingue archivos reproducibles, ausentes y enlaces HTTPS a servicios; esos enlaces se abren fuera del reproductor.
+- Ofrece modo compacto, bandeja, cinco temas, movimiento y transparencia reducibles, tutorial y soporte con borradores revisables.
 
-El MSI interactivo ya deja el mismo estado funcional que Setup.exe: instala NgMusic, agrega `PATH` y abre un configurador para Client ID y accesos directos.
+Puedes escuchar sin cuenta. El cliente OIDC opcional permanece deshabilitado hasta configurar un broker y registros reales para Google, Apple, Facebook y Microsoft. No incluye catálogos de streaming ni sincronización en la nube. La interfaz actual está en español.
 
-El MSI silencioso permanece silencioso para despliegues empresariales.
+Con Windows y el SDK de .NET 10:
 
-Después de Setup.exe o MSI interactivo:
-
-```text
-ngmusic
-login
-search "..."
-play 1
+```powershell
+dotnet run --project src/Cauce.Desktop
 ```
 
-[Instalación](docs/i18n/es/installation.md)
+[Instalación](docs/i18n/es/installation.md) · [Preferencias](docs/i18n/es/configuration.md) · [Controles](docs/i18n/es/commands.md) · [Problemas](docs/i18n/es/troubleshooting.md)
 
+[Arquitectura](docs/i18n/es/architecture.md) · [Seguridad](docs/i18n/es/security.md) · [Publicaciones](docs/i18n/es/releasing.md) · [Firma](docs/i18n/es/code-signing-policy.md)
 
-## Client Secret de Google
+[Guía completa](docs/cauce.md) · [Cuentas](docs/cauce-accounts.md) · [Código](https://github.com/ManuelPerilla/cauce)
 
-Algunos clientes OAuth de Google exigen también un **Client Secret** durante el intercambio del token.
-
-Desde NgMusic 0.5.2 puedes configurarlo con `setup`, Setup.exe o el configurador del MSI. El secret se guarda en **Windows Credential Manager**, nunca en `config.json`.
+[English](README.md) · Español · [Français](README.fr.md) · [हिन्दी](README.hi.md) · [简体中文](README.zh-CN.md)

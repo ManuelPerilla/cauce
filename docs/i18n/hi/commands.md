@@ -1,13 +1,13 @@
-# Command reference
+# इंटरफ़ेस के नियंत्रण
 
-नई configuration commands:
+- **Biblioteca → Añadir archivos**: MP3, WAV और M4A के संदर्भ जोड़ें; ज़रूरत पर कलाकार और genre भरें।
+- **Escuchar**: चलाएँ, रोकें या अगला गीत चुनें; genre और नियम तय करें। गीत उपलब्ध न होने पर Cauce कारण बताता है।
+- **Abrir enlace**: HTTPS संदर्भ संबंधित सेवा में खोलें। ऐप में स्ट्रीमिंग कैटलॉग जुड़ा नहीं है।
+- **Modo compacto**: मुख्य नियंत्रण पास रखें। मिनिमाइज़ करने पर Windows की सूचना क्षेत्र ट्रे से वापस खोलें या बाहर निकलें। Windows शॉर्टकट उपलब्ध होने पर Alt+Shift+C विंडो वापस दिखाता है।
+- **Apariencia**: थीम, गति और पारदर्शिता बदलें।
+- **Guía**: ट्यूटोरियल दोहराएँ और सामान्य प्रश्न पढ़ें।
+- **Soporte**: स्थानीय डेटा निर्यात या साफ़ करें और त्रुटि रिपोर्ट बनाएँ।
 
-| Command | काम |
-| --- | --- |
-| `setup` | OAuth setup wizard |
-| `config show` | Configuration दिखाएँ |
-| `config path` | Config file path |
-| `config reset` | Local config हटाएँ |
-| `login` | Login; जरूरत पर setup auto-run |
+रिपोर्ट GitHub में ड्राफ़्ट के रूप में खुलती है। भेजने से पहले उसे जाँचें। विंडो बंद करने पर Cauce समाप्त होता है और लंबित प्राथमिकताएँ सहेजी जाती हैं।
 
-बाकी playback/search/queue commands पहले जैसे हैं।
+[मुख्य पृष्ठ](../../../README.hi.md) · [अंग्रेज़ी गाइड](../../commands.md)

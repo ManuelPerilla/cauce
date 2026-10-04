@@ -1,0 +1,54 @@
+name: Cauce checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cauce-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    env:
+      CI: 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Check repository branding and documentation
+        shell: pwsh
+        run: ./build/check-repository.ps1
+      - name: Test library and queue invariants
+        run: dotnet run --project tests/Cauce.Core.Tests -c Release
+      - name: Test authentication protocol and loopback boundaries
+        run: dotnet run --project tests/Cauce.Auth.Tests -c Release
+      - name: Build desktop
+        run: dotnet build src/Cauce.Desktop -c Release
+      - name: Verify desktop behavior and capture themes
+        run: dotnet run --project tests/Cauce.Desktop.Smoke -c Release -- artifacts/cauce-smoke
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cauce-ui-verification
+          path: artifacts/cauce-smoke
+          retention-days: 7
+      - name: Prepare unsigned review package
+        shell: pwsh
+        run: ./build/cauce.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cauce-windows-x64-unsigned
+          path: artifacts/cauce/*.zip
+          if-no-files-found: error
+          retention-days: 7

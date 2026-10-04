@@ -1,13 +1,13 @@
-# Security और privacy
+# सुरक्षा और गोपनीयता
 
-NgMusic एक desktop client है और project-operated telemetry/account backend नहीं चलाता।
+Cauce में टेलीमेट्री, स्वचालित त्रुटि-अपलोड, कवर-चित्र कैश या ऑडियो की अतिरिक्त कॉपी नहीं है। संदर्भ और प्राथमिकताएँ `%LOCALAPPDATA%\Cauce` में अधिकतम 10,000 प्रविष्टियों और 16 MiB तक सहेजी जाती हैं। सत्र का इतिहास और खाते की पहचान मेमोरी में रहते हैं।
 
-यह search queries, OAuth tokens, basic Google profile data और YouTube metadata process कर सकता है।
+पढ़ी न जा सकने वाली लाइब्रेरी अधिकतम तीन रिकवरी फ़ाइलों में सुरक्षित रहती है। नए schema की लाइब्रेरी ओवरराइट नहीं होती। **Borrar datos locales** लाइब्रेरी और रिकवरी हटाता है, संगीत नहीं।
 
-Google login, token refresh, YouTube search और playback के लिए network requests होती हैं। Local OAuth/player services केवल `127.0.0.1` पर listen करती हैं।
+वैकल्पिक OIDC सिस्टम ब्राउज़र, PKCE, state और nonce इस्तेमाल करता है। HTTPS तथा हस्ताक्षर, issuer, audience और समय-सीमा की जाँच आवश्यक है। प्रदाता के गुप्त क्रेडेंशियल broker में रहते हैं। Cauce टोकन नहीं सहेजता और क्लाउड सिंक नहीं करता।
 
-OAuth tokens Windows Credential Manager में `NgMusic.GoogleOAuth` के तहत store होते हैं।
+बाहरी लिंक की सेवा की अपनी शर्तें होती हैं। रिपोर्ट ड्राफ़्ट में लॉग या फ़ाइलें स्वतः नहीं जोड़ी जातीं। निर्यात में पथ और URL होते हैं; साझा करने से पहले निजी जानकारी हटाएँ।
 
-Project का अपना backend नहीं होने के कारण NgMusic project-operated systems को data नहीं भेजता। Google/YouTube features उपयोग करने पर data उन services को जाता है।
+सुरक्षा समस्या के लिए [SECURITY.md](../../../SECURITY.md) देखें। प्रीव्यू बिना हस्ताक्षर है; [कोड-साइनिंग नीति](code-signing-policy.md) पढ़ें।
 
-Sensitive vulnerabilities या credentials public issue में पोस्ट न करें।
+[मुख्य पृष्ठ](../../../README.hi.md) · [अंग्रेज़ी गाइड](../../security.md)

@@ -1,0 +1,43 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package
+      Id="Cauce.Terminal.Windows"
+      Name="Cauce.Terminal"
+      Manufacturer="Cauce.Terminal"
+      Version="$(Version)"
+      Scope="perMachine">
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of Cauce.Terminal is already installed." />
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+
+    <Property Id="CAUCE_TERMINAL_WRAPPER" Secure="yes" />
+
+    <StandardDirectory Id="ProgramFiles6432Folder">
+      <Directory Id="INSTALLFOLDER" Name="Cauce.Terminal">
+        <Files Include="$(PayloadDir)\**" />
+        <Component Id="ConfiguratorComponent" Guid="*">
+          <File Id="ConfiguratorExe" Source="$(ConfiguratorPath)" Name="CauceTerminalConfigurator.exe" KeyPath="yes" />
+        </Component>
+      </Directory>
+    </StandardDirectory>
+
+    <Component Id="PathRegistration" Directory="INSTALLFOLDER" Guid="*">
+      <Environment Id="Cauce.TerminalPath" Name="PATH" Value="[INSTALLFOLDER]" Part="last" Action="set" System="yes" Permanent="no" />
+      <RegistryValue Root="HKLM" Key="Software\Cauce.Terminal" Name="InstallPath" Type="string" Value="[INSTALLFOLDER]" KeyPath="yes" />
+    </Component>
+
+    <CustomAction
+        Id="LaunchConfigurator"
+        FileRef="ConfiguratorExe"
+        ExeCommand=""
+        Execute="immediate"
+        Return="asyncNoWait"
+        Impersonate="yes" />
+
+    <InstallExecuteSequence>
+      <Custom
+          Action="LaunchConfigurator"
+          After="InstallFinalize"
+          Condition="NOT Installed AND UILevel &gt;= 4 AND NOT CAUCE_TERMINAL_WRAPPER" />
+    </InstallExecuteSequence>
+  </Package>
+</Wix>

@@ -1,123 +1,122 @@
-name: release-build
+name: Cauce release packages
 
 on:
   workflow_dispatch:
     inputs:
       version:
-        description: Release version (for example 0.4.0)
-        required: true
-        default: 0.5.4
+        description: SemVer version matching Directory.Build.props (leave blank to use it)
+        required: false
+        type: string
   push:
-    branches:
-      - main
-    tags:
-      - 'v*'
+    tags: ['v*']
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: cauce-release-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  build:
-    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v') || contains(github.event.head_commit.message, '[release]')
+  verify-and-package:
     runs-on: windows-latest
+    timeout-minutes: 35
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     env:
-      CI: true
-
+      CI: 'true'
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup .NET 10
-        uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-
-      - name: Resolve version
+      - name: Validate release version
         id: version
         shell: pwsh
+        env:
+          REQUESTED_VERSION: ${{ inputs.version }}
+          EVENT_NAME: ${{ github.event_name }}
+          REF_NAME: ${{ github.ref_name }}
         run: |
-          if ('${{ github.event_name }}' -eq 'workflow_dispatch') {
-            $version = '${{ inputs.version }}'
-          } elseif ('${{ github.ref }}'.StartsWith('refs/tags/v')) {
-            $version = '${{ github.ref_name }}'.TrimStart('v')
-          } else {
-            [xml]$props = Get-Content ./Directory.Build.props
-            $version = [string]$props.Project.PropertyGroup.VersionPrefix
-          }
-
-          if ([string]::IsNullOrWhiteSpace($version)) {
-            throw 'Could not resolve a release version.'
-          }
-
-          "version=$version" >> $env:GITHUB_OUTPUT
-          Write-Host "Release version: $version"
-
-      - name: Build setup, MSI and portable packages
+          . ./build/common.ps1
+          $declared = Resolve-CauceVersion
+          $candidate = if ($env:EVENT_NAME -eq 'push') { $env:REF_NAME.Substring(1) } else { $env:REQUESTED_VERSION }
+          if ($env:EVENT_NAME -eq 'push' -and [string]::IsNullOrWhiteSpace($candidate)) { throw 'Release tag must contain a version after v.' }
+          $version = Resolve-CauceVersion -Version $candidate
+          if ($version -cne $declared) { throw 'Release version must match Directory.Build.props.' }
+          "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+      - name: Check repository branding and documentation
         shell: pwsh
-        run: ./build/release.ps1 -Version '${{ steps.version.outputs.version }}'
-
-      - name: Generate checksums and Windows bundle
-        shell: pwsh
-        run: |
-          $version = '${{ steps.version.outputs.version }}'
-          $releaseDir = Join-Path $PWD 'artifacts/release'
-          $checksumFile = Join-Path $releaseDir 'SHA256SUMS.txt'
-
-          Get-ChildItem $releaseDir -File |
-            Sort-Object Name |
-            ForEach-Object {
-              $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
-              "$hash  $($_.Name)"
-            } | Set-Content $checksumFile -Encoding ascii
-
-          $bundle = Join-Path $PWD "artifacts/NgMusic-$version-Windows-Packages.zip"
-          Compress-Archive -Path (Join-Path $releaseDir '*') -DestinationPath $bundle -CompressionLevel Optimal
-
-      - name: Upload Actions package
-        uses: actions/upload-artifact@v4
+        run: ./build/check-repository.ps1
+      - name: Test core behavior
+        run: dotnet run --project tests/Cauce.Core.Tests -c Release
+      - name: Test authentication boundaries
+        run: dotnet run --project tests/Cauce.Auth.Tests -c Release
+      - name: Build desktop
+        run: dotnet build src/Cauce.Desktop -c Release
+      - name: Verify desktop behavior
+        run: dotnet run --project tests/Cauce.Desktop.Smoke -c Release -- artifacts/cauce-smoke
+      - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: NgMusic-${{ steps.version.outputs.version }}-Windows
-          path: |
-            artifacts/release/*
-            artifacts/NgMusic-${{ steps.version.outputs.version }}-Windows-Packages.zip
+          name: cauce-release-ui-verification
+          path: artifacts/cauce-smoke
+          retention-days: 7
+      - name: Package unsigned x64 and ARM64 releases
+        shell: pwsh
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+        run: ./build/release.ps1 -Version $env:RELEASE_VERSION
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cauce-release-packages
+          path: artifacts/release/*
           if-no-files-found: error
+          retention-days: 14
 
-      - name: Publish GitHub Release
+  draft-release:
+    needs: verify-and-package
+    runs-on: windows-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: cauce-release-packages
+          path: artifacts/release
+      - name: Create a new draft release
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_VERSION: ${{ needs.verify-and-package.outputs.version }}
+          RELEASE_COMMIT: ${{ github.sha }}
         run: |
-          $version = '${{ steps.version.outputs.version }}'
+          $ErrorActionPreference = 'Stop'
+          $version = $env:RELEASE_VERSION
           $tag = "v$version"
-          $releaseDir = Join-Path $PWD 'artifacts/release'
-          $bundle = Join-Path $PWD "artifacts/NgMusic-$version-Windows-Packages.zip"
-          $assets = @(
-            Get-ChildItem $releaseDir -File | ForEach-Object { $_.FullName }
-          ) + @($bundle)
-
-          $notesPath = Join-Path $PWD 'release-notes.md'
-          @(
-            "# NgMusic $version"
-            ""
-            "Recommended installation:"
-            "- Graphical Setup.exe for x64, ARM64 and x86"
-            ""
-            "Also included:"
-            "- Direct MSI installers"
-            "- Portable self-contained ZIPs"
-            "- Combined Windows package bundle"
-            "- SHA-256 checksums"
-            ""
-            "Setup.exe configures OAuth during the wizard. Interactive MSI installation launches the same post-install configurator. Silent MSI deployment stays silent and can be configured through environment variables or the in-app setup command."
-          ) | Set-Content $notesPath -Encoding utf8
-
-          gh release view $tag --repo $env:GITHUB_REPOSITORY *> $null
-          if ($LASTEXITCODE -eq 0) {
-            gh release upload $tag @assets --clobber --repo $env:GITHUB_REPOSITORY
-          } else {
-            gh release create $tag @assets `
-              --repo $env:GITHUB_REPOSITORY `
-              --target '${{ github.sha }}' `
-              --title "NgMusic v$version" `
-              --notes-file $notesPath
-          }
+          $releaseDirectory = Join-Path $PWD 'artifacts/release'
+          $assets = @(Get-ChildItem -LiteralPath $releaseDirectory -File | ForEach-Object { $_.FullName })
+          if ($assets.Count -ne 3) { throw 'Expected two portable packages and SHA256SUMS.txt.' }
+          $releases = gh api --paginate --slurp "repos/$env:GH_REPO/releases?per_page=100"
+          if ($LASTEXITCODE -ne 0) { throw 'Could not verify existing releases; no release was changed.' }
+          $existing = @($releases | ConvertFrom-Json) | ForEach-Object { $_ } | Where-Object { $_.tag_name -eq $tag }
+          if ($existing) { throw "Release $tag already exists; it will not be overwritten." }
+          $notes = @(
+            "Cauce $version — unsigned preview"
+            ''
+            'Portable Windows x64 and ARM64 packages. Extract the ZIP and run Cauce.exe.'
+            'SHA256SUMS.txt records each package hash; each ZIP also contains file hashes.'
+            'Local playback, reference-only library, deterministic genre sessions and a compact interface.'
+            'External services remain links. Social sign-in requires an identity service and registered providers.'
+            'The packages are unsigned. Review installation and code-signing guidance before running them.'
+          )
+          $notesPath = Join-Path $PWD 'cauce-release-notes.md'
+          $notes | Set-Content -LiteralPath $notesPath -Encoding utf8
+          $arguments = @('release', 'create', $tag) + $assets + @('--repo', $env:GH_REPO, '--target', $env:RELEASE_COMMIT, '--title', "Cauce v$version", '--notes-file', $notesPath, '--draft')
+          if ($version.Split('+')[0].Contains('-')) { $arguments += '--prerelease' }
+          gh @arguments
+          if ($LASTEXITCODE -ne 0) { throw 'Draft release creation failed.' }

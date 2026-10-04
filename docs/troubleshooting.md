@@ -1,55 +1,48 @@
-# Troubleshooting
+# Troubleshooting Cauce
 
-## `invalid_request: client_secret is missing`
+[Documentation](README.md) · [Installation](installation.md) · [Privacy](security.md)
 
-Google accepted browser authorization, but the token endpoint requires this OAuth client's Client Secret.
+## The app does not start
 
-In NgMusic 0.5.2 or later:
+Extract the entire portable ZIP and keep its runtime files together. Confirm the package matches your Windows architecture: x64 or ARM64. Source development requires the .NET 10 SDK; a self-contained ZIP does not.
 
-1. Open **Google Auth Platform → Clients**.
-2. Open the same OAuth client whose Client ID you configured.
-3. Copy its **Client Secret**.
-4. Run `setup`.
-5. Enter the Client ID and paste the Client Secret when requested.
-6. Run `login` again.
+If Windows blocks an unsigned binary, verify its source and checksum. Report the exact Windows message/error code, app version and architecture. Do not disable Windows security controls. A policy-blocked process is not evidence of a completed test run.
 
-NgMusic stores the Client Secret in Windows Credential Manager, not plaintext JSON.
+## A local file is missing or will not play
 
-If Google no longer displays the original secret, rotate/create a new secret when available and configure the new value in NgMusic.
+Cauce stores paths rather than copying audio. If you moved, renamed or disconnected a file, restore its location or remove the stale reference and import its current path. The preview accepts MP3, WAV and M4A; decoding also depends on Windows media support and the individual codec/file.
 
-## Other OAuth errors
+Check that Windows can read the file and that it is not empty or damaged. A saved service link opens its service and cannot play inside Cauce. Report a failure with the format and reproduction steps; avoid attaching audio or private paths unnecessarily.
 
-- `invalid_client`: wrong/deleted Client ID or incorrect Client Secret.
-- `invalid_grant`: retry login; the authorization code, PKCE verifier, or redirect may no longer be valid.
-- `redirect_uri_mismatch`: verify the client is appropriate for a Desktop/installed flow.
-- `access_denied`: consent or organization policy denied access.
+## The session cannot continue
 
-## Browser success page
+Read the explanation in **Escuchar**:
 
-NgMusic 0.5.1+ only reports browser success after token exchange succeeds and tokens have been stored.
+- No available local files: add music or restore missing paths.
+- No files in the chosen genre: set the genre in **Biblioteca** or choose another genre.
+- All eligible files already played: allow repeats or change genre to start a new session.
+- Artist spacing excludes all candidates: add other artists or reduce that rule.
 
+Cauce keeps the rules you chose. Missing artist metadata cannot establish a reliable gap; edit artist and genre with **Guardar datos**. Edits affect the library only.
 
-## YouTube player says "An error occurred. Please try again later"
+## Account buttons are disabled or login fails
 
-NgMusic 0.5.3+ filters search results with YouTube's `videoEmbeddable=true` and `videoSyndicated=true` flags so results should be playable in the embedded player.
+Local playback works without an account. Disabled buttons mean no valid broker configuration is loaded. The distributor must supply public `auth.json` beside `Cauce.exe`, register the native client and configure social-provider connections. Restart after changing that file.
 
-The player also reports the IFrame error code directly in the terminal:
+An enabled button confirms valid configuration, not live provider availability. Check broker reachability, callback registration, client ID and provider selector. An occupied loopback port, denied consent, timeout or interrupted connection can stop sign-in. Consult [accounts](cauce-accounts.md); never paste client secrets into the desktop or bypass certificate/token validation.
 
-- `101` / `150`: the video owner blocks embedded playback.
-- `153`: YouTube did not receive the required HTTP Referer or equivalent client identity.
-- `100`: the video was removed or is private.
-- `5`: HTML5 playback failure.
-- `2`: invalid video parameter.
+## The library warns about corruption or a newer version
 
-NgMusic sends an explicit `strict-origin-when-cross-origin` referrer policy, matching YouTube's recommendation for embedded players.
+Unreadable metadata is preserved in up to three `library.corrupt-*.json` files under `%LOCALAPPDATA%\Cauce`, with a visible warning. If all three slots are used, the original is preserved rather than overwriting a recovery copy. Keep backups before investigating or resetting.
 
-If autoplay is blocked by the browser, NgMusic reports that separately in the terminal.
+A newer-schema library is not overwritten. Preserve it and use a compatible build. If saving fails, use **Cuenta → Exportar mis datos** before closing when possible. Reset only when you intend to remove references and preferences; audio stays intact.
 
+## The window disappeared or motion feels uncomfortable
 
-## Player error 2 with a valid 11-character video ID
+Minimizing moves Cauce to the notification area. Double-click its icon, choose **Abrir Cauce** or press **Alt+Shift+C** if available. Another app may own that shortcut.
 
-NgMusic 0.5.4 fixes a startup race in which the terminal could send `loadVideoById` after the `YT.Player` object existed but before YouTube's `onReady` event had fired.
+Enable reduced motion or opaque surfaces in **Apariencia**, or choose **Alto contraste**. Repeat the introduction from **Guía** to revisit controls.
 
-YouTube documents `onReady` as the point at which the player is ready to receive API calls. NgMusic now waits for that event before it polls and consumes queued terminal commands.
+## Report a reproducible problem
 
-If error 2 still appears on 0.5.4+, report the video ID and the complete terminal line.
+Use **Soporte → Preparar reporte de un problema** or [GitHub Issues](https://github.com/ManuelPerilla/cauce/issues). Review the draft and include version, Windows architecture, steps, expected result and observed result. Omit tokens, account secrets and unreviewed exports. Sensitive reports follow [SECURITY.md](../SECURITY.md).

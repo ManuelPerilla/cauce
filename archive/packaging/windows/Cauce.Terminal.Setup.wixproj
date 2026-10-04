@@ -1,0 +1,10 @@
+<Project Sdk="WixToolset.Sdk/6.0.2">
+  <PropertyGroup>
+    <OutputName>Cauce.Terminal</OutputName>
+    <InstallerPlatform Condition="'$(InstallerPlatform)' == ''">x64</InstallerPlatform>
+    <CauceTerminalPayloadDir Condition="'$(CauceTerminalPayloadDir)' == ''">$(MSBuildThisFileDirectory)..\..\artifacts\publish\win-$(InstallerPlatform)</CauceTerminalPayloadDir>
+    <CauceTerminalConfiguratorPath Condition="'$(CauceTerminalConfiguratorPath)' == ''">$(MSBuildThisFileDirectory)..\..\artifacts\configurator\win-$(InstallerPlatform)\CauceTerminalConfigurator.exe</CauceTerminalConfiguratorPath>
+    <DefineConstants>Version=$(Version);PayloadDir=$(CauceTerminalPayloadDir);ConfiguratorPath=$(CauceTerminalConfiguratorPath)</DefineConstants>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+</Project>
