@@ -2,7 +2,7 @@
 
 [Documentation](README.md) · [Installation](installation.md) · [Signing policy](code-signing-policy.md)
 
-Cauce targets native Windows with .NET 10 and WPF. Maintained packaging produces self-contained **x64** and **ARM64** portable ZIPs, without an MSI, setup wizard or x86 distribution. `Directory.Build.props` is the version source; the current preview is `0.6.0-alpha.1`.
+Cauce targets native Windows with .NET 10 and WPF. Maintained packaging produces self-contained **x64** and **ARM64** portable ZIPs, EXE setup installers and MSI installers. There is no x86 distribution. `Directory.Build.props` is the version source; the current preview is `0.6.0-alpha.1`.
 
 ## Development and review packages
 
@@ -29,7 +29,7 @@ Core checks cover queues, import, storage limits, recovery and selective reset. 
 
 Verify real file playback on representative Windows devices and codecs. Measure CPU/memory during startup, large-library use, sustained/minimized playback and repeated theme/view changes before performance claims. Test live accounts only after real broker/provider registration. If Windows Application Control blocks an executable, report the blocked execution and preserve the control; compilation alone is not a passing test.
 
-## Versioned portable release
+## Versioned Windows release
 
 ```powershell
 ./build/release.ps1 -Version 0.6.0-alpha.1 -Architectures x64,arm64
@@ -40,7 +40,10 @@ The release script packages each architecture under `artifacts/release` and emit
 ## Workflows
 
 - **`.github/workflows/cauce.yml`** verifies Cauce on Windows and uploads review artifacts. Pull-request checks do not publish releases.
-- **`.github/workflows/release.yml`** accepts manual release preparation or a version tag, builds x64/ARM64 packages and creates a **draft GitHub Release**. Review commit, checks, version, architecture payloads, checksums and notes before publishing the draft.
+- **`.github/workflows/release.yml`** accepts a manual run or a `v*` version tag matching `Directory.Build.props`. After verification it builds x64/ARM64 ZIP, EXE and MSI packages and publishes a GitHub Release with SHA-256 checksums. Versions with a prerelease suffix are published as prereleases.
+- The workflow also packs **Cauce.Core** and publishes its `.nupkg` to the owner's GitHub Packages NuGet registry using `GITHUB_TOKEN` and job-scoped `packages: write`. This package contains the reusable library; desktop installers remain release assets. Existing NuGet versions are skipped rather than overwritten.
+- To start a release, open Actions → Cauce release packages → Run workflow on `main`. Leave the version blank to use the shared project version. GitHub Packages becomes populated after the NuGet publication job succeeds.
+- Installer generation uses `build/installers.ps1`, WiX 4.0.6 and Inno Setup 6.4.3 after `build/release.ps1`. EXE and MSI use separate installation directories; choose one installer format per device. Both include the runtime and create a Start menu shortcut.
 
 Keep permissions minimal, with release upload access limited to delivery. Do not put provider secrets, personal `auth.json`, library exports or signing keys into logs or packages. Release links use [source](https://github.com/ManuelPerilla/cauce), [issues](https://github.com/ManuelPerilla/cauce/issues) and [releases](https://github.com/ManuelPerilla/cauce/releases).
 
