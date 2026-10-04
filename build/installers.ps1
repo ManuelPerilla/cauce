@@ -32,11 +32,11 @@ foreach ($arch in @('x64', 'arm64')) {
                 $shortcut = if ($file.Name -eq 'Cauce.exe') { '<Shortcut Id="StartMenuShortcut" Directory="ProgramMenuFolder" Name="Cauce (MSI)" Advertise="yes" WorkingDirectory="INSTALLFOLDER" />' } else { '' }
                 [void]$builder.Append("<Component Id=`"$id`" Guid=`"*`"><File Id=`"F$script:index`" Source=`"$(Escape-Xml $file.FullName)`" KeyPath=`"yes`">$shortcut</File></Component>")
             }
-            foreach ($directory in (Get-ChildItem -LiteralPath $Directory -Directory | Sort-Object Name)) {
+            foreach ($childDirectory in (Get-ChildItem -LiteralPath $Directory -Directory | Sort-Object Name)) {
                 $script:index++
                 $directoryId = "D$script:index"
-                $children = New-PayloadXml $directory.FullName
-                [void]$builder.Append("<Directory Id=`"$directoryId`" Name=`"$(Escape-Xml $directory.Name)`">$children</Directory>")
+                $children = New-PayloadXml $childDirectory.FullName
+                [void]$builder.Append("<Directory Id=`"$directoryId`" Name=`"$(Escape-Xml $childDirectory.Name)`">$children</Directory>")
             }
             $builder.ToString()
         }
