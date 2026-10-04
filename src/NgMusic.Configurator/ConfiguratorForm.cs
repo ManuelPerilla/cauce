@@ -9,7 +9,7 @@ namespace NgMusic.Configurator;
 internal sealed class ConfiguratorForm : Form
 {
     private const string SetupGuideUrl =
-        "https://github.com/ManuelPerilla/ngmusic/blob/main/docs/configuration.md";
+        "https://github.com/ManuelPerilla/cauce/blob/main/docs/configuration.md";
 
     private readonly TextBox _clientId = new() { Width = 560 };
     private readonly TextBox _clientSecret = new() { Width = 560, UseSystemPasswordChar = true };
@@ -260,3 +260,4 @@ internal sealed class ConfiguratorForm : Form
         }
     }
 }
+

@@ -6,7 +6,7 @@ SignPath Foundation 审批目前仍在等待中。
 
 **Free code signing provided by SignPath.io, certificate by SignPath Foundation.**
 
-只有来自官方 `ManuelPerilla/ngmusic` 仓库并通过批准的自动化 pipeline 构建的产物可以签名。
+只有来自官方 `ManuelPerilla/cauce` 仓库并通过批准的自动化 pipeline 构建的产物可以签名。
 
 不得使用项目签名身份为无关项目、不可验证的本地修改二进制或第三方专有软件签名。
 

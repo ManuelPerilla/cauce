@@ -11,7 +11,7 @@ public sealed class MusicShell(
     GoogleCredentials credentials)
 {
     private const string SetupGuideUrl =
-        "https://github.com/ManuelPerilla/ngmusic/blob/main/docs/configuration.md";
+        "https://github.com/ManuelPerilla/cauce/blob/main/docs/configuration.md";
 
     private IReadOnlyList<MusicTrack> _searchResults = [];
     private readonly Queue<MusicTrack> _queue = new();
@@ -607,3 +607,4 @@ public sealed class MusicShell(
         Console.ResetColor();
     }
 }
+

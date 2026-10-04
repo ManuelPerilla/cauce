@@ -12,7 +12,7 @@ internal sealed class WizardForm : Form
 {
     private const string ResourceName = "NgMusic.Setup.Payload.msi";
     private const string SetupGuideUrl =
-        "https://github.com/ManuelPerilla/ngmusic/blob/main/docs/configuration.md";
+        "https://github.com/ManuelPerilla/cauce/blob/main/docs/configuration.md";
 
     private readonly Panel _content = new() { Dock = DockStyle.Fill, Padding = new Padding(36, 22, 36, 16) };
     private readonly Button _back = new() { Text = "< Back", Width = 95, Height = 32 };
@@ -571,3 +571,4 @@ internal sealed class WizardForm : Form
             MessageBoxIcon.Information);
     }
 }
+

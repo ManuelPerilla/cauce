@@ -8,7 +8,7 @@ Cuando la firma esté activa:
 
 ## Alcance
 
-Solo pueden firmarse artefactos oficiales producidos desde `ManuelPerilla/ngmusic` mediante el pipeline aprobado.
+Solo pueden firmarse artefactos oficiales producidos desde `ManuelPerilla/cauce` mediante el pipeline aprobado.
 
 No se usará la identidad de firma para proyectos ajenos, binarios modificados localmente sin procedencia verificable o software propietario externo.
 

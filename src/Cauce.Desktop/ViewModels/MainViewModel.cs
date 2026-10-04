@@ -122,7 +122,7 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
         ExportDataCommand = Async(_ => ExportAsync());
         ClearDataCommand = Async(_ => ClearAsync());
         OpenBugReportCommand = Action(_ => OpenBugReport());
-        OpenSupportCommand = Action(_ => OpenHttps("https://github.com/ManuelPerilla/ngmusic/issues"));
+        OpenSupportCommand = Action(_ => OpenHttps("https://github.com/ManuelPerilla/cauce/issues"));
         SignInCommand = Async(async provider =>
         {
             if (!authentication.IsConfigured) { AccountStatus = authentication.ConfigurationStatus; return; }
@@ -342,7 +342,7 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
     {
         var version = typeof(MainViewModel).Assembly.GetName().Version?.ToString() ?? "desconocida";
         var body = $"### Qué ocurrió\n\n### Pasos para reproducir\n1. \n\n### Qué esperabas\n\n### Entorno\nCauce: {version}\nWindows: {Environment.OSVersion.Version}\n\nRevisa lo que compartes. No incluyas contraseñas, tokens, rutas personales ni archivos de música.\n";
-        OpenHttps("https://github.com/ManuelPerilla/ngmusic/issues/new?title=" + Uri.EscapeDataString("[Cauce] ") + "&body=" + Uri.EscapeDataString(body));
+        OpenHttps("https://github.com/ManuelPerilla/cauce/issues/new?title=" + Uri.EscapeDataString("[Cauce] ") + "&body=" + Uri.EscapeDataString(body));
         Status = "Se abrió un borrador en GitHub. Revísalo y envíalo cuando esté listo; Cauce no adjunta archivos ni envía datos automáticamente.";
     }
     private static void OpenHttps(string location)

@@ -6,7 +6,7 @@ Lorsque la signature sera active :
 
 **Free code signing provided by SignPath.io, certificate by SignPath Foundation.**
 
-Seuls les artefacts issus du dépôt officiel `ManuelPerilla/ngmusic` et du pipeline automatisé approuvé peuvent être signés.
+Seuls les artefacts issus du dépôt officiel `ManuelPerilla/cauce` et du pipeline automatisé approuvé peuvent être signés.
 
 Rôles actuels :
 - Committer : ManuelPerilla

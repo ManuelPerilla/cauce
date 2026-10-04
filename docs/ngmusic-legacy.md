@@ -71,7 +71,7 @@ NgMusic releases x64, ARM64, and x86 variants of:
 - MSI;
 - portable ZIP.
 
-Use the [latest GitHub Release](https://github.com/ManuelPerilla/ngmusic/releases/latest).
+Use the [latest GitHub Release](https://github.com/ManuelPerilla/cauce/releases/latest).
 
 ## Documentation
 
@@ -96,3 +96,4 @@ SignPath Foundation approval is pending. When official signing is enabled:
 Some Google OAuth clients require a Client Secret during token exchange. NgMusic 0.5.2+ supports this securely through Setup.exe, the MSI configurator, or the `setup` command.
 
 The Client Secret is stored in Windows Credential Manager and is never written to `config.json`.
+

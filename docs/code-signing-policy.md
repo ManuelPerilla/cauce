@@ -16,7 +16,7 @@ Unsigned historical releases must not be represented as signed.
 
 ## Scope
 
-Only artifacts produced from the official `ManuelPerilla/ngmusic` repository and its maintained build scripts are eligible for project signing.
+Only artifacts produced from the official `ManuelPerilla/cauce` repository and its maintained build scripts are eligible for project signing.
 
 NgMusic must not use its signing identity to sign unrelated projects, third-party proprietary code, locally modified binaries with unverifiable provenance, or artifacts produced outside the approved release pipeline.
 
@@ -79,3 +79,4 @@ If a signed release is suspected of containing malicious or unintended code, the
 4. investigate source, dependencies, build scripts, and signing approvals;
 5. coordinate certificate/signature revocation with the signing provider when required;
 6. publish a clear remediation notice for users.
+

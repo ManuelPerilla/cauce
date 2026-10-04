@@ -6,7 +6,7 @@ Signing active होने पर:
 
 **Free code signing provided by SignPath.io, certificate by SignPath Foundation.**
 
-केवल official `ManuelPerilla/ngmusic` repository और approved automated pipeline से बने artifacts sign किए जा सकते हैं।
+केवल official `ManuelPerilla/cauce` repository और approved automated pipeline से बने artifacts sign किए जा सकते हैं।
 
 Current roles:
 - Committer: ManuelPerilla
