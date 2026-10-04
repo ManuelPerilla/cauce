@@ -96,6 +96,17 @@ jobs:
         run: |
           ./build/release.ps1 -Version $env:RELEASE_VERSION
           ./build/installers.ps1 -Version $env:RELEASE_VERSION
+      - name: Verify x64 installer lifecycle
+        shell: pwsh
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+        run: ./build/verify-installers.ps1 -Version $env:RELEASE_VERSION
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cauce-installer-verification
+          path: artifacts/installer-verification
+          retention-days: 14
       - uses: actions/upload-artifact@v4
         with:
           name: cauce-release-packages
@@ -142,11 +153,13 @@ jobs:
             'Local playback, reference-only library, deterministic genre sessions and a compact interface.'
             'External services remain links. Social sign-in requires an identity service and registered providers.'
             'The packages are unsigned. Review installation and code-signing guidance before running them.'
+            'x64 EXE/MSI installation, startup, repair and uninstallation are checked in CI; user metadata is preserved.'
+            'Native ARM64, cross-version upgrades and real audio playback require device testing before stable release.'
           )
           $notesPath = Join-Path $PWD 'cauce-release-notes.md'
           $notes | Set-Content -LiteralPath $notesPath -Encoding utf8
           $arguments = @('release', 'create', $tag) + $assets + @('--repo', $env:GH_REPO, '--target', $env:RELEASE_COMMIT, '--title', "Cauce v$version", '--notes-file', $notesPath)
-          if ($version.Split('+')[0].Contains('-')) { $arguments += '--prerelease' }
+          if ($version.Split('+')[0].Contains('-')) { $arguments += '--prerelease' } else { $arguments += '--latest' }
           gh @arguments
           if ($LASTEXITCODE -ne 0) { throw 'Release publication failed.' }
 

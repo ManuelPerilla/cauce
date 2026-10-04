@@ -33,7 +33,7 @@ Minimizing hides the window in the Windows notification area while playback can 
 ```powershell
 ./build/dev.ps1
 ./build/cauce.ps1 -Runtime win-x64
-./build/release.ps1 -Version 0.6.0-alpha.1 -Architectures x64,arm64
+./build/release.ps1 -Version 0.6.0-rc.1 -Architectures x64,arm64
 ```
 
 These are repository scripts, not music-player commands. Outputs and verification requirements are documented in [building and releasing](releasing.md).

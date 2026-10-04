@@ -1,6 +1,6 @@
 # 代码签名政策
 
-Cauce 0.6.0-alpha.1 **未签名**。SignPath Foundation 审批仍在等待中；仓库目前也没有许可证。所有者需先选择许可证，再申请 SignPath Foundation 流程。不得将未签名包描述为已签名。
+Cauce 0.6.0-rc.1 **未签名**。SignPath Foundation 审批仍在等待中；仓库目前也没有许可证。所有者需先选择许可证，再申请 SignPath Foundation 流程。不得将未签名包描述为已签名。
 
 获得批准并启用签名后，使用以下署名：
 

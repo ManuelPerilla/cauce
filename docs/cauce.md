@@ -1,6 +1,6 @@
 # Cauce desktop guide
 
-Cauce `0.6.0-alpha.1` is a native Windows music-player preview built with C#/.NET 10 and WPF. It offers quiet local playback, understandable listening rules and clear source availability. The portable preview is unsigned; real account integration requires external broker/provider setup.
+Cauce `0.6.0-rc.1` is a native Windows music-player preview built with C#/.NET 10 and WPF. It offers quiet local playback, understandable listening rules and clear source availability. The portable preview is unsigned; real account integration requires external broker/provider setup.
 
 [Documentation index](README.md) · [Installation](installation.md) · [Accounts](cauce-accounts.md)
 

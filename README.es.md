@@ -2,7 +2,7 @@
 
 **Tu música, sin perder el hilo.**
 
-Cauce es un reproductor nativo para Windows, escrito en C# con WPF y .NET 10. Su vista previa **0.6.0-alpha.1 está sin firma** y se prepara como ZIP portable para x64 y ARM64.
+Cauce es un reproductor nativo para Windows, escrito en C# con WPF y .NET 10. Su vista previa **0.6.0-rc.1 está sin firma** y se prepara como ZIP portable para x64 y ARM64.
 
 - Reproduce MP3, WAV y M4A locales mediante Windows; la compatibilidad depende del archivo y del códec.
 - Mantiene el género elegido con reglas deterministas de repetición y separación de artistas. Explica cuándo la cola no puede continuar.

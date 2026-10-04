@@ -9,7 +9,7 @@ dotnet build src/Cauce.Desktop -c Release
 dotnet run --project tests/Cauce.Desktop.Smoke -c Release -- artifacts/cauce-smoke
 ./build/cauce.ps1 -Runtime win-x64
 ./build/cauce.ps1 -Runtime win-arm64
-./build/release.ps1 -Version 0.6.0-alpha.1
+./build/release.ps1 -Version 0.6.0-rc.1
 ```
 
 测试验证曲库、队列、身份及 WPF 状态。合成测试不代表真实账户提供商已经通过验证，也不能保证其他设备上的性能。

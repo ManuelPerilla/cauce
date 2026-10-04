@@ -1,6 +1,6 @@
 # Politique de signature de code
 
-Cauce 0.6.0-alpha.1 est **non signé**. L’approbation de SignPath Foundation est en attente ; aucune licence n’est encore présente dans le dépôt. Le propriétaire doit en choisir une avant de demander la voie SignPath Foundation. Un paquet sans signature ne doit jamais être présenté comme signé.
+Cauce 0.6.0-rc.1 est **non signé**. L’approbation de SignPath Foundation est en attente ; aucune licence n’est encore présente dans le dépôt. Le propriétaire doit en choisir une avant de demander la voie SignPath Foundation. Un paquet sans signature ne doit jamais être présenté comme signé.
 
 Lorsque l’approbation et la signature sont actives, l’attribution requise est :
 

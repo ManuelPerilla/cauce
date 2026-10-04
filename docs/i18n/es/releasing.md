@@ -9,7 +9,7 @@ dotnet build src/Cauce.Desktop -c Release
 dotnet run --project tests/Cauce.Desktop.Smoke -c Release -- artifacts/cauce-smoke
 ./build/cauce.ps1 -Runtime win-x64
 ./build/cauce.ps1 -Runtime win-arm64
-./build/release.ps1 -Version 0.6.0-alpha.1
+./build/release.ps1 -Version 0.6.0-rc.1
 ```
 
 Las suites verifican biblioteca, cola, identidad y estados WPF. Las pruebas sintéticas no validan proveedores de cuentas reales ni garantizan rendimiento en otros equipos.

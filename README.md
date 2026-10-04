@@ -4,7 +4,7 @@
 
 A native Windows music player built with C#/.NET 10 and WPF. Cauce keeps listening sessions within the genre you choose, explains its queue decisions and distinguishes playable local files from external service links.
 
-> **0.6.0-alpha.1 — development preview.** The portable preview is unsigned. Account sign-in requires an identity broker and real provider registrations. Integrated streaming and cloud synchronization are not available.
+> **0.6.0-rc.1 — release candidate.** The portable preview is unsigned. Account sign-in requires an identity broker and real provider registrations. Integrated streaming and cloud synchronization are not available.
 
 [Español](README.es.md) · [简体中文](README.zh-CN.md) · [हिन्दी](README.hi.md) · [Français](README.fr.md) · [Documentation](docs/README.md)
 
@@ -53,7 +53,7 @@ Google, Apple, Facebook and Microsoft buttons use an optional configurable OIDC 
 | `tests/Cauce.Auth.Tests` | Identity and callback checks using synthetic data |
 | `tests/Cauce.Desktop.Smoke` | Rendered interface, bindings, themes and preference checks |
 | `build` | Development, portable review and release packaging |
-| `.github/workflows` | Windows verification and draft release delivery |
+| `.github/workflows` | Windows verification, installer validation and public release delivery |
 
 The `archive/` directory contains reference code excluded from the maintained builds and distributed packages.
 

@@ -1,6 +1,6 @@
 # Política de firma de código
 
-Cauce 0.6.0-alpha.1 está **sin firma**. La aprobación de SignPath Foundation está pendiente; el repositorio tampoco contiene aún una licencia. El titular debe elegir una antes de solicitar la vía de SignPath Foundation. No se atribuirá firma a un paquete que no la tenga.
+Cauce 0.6.0-rc.1 está **sin firma**. La aprobación de SignPath Foundation está pendiente; el repositorio tampoco contiene aún una licencia. El titular debe elegir una antes de solicitar la vía de SignPath Foundation. No se atribuirá firma a un paquete que no la tenga.
 
 Cuando exista una aprobación y firma activas, corresponde la atribución:
 

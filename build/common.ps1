@@ -14,7 +14,7 @@ function Resolve-CauceVersion {
     $number = '(0|[1-9][0-9]*)'
     $identifier = '(0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)'
     $pattern = "\A$number\.$number\.$number(?:-$identifier(?:\.$identifier)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?\z"
-    if ($Version -cnotmatch $pattern) { throw 'Version must be a valid SemVer value, such as 0.6.0-alpha.1.' }
+    if ($Version -cnotmatch $pattern) { throw 'Version must be a valid SemVer value, such as 0.6.0-rc.1.' }
     return $Version
 }
 

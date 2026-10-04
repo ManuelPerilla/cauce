@@ -2,7 +2,7 @@
 
 **Votre musique garde le fil.**
 
-Cauce est un lecteur natif Windows en C#, WPF et .NET 10. La préversion **0.6.0-alpha.1 est non signée**, avec des ZIP portables pour x64 et ARM64.
+Cauce est un lecteur natif Windows en C#, WPF et .NET 10. La préversion **0.6.0-rc.1 est non signée**, avec des ZIP portables pour x64 et ARM64.
 
 - Lecture locale MP3, WAV et M4A via Windows, selon la validité des fichiers et la prise en charge des codecs.
 - Sessions conservant le genre choisi, règles déterministes de répétition et d’espacement des artistes, avec explication lorsque la file s’arrête.

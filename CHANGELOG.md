@@ -1,5 +1,12 @@
 # Cauce changelog
 
+## 0.6.0-rc.1
+
+- Public EXE, MSI and portable ZIP delivery for x64 and ARM64, plus Cauce.Core on GitHub Packages.
+- Reuse the Windows runner’s installed Inno Setup compiler; fix recursive installer directory harvesting.
+- Add x64 installer lifecycle checks with retained logs and synthetic metadata preservation.
+- Document remaining validation before the stable release. Packages remain unsigned.
+
 ## 0.6.0-alpha.1
 
 Native Windows desktop development preview built with C#/.NET 10 and WPF.

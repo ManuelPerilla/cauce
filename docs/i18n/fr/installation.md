@@ -1,6 +1,6 @@
 # Installation de Cauce
 
-La préversion 0.6.0-alpha.1 est distribuée en ZIP portable pour Windows x64 ou ARM64. Elle est **non signée** tant que les conditions externes de signature ne sont pas remplies. Choisissez l’architecture de votre ordinateur.
+La préversion 0.6.0-rc.1 est distribuée en ZIP portable pour Windows x64 ou ARM64. Elle est **non signée** tant que les conditions externes de signature ne sont pas remplies. Choisissez l’architecture de votre ordinateur.
 
 1. Téléchargez le ZIP d’une publication officielle et vérifiez son SHA-256.
 2. Extrayez-le dans un dossier accessible en écriture.

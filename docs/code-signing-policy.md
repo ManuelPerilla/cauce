@@ -2,7 +2,7 @@
 
 [Documentation](README.md) · [Security](security.md) · [Releasing](releasing.md)
 
-This policy governs signing of official Cauce Windows artifacts. The current `0.6.0-alpha.1` preview is unsigned. No certificate is included, and SignPath Foundation approval/configuration is not established. The repository has no `LICENSE` file; the owner must choose an appropriate license before pursuing a Foundation route that requires one.
+This policy governs signing of official Cauce Windows artifacts. The current `0.6.0-rc.1` preview is unsigned. No certificate is included, and SignPath Foundation approval/configuration is not established. The repository has no `LICENSE` file; the owner must choose an appropriate license before pursuing a Foundation route that requires one.
 
 ## Scope and roles
 

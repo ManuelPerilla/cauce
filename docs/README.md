@@ -1,6 +1,6 @@
 # Cauce documentation
 
-Cauce `0.6.0-alpha.1` is a native Windows music-player preview. These guides describe the WPF application, local playback and portable distribution.
+Cauce `0.6.0-rc.1` is a native Windows music-player preview. These guides describe the WPF application, local playback and portable distribution.
 
 ## Start here
 

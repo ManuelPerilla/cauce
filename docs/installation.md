@@ -2,7 +2,7 @@
 
 [Documentation](README.md) · [Preferences](configuration.md) · [Troubleshooting](troubleshooting.md)
 
-Cauce is a Windows WPF application. Portable packages target **x64** and **ARM64** and include their .NET runtime. Choose the package matching your Windows device. The release workflow also builds EXE setup and MSI installers for both architectures. The current `0.6.0-alpha.1` preview is unsigned.
+Cauce is a Windows WPF application. Portable packages target **x64** and **ARM64** and include their .NET runtime. Choose the package matching your Windows device. The release workflow also builds EXE setup and MSI installers for both architectures. The current `0.6.0-rc.1` preview is unsigned.
 
 ## Portable package
 
