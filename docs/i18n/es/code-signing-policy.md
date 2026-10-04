@@ -1,27 +1,17 @@
 # Política de firma de código
 
-La aprobación de SignPath Foundation está pendiente.
+Cauce 0.6.0-alpha.1 está **sin firma**. La aprobación de SignPath Foundation está pendiente; el repositorio tampoco contiene aún una licencia. El titular debe elegir una antes de solicitar la vía de SignPath Foundation. No se atribuirá firma a un paquete que no la tenga.
 
-Cuando la firma esté activa:
+Cuando exista una aprobación y firma activas, corresponde la atribución:
 
 **Free code signing provided by SignPath.io, certificate by SignPath Foundation.**
 
-## Alcance
+Sólo son elegibles artefactos de [ManuelPerilla/cauce](https://github.com/ManuelPerilla/cauce) producidos por sus scripts mantenidos. La identidad de firma no se utiliza para proyectos ajenos ni binarios de origen no verificable.
 
-Solo pueden firmarse artefactos oficiales producidos desde `ManuelPerilla/cauce` mediante el pipeline aprobado.
+ManuelPerilla desempeña los roles de committer, reviewer y signing approver. Las contribuciones externas se revisan antes de integrarlas. **Cada solicitud de firma requiere aprobación humana explícita** del responsable. El acceso al repositorio y al servicio de firma exige MFA; claves y credenciales nunca van en código, registros ni artefactos.
 
-No se usará la identidad de firma para proyectos ajenos, binarios modificados localmente sin procedencia verificable o software propietario externo.
+El proceso debe verificar origen, metadatos, compilación y firma con sello de tiempo antes de una publicación oficial. El paquete portable no modifica PATH ni requiere privilegios elevados; sus datos locales y eliminación se describen en [instalación](installation.md) y [seguridad](security.md).
 
-## Roles actuales
+Ante un incidente: suspender firmas y publicaciones, identificar versiones, conservar evidencia, investigar y coordinar revocación y aviso de reparación.
 
-- Committer: [ManuelPerilla](https://github.com/ManuelPerilla)
-- Reviewer: [ManuelPerilla](https://github.com/ManuelPerilla)
-- Signing approver: [ManuelPerilla](https://github.com/ManuelPerilla)
-
-Los PR externos requieren revisión. Cada solicitud de firma requiere aprobación humana explícita.
-
-Las cuentas con acceso a repositorio o firma deben usar MFA.
-
-Las claves privadas de firma nunca deben aparecer en Git, logs o artefactos.
-
-Las releases firmadas deben provenir del pipeline automatizado, completar el build normal y pasar aprobación manual antes de firmarse.
+[Inicio](../../../README.es.md) · [Guía en inglés](../../code-signing-policy.md)

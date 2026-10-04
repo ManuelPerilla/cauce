@@ -1,65 +1,82 @@
-# Cauce — desktop preview
+# Cauce desktop guide
 
-Cauce is the native Windows successor being developed alongside the original NgMusic terminal application. Its purpose is a quiet music player with understandable listening rules and honest source availability. This preview is not yet a signed public release.
+Cauce `0.6.0-alpha.1` is a native Windows music-player preview built with C#/.NET 10 and WPF. It offers quiet local playback, understandable listening rules and clear source availability. The portable preview is unsigned; real account integration requires external broker/provider setup.
 
-## What works in this preview
+[Documentation index](README.md) · [Installation](installation.md) · [Accounts](cauce-accounts.md)
 
-- Native playback of local MP3, WAV and M4A using Windows media support. Individual files/codecs can still be unsupported by Windows; playback errors are shown without a crash.
-- A local reference library: importing never copies or edits the audio. MP3 ID3v1 metadata is read when present; other files use their filenames until you edit the genre in Cauce.
-- Genre-restricted queues, session repeat control and artist spacing. A queue that runs out explains why; it does not silently change genres. Choosing a genre starts a new listening session.
-- HTTPS service links saved separately from playable local audio. Links are neither catalog integrations nor verified stream availability.
-- Light, dark, forest, system and high-contrast appearances; reduced motion and opaque surfaces; a compact player and tray controls.
-- A repeatable four-step introduction, contextual help, FAQ, local-data export/reset and a user-reviewed bug-report draft.
-- Configurable broker-based OIDC sign-in using the system browser. It is disabled until real provider registrations and a trusted HTTPS broker are configured; see [accounts](cauce-accounts.md).
+## What works in the preview
+
+- Local MP3, WAV and M4A playback through Windows media support, with visible failure handling for unsupported files/codecs.
+- Reference-only import. Audio stays in place and is never copied or retagged. MP3 ID3v1 metadata is read when present; other files initially use their filename. Artist and genre can be edited inside Cauce.
+- Deterministic genre queues with repeat control and artist spacing. A session that runs out explains why instead of changing its rules.
+- HTTPS service references stored separately from playable files. A link opens its service; it is not an integrated stream or verified catalog item.
+- System, light, dark, forest and high-contrast appearance, reduced motion, opaque surfaces, compact transport and notification-area controls.
+- A repeatable four-step introduction, optional tips, common questions, export/reset controls and user-reviewed report drafts.
+- An optional OIDC client using the system browser, disabled without valid broker configuration. See [accounts](cauce-accounts.md).
 
 ## First listen
 
-Open **Biblioteca**, choose **Añadir archivos**, then select music on your device. Set a genre for unclassified files in the library. In **Escuchar**, choose the genre and start playback. Turn on repeats only if you want the session to reuse songs. Use **Abrir enlace** for a saved service reference; that service handles its own playback.
+1. Open **Biblioteca → Añadir archivos** and select music on your device.
+2. Select a reference and fill missing artist or genre using **Guardar datos**. Edits affect Cauce only.
+3. In **Escuchar**, choose a genre and press **Reproducir**. **Todos** allows all local genres.
+4. Set artist spacing between zero and five songs. Allow repeats if you want the session to reuse songs.
 
-The compact view keeps transport controls close. Minimizing moves the app to the notification area; use its menu to restore or exit. Alt+Shift+C restores the window when Windows allows that shortcut registration. Closing the window exits and saves pending preferences.
+Changing genre starts a fresh in-memory session. **Siguiente** honors the same rules and explains when no candidate is eligible. Unheard songs are preferred, then the least recently selected; library order breaks ties. Missing artist metadata cannot establish artist spacing, so complete it for predictable sessions.
+
+To save a service reference, expand **Guardar un enlace de música** in **Biblioteca**, enter its title and HTTPS URL, and press **Guardar**. **Abrir enlace seleccionado** opens the service. Those references stay outside the local queue; Cauce does not stream remote music, authenticate subscriptions or query a service catalog.
+
+## Discreet playback and appearance
+
+**Compacto** switches to a small transport view; **Ampliar** restores the full interface. Minimizing hides the window in the notification area while playback can continue. Double-click the icon or choose **Abrir Cauce** to restore it. **Alt+Shift+C** also restores it when Windows permits registration. Closing the window or choosing **Salir** exits and attempts to save pending preferences.
+
+Choose **Sistema**, **Claro**, **Oscuro**, **Bosque** or **Alto contraste** in **Apariencia**. Reduced motion disables interaction animations; reduced transparency uses opaque surfaces. Tips are optional. Repeat the introduction from **Guía → Volver a ver la bienvenida**. See [interface actions](commands.md).
 
 ## Data and privacy
 
-Only references, small text metadata and preferences are saved under `%LOCALAPPDATA%\Cauce`. Schema-versioned JSON is atomically replaced, capped at 10,000 references and 16 MiB. Listening history is held in memory for the current session, not persisted. The player has no telemetry, ad identifiers, automatic error uploads, audio duplication or artwork cache.
+Only references, small text metadata and preferences are saved in `%LOCALAPPDATA%\Cauce\library.json`. Versioned JSON is atomically replaced and capped at 10,000 references and 16 MiB. History exists only during the current session. There is no telemetry, ad identifier, artwork cache, automatic report upload or audio duplication.
 
-Unreadable library files are preserved in at most three named recovery files, with a visible warning. A file from a newer schema is never overwritten. **Borrar datos locales** removes Cauce's library and those recovery files, without deleting music. Export includes file paths and service URLs; inspect it before sharing.
+Availability is checked against the filesystem. Moving a file makes its reference unavailable; restore the path or import the new location. Corrupt metadata is preserved in at most three named recovery files with a visible warning. Newer-schema data is not overwritten. When recovery slots are full, the original is preserved for investigation.
 
-Account identity is held only for the running process. There is no cloud synchronization in this preview. Provider access tokens, passwords, and private keys are not stored in the library. Signing into Cauce is separate from authorizing any music service.
+**Cuenta → Exportar mis datos** writes JSON to a chosen location. It includes personal paths and URLs; review it before sharing. JSON import is not implemented in the interface. **Restablecer datos locales** asks for confirmation, clears references/preferences/recovery files and local identity, and saves fresh defaults. Original audio and unrelated files stay intact.
+
+Account identity lasts only for the running process. Tokens and provider secrets are not stored in the library. Sign-in does not synchronize music/preferences, authorize a music service or create a persistent account session. Browser cookies are managed independently. Read [security and privacy](security.md).
 
 ## Support and bug reports
 
-Use **Soporte → Reportar un error**. Cauce opens a GitHub draft with app/Windows versions. It sends nothing automatically and attaches no logs or files. Review your report before submitting. Security reports follow [SECURITY.md](../SECURITY.md).
+Use **Soporte → Preparar reporte de un problema**. Cauce opens a [GitHub draft](https://github.com/ManuelPerilla/cauce/issues/new) with app/Windows versions and editable prompts. It submits nothing automatically and attaches no logs or files. Review screenshots and personal paths before sending. Sensitive vulnerabilities follow [SECURITY.md](../SECURITY.md); other problems are covered in [troubleshooting](troubleshooting.md).
 
 ## Build and verify
 
-Requires the .NET 10 SDK on Windows.
+Development requires Windows and the .NET 10 SDK. From the repository root:
 
 ```powershell
+./build/dev.ps1
 dotnet run --project tests/Cauce.Core.Tests -c Release
-dotnet build src/Cauce.Desktop -c Release
-dotnet run --project src/Cauce.Desktop
-./build/cauce.ps1
+dotnet run --project tests/Cauce.Auth.Tests -c Release
+dotnet run --project tests/Cauce.Desktop.Smoke -c Release -- artifacts/cauce-smoke
+./build/cauce.ps1 -Runtime win-x64
 ```
 
-The portable review package contains its Windows runtime and does not require administrator installation. The CI workflow only creates review artifacts; it does not publish a release or sign anything without signing credentials.
+The portable ZIP includes its runtime and needs no administrator installation. CI verifies the desktop and uploads review artifacts. The release workflow builds versioned x64/ARM64 ZIPs and prepares a draft for review. See [building and releasing](releasing.md).
+
+Synthetic core/authentication checks and rendered-interface smoke tests verify their stated boundaries. They do not establish real codec playback, live sign-in or performance on user hardware. A policy-blocked executable is not a passed test; preserve Windows protection.
 
 ## Architecture and resource budget
 
-`Cauce.Core` owns tracks, rules, candidate selection and bounded durable metadata. It has no WPF, network or OAuth dependency. `Cauce.Desktop` owns presentation and native audio adapters; the view model coordinates user actions. Authentication is an optional adapter that opens the system browser only when requested. The legacy terminal app is preserved during this migration.
+`Cauce.Core` owns models, import, queue selection and bounded metadata without WPF, network or OAuth dependencies. `Cauce.Desktop` owns presentation and native audio/account adapters. `MainViewModel` coordinates commands; one native decoder handles playback. Import runs away from the UI dispatcher, reads bounded MP3 metadata and avoids loading entire audio into memory.
 
-Glass is approximated with static translucent surfaces, frozen brushes and restrained highlights. Interaction animations are short, triggered by actual pointer/focus activity and disabled by reduced-motion settings. There are no looping decorative animations, web rendering processes or per-frame audio visualizers. Library items are virtualized. Progress updates run at one-second intervals while playing.
+Glass-inspired surfaces use static translucent resources, frozen brushes and restrained highlights. Button animations are brief, triggered by interaction and disabled by reduced motion. There are no looping visualizers or web rendering processes for music. Rows are virtualized, progress updates run once per second during playback and preference saves are debounced. Read [architecture](architecture.md).
 
-Memory and CPU claims require measurements on representative hardware and libraries; an attractive mockup is not a performance result. Before release, profile startup, a 10,000-entry library, ten minutes of playback, minimized playback and repeated theme/view changes. Check that memory stabilizes rather than merely reporting a small startup number.
+CPU/memory claims need measurements on representative devices: startup, a 10,000-entry library, sustained/minimized playback and repeated theme/view changes. Check memory stabilization across use, not only a small startup number.
 
 ## Signing readiness
 
-The desktop has explicit product/version metadata, an `asInvoker` manifest and no self-update/downloading executable behavior. `build/cauce.ps1` can sign Cauce binaries using an already installed certificate, timestamp the signature, verify it and then package checksums. No certificate or signing secret belongs in source control.
+The desktop has explicit Cauce product/version metadata, an `asInvoker` manifest and no self-update or downloaded-executable behavior. `build/cauce.ps1` can use an installed code-signing certificate, timestamp/verify binary signatures and package checksums. No signing secret belongs in source control.
 
-Public signing remains an external release prerequisite: a valid certificate, an approved SignPath Foundation project, or a Microsoft Store/MSIX submission. The existing NgMusic signing policy is not evidence that Cauce is already signed. Store packaging and submission are future work; do not describe this ZIP as a Store package. See [Microsoft signing guidance](https://learn.microsoft.com/en-us/windows/msix/package/signing-package-overview) and [SignPath requirements](https://signpath.org/terms.html).
+The preview is unsigned. A valid certificate or approved signing route remains necessary before signed public distribution. SignPath Foundation approval/configuration is not established; Store/MSIX packaging is future work. There is no `LICENSE` file, so the owner must choose a license before pursuing a route that requires it. These source changes do not grant a license.
 
-The repository does not currently contain a LICENSE file. The owner must choose an appropriate open-source license before pursuing the SignPath Foundation route; this change does not grant or invent a license for their work. Signing requests under the existing policy still require the maintainer's explicit approval.
+Signing requests require explicit human approval under the [code signing policy](code-signing-policy.md). A checksum or CI success is not a publisher signature. The portable ZIP is not a signed installer or Store package.
 
-## Boundaries before a public release
+## Public-release boundaries
 
-Real Google/Apple/Facebook/Microsoft login requires configured provider accounts and an HTTPS identity service. Live sign-ins, expiry, logout and error paths must be tested against those real registrations. Streaming integrations, cloud sync, ID3v2/FLAC tagging, verified catalog equivalence and a signed installer are not implemented by this foundation. Preserve this distinction in product copy and release notes.
-
+Real Google/Apple/Facebook/Microsoft sign-in needs registrations, a trusted HTTPS broker and live checks of consent, callbacks, cancellation, logout, key rotation and error paths. External links stay external. Integrated catalogs, cloud sync, ID3v2/FLAC tagging, verified catalog equivalence and signed installer delivery are not included. Keep these limits explicit in product descriptions and release notes.

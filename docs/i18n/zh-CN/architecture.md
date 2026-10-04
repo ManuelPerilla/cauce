@@ -1,14 +1,11 @@
 # 架构
 
-NgMusic 将终端、音乐提供者、认证和播放器解耦。
+`Cauce.Core` 负责曲目、导入、确定性队列规则和有界 JSON 存储，不依赖 WPF、网络或身份验证。队列按可用性和曲风筛选，控制重复及艺人间隔；无法继续时解释原因，不会自行放宽规则。
 
-- `MusicShell`：命令、解析、队列与历史。
-- `YouTubeProvider`：YouTube Data API v3 搜索。
-- `GoogleOAuthService`：OAuth 2.0 + PKCE。
-- `WindowsCredentialTokenStore`：Credential Manager token 存储。
-- `IPlayer`：播放抽象。
-- `YouTubeIframePlayer`：可见 IFrame 播放器和 localhost 控制桥。
+`Cauce.Desktop` 负责 WPF 界面、视图模型、主题、Windows 音频适配器和可选身份客户端。本地文件与外部链接是不同来源。导入保存路径和少量元数据，不保存音频副本。
 
-未来可以替换成 WebView2，而不需要重写 shell。
+半透明表面是静态的，短动画由交互触发。曲库列表采用虚拟化，播放进度每秒更新一次。没有持续运行的装饰动画或嵌入式浏览器。
 
-x64、ARM64、x86 分别独立构建，WiX 的中间目录也按架构隔离，避免交叉复用。
+`Cauce.Core.Tests`、`Cauce.Auth.Tests` 和 `Cauce.Desktop.Smoke` 分别验证规则、身份验证边界及界面状态。CI 截图不能替代在实际设备和代表性曲库上的资源测量。
+
+[主页](../../../README.zh-CN.md) · [英文指南](../../architecture.md)

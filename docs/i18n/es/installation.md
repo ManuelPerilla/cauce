@@ -1,28 +1,20 @@
-# Instalación
+# Instalación de Cauce
 
-NgMusic ofrece Setup.exe, MSI y ZIP portable.
+La vista previa 0.6.0-alpha.1 se distribuye como ZIP portable para Windows x64 o ARM64. Está **sin firma** mientras se completan los requisitos externos de firma. Usa el paquete que corresponda a la arquitectura de tu equipo.
 
-## Setup.exe
+1. Descarga el ZIP de una publicación oficial y comprueba su SHA-256.
+2. Extrae el paquete en una carpeta donde puedas escribir.
+3. Abre `Cauce.exe`. El paquete incluye su runtime de .NET.
+4. En **Biblioteca → Añadir archivos**, selecciona MP3, WAV o M4A. Completa su género y escucha una sesión desde **Escuchar**.
 
-Es la opción recomendada. Configura OAuth antes de instalar y permite crear accesos directos.
+No requiere cuenta, permisos de administrador ni modificaciones de PATH. Los datos se guardan en `%LOCALAPPDATA%\Cauce`, independientemente de la carpeta del programa. Para quitar la aplicación, cierra Cauce y elimina su carpeta; **Borrar datos locales** elimina la biblioteca y sus archivos de recuperación sin borrar música.
 
-## MSI interactivo
+Desde el código, necesitas Windows y el SDK de .NET 10:
 
-Al hacer doble clic:
+```powershell
+dotnet run --project src/Cauce.Desktop
+```
 
-1. instala NgMusic en Program Files;
-2. añade NgMusic al PATH;
-3. abre el configurador al terminar;
-4. permite guardar el Client ID y crear accesos directos.
+La interfaz actual está en español; estas guías traducen las instrucciones, no la aplicación.
 
-El resultado funcional queda alineado con Setup.exe.
-
-## MSI silencioso
-
-Con `/qn` no abre interfaz ni configurador. Esto es intencional para GPO, Intune, SCCM y scripts.
-
-Después puede ejecutarse `ngmusic setup` o usarse configuración por variables de entorno.
-
-## Portable
-
-No instala nada. El primer `login` puede lanzar el asistente de configuración.
+[Inicio](../../../README.es.md) · [Guía en inglés](../../installation.md)

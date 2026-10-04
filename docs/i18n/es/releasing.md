@@ -1,32 +1,23 @@
-# Builds y releases
+# Compilación y publicaciones
 
-## Requisitos de mantenedor
-
-- Windows o runner Windows de GitHub Actions.
-- .NET 10 SDK.
-- Acceso de red para restore.
-- WiX Toolset SDK.
-
-## Build local
+Necesitas Windows y el SDK de .NET 10. Desde la raíz:
 
 ```powershell
-.\build\release.ps1 -Version 0.2.0
+dotnet run --project tests/Cauce.Core.Tests -c Release
+dotnet run --project tests/Cauce.Auth.Tests -c Release
+dotnet build src/Cauce.Desktop -c Release
+dotnet run --project tests/Cauce.Desktop.Smoke -c Release -- artifacts/cauce-smoke
+./build/cauce.ps1 -Runtime win-x64
+./build/cauce.ps1 -Runtime win-arm64
+./build/release.ps1 -Version 0.6.0-alpha.1
 ```
 
-Genera MSI y ZIP portable para x64, ARM64 y x86.
+Las suites verifican biblioteca, cola, identidad y estados WPF. Las pruebas sintéticas no validan proveedores de cuentas reales ni garantizan rendimiento en otros equipos.
 
-Las releases usan self-contained, single-file, ReadyToRun, sin símbolos debug y sin trimming por ahora.
+Los scripts preparan ZIPs portables con runtime y checksums. La vista previa es sin firma salvo que se use un certificado autorizado y se verifique la firma. No hay instalador ni paquete de Store.
 
-## Checklist
+`build/cauce.ps1` admite `-Version` y escribe en `artifacts/cauce/`; `build/release.ps1` usa x64 y ARM64 por defecto y reúne los ZIPs y `SHA256SUMS.txt` en `artifacts/release/`.
 
-1. Revisar código y scripts de build.
-2. Verificar versión.
-3. Compilar todas las arquitecturas.
-4. Verificar que los artefactos por arquitectura sean distintos.
-5. Generar SHA-256.
-6. Firmar cuando el servicio esté disponible.
-7. Publicar Release.
-8. Verificar enlaces, firmas y hashes.
-9. Hacer smoke test.
+`.github/workflows/cauce.yml` comprueba Cauce y conserva artefactos de revisión. `release.yml`, iniciado manualmente o con una etiqueta de versión, prepara paquetes y crea una publicación **en borrador**. Revisa versión, arquitectura, checksums, resultados y notas antes de publicar. Las solicitudes de firma siguen la [política de aprobación](code-signing-policy.md).
 
-Los binarios se publican como assets de GitHub Releases, no se comitean al repositorio.
+[Inicio](../../../README.es.md) · [Guía en inglés](../../releasing.md)

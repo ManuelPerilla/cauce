@@ -1,17 +1,11 @@
-# Configuration और Google OAuth
+# प्राथमिकताएँ और खाते
 
-`login` चलाएँ। Client ID missing होने पर NgMusic setup wizard automatically खोलता है।
+**Apariencia** में Sistema, Claro, Oscuro, Bosque और Alto contraste थीम हैं। गति और पारदर्शिता कम कर सकते हैं। **Escuchar** में genre, कलाकारों के बीच अंतर और गाने दोहराने का विकल्प चुनें। Genre बदलने पर नया सुनने का सत्र शुरू होता है।
 
-Google OAuth **Desktop app** Client ID paste करने के बाद यह यहाँ save होता है:
+संदर्भ, मेटाडेटा और प्राथमिकताएँ `%LOCALAPPDATA%\Cauce` में रहती हैं: अधिकतम 10,000 संदर्भ और 16 MiB। ऑडियो न कॉपी किया जाता है, न बदला जाता है। सुनने का इतिहास केवल वर्तमान सत्र में रहता है। निर्यात में फ़ाइल पथ और URL होते हैं; साझा करने से पहले जाँचें।
 
-`%LOCALAPPDATA%\NgMusic\config.json`
+खाता वैकल्पिक है। वितरक `Cauce.exe` के पास सार्वजनिक `auth.json` रखकर भरोसेमंद HTTPS OIDC broker के जरिए Google, Apple, Facebook और Microsoft जोड़ सकता है। वास्तविक कॉन्फ़िगरेशन के बिना साइन-इन बंद रहता है। सिस्टम ब्राउज़र में Authorization Code और PKCE का उपयोग होता है; टोकन या गुप्त कुंजियाँ सहेजी नहीं जातीं। खाता लाइब्रेरी सिंक या संगीत-सेवा की अनुमति नहीं देता।
 
-OAuth tokens JSON में नहीं, Windows Credential Manager में store होते हैं।
+[खातों की विस्तृत गाइड](../../cauce-accounts.md) में broker पंजीकरण, callback और वास्तविक सेवाओं के साथ जाँच का विवरण है। स्थानीय संगीत के लिए यह कॉन्फ़िगरेशन आवश्यक नहीं है।
 
-- `setup`: Client ID configure/replace
-- `config show`: status
-- `config path`: config path
-- `config reset`: local config delete
-- `logout`: OAuth token delete
-
-Environment variables supported हैं और local config से higher priority रखते हैं।
+[मुख्य पृष्ठ](../../../README.hi.md) · [अंग्रेज़ी गाइड](../../configuration.md)

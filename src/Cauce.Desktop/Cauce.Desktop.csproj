@@ -10,9 +10,6 @@
     <RootNamespace>Cauce.Desktop</RootNamespace>
     <Product>Cauce</Product>
     <Company>Cauce</Company>
-    <Version>0.6.0-alpha.1</Version>
-    <VersionPrefix>0.6.0</VersionPrefix>
-    <VersionSuffix>alpha.1</VersionSuffix>
     <Description>Tu biblioteca de música, con calma. Reproductor nativo para Windows.</Description>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets/cauce.ico</ApplicationIcon>

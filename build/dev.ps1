@@ -1,13 +1,8 @@
 [CmdletBinding()]
-param()
+param([string]$Dotnet = 'dotnet')
 
-$ErrorActionPreference = "Stop"
-$Root = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
-$Project = Join-Path $Root "src\NgMusic\NgMusic.csproj"
-
-if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
-    throw "The .NET 10 SDK is required for development. Releases themselves are self-contained."
-}
-
-& dotnet run --project $Project
-exit $LASTEXITCODE
+$ErrorActionPreference = 'Stop'
+Set-StrictMode -Version Latest
+$repository = Split-Path $PSScriptRoot -Parent
+& $Dotnet run --project (Join-Path $repository 'src/Cauce.Desktop/Cauce.Desktop.csproj')
+if ($LASTEXITCODE -ne 0) { throw 'Cauce development run failed.' }

@@ -1,18 +1,17 @@
-# Code signing policy
+# कोड-साइनिंग नीति
 
-SignPath Foundation approval अभी pending है।
+Cauce 0.6.0-alpha.1 **बिना डिजिटल हस्ताक्षर** है। SignPath Foundation की स्वीकृति लंबित है और रिपॉज़िटरी में अभी लाइसेंस नहीं है। SignPath Foundation प्रक्रिया से पहले मालिक को लाइसेंस चुनना होगा। बिना हस्ताक्षर के पैकेज को हस्ताक्षरित नहीं बताया जाएगा।
 
-Signing active होने पर:
+स्वीकृति और हस्ताक्षर सक्रिय होने पर यह श्रेय लागू होगा:
 
 **Free code signing provided by SignPath.io, certificate by SignPath Foundation.**
 
-केवल official `ManuelPerilla/cauce` repository और approved automated pipeline से बने artifacts sign किए जा सकते हैं।
+केवल [ManuelPerilla/cauce](https://github.com/ManuelPerilla/cauce) और उसकी रखरखाव वाली स्क्रिप्ट से बने आर्टिफैक्ट पात्र हैं। हस्ताक्षर पहचान दूसरे प्रोजेक्ट या अप्रमाणित मूल के बाइनरी के लिए नहीं है।
 
-Current roles:
-- Committer: ManuelPerilla
-- Reviewer: ManuelPerilla
-- Signing approver: ManuelPerilla
+ManuelPerilla committer, reviewer और signing approver हैं। बाहरी योगदान मिलाने से पहले समीक्षा आवश्यक है। **हर हस्ताक्षर अनुरोध को जिम्मेदार व्यक्ति की स्पष्ट मानवीय मंज़ूरी चाहिए।** रिपॉज़िटरी और साइनिंग सेवा के लिए MFA आवश्यक है। निजी कुंजियाँ और क्रेडेंशियल कोड, लॉग या आर्टिफैक्ट में नहीं रखे जाते।
 
-External PRs maintainer review के बाद merge होंगे। हर signing request पर explicit human approval जरूरी है।
+आधिकारिक रिलीज़ से पहले स्रोत, मेटाडेटा, बिल्ड और timestamp सहित हस्ताक्षर की जाँच होती है। पोर्टेबल ZIP PATH नहीं बदलता और एडमिन अधिकार नहीं माँगता; [स्थापना](installation.md) और [सुरक्षा](security.md) देखें।
 
-Repository या signing access वाले accounts पर MFA आवश्यक है। Private signing keys Git, logs या artifacts में नहीं जानी चाहिए।
+घटना होने पर हस्ताक्षर और रिलीज़ रोकें, प्रभावित संस्करण पहचानें, साक्ष्य सुरक्षित रखें, जाँच करें और निरस्तीकरण तथा सुधार-सूचना का समन्वय करें।
+
+[मुख्य पृष्ठ](../../../README.hi.md) · [अंग्रेज़ी गाइड](../../code-signing-policy.md)

@@ -1,44 +1,40 @@
-# Command reference
+# Cauce interface actions
 
-[Documentation home](../README.md)
+[Documentation](README.md) · [Detailed guide](cauce.md)
 
-| Command | Description |
+Cauce is controlled through its desktop interface. The current preview has no terminal command interface. Labels below match the Spanish UI.
+
+| Section or control | Action |
 | --- | --- |
-| `setup`, `configure` | Run interactive Google OAuth configuration |
-| `config show` | Show configuration source/status |
-| `config path` | Show local configuration file path |
-| `config reset` | Remove local JSON configuration |
-| `login` | Authenticate with Google; runs setup automatically if needed |
-| `logout` | Remove saved OAuth token |
-| `whoami` | Show current authenticated account |
-| `search <query>`, `s <query>` | Search YouTube music videos |
-| `play <n>`, `p <n>` | Play result number `n` |
-| `pause` | Pause playback |
-| `resume` | Resume playback |
-| `stop` | Stop playback |
-| `next`, `n` | Play next queued track |
-| `prev`, `previous` | Play previous track from history |
-| `seek <seconds>` | Seek to an absolute position |
-| `seek <mm:ss>` | Seek using minute/second notation |
-| `volume <0-100>`, `vol <0-100>` | Set player volume |
-| `queue`, `q` | Show current queue |
-| `queue add <n>` | Add search result `n` to queue |
-| `queue clear` | Clear queue |
-| `queue play` | Play next queued item |
-| `now`, `np` | Show current track |
-| `clear`, `cls` | Clear terminal |
-| `exit`, `quit` | Exit NgMusic |
+| **Escuchar** | Choose a genre, allow or prevent repeats and set artist spacing from zero to five songs |
+| **Reproducir / pausar** | Start the eligible local song, pause it or resume it |
+| **Siguiente** | Select the next eligible local file using the current session rules |
+| **Vol.** | Adjust playback volume for the running process |
+| **Biblioteca → Añadir archivos** | Add MP3, WAV and M4A references without copying audio |
+| **Biblioteca → Guardar datos** | Save edited artist and genre in Cauce metadata; the audio file is untouched |
+| **Biblioteca → Abrir enlace seleccionado** | Open a saved HTTPS reference in its own service |
+| **Biblioteca → Quitar** | Remove the selected reference without deleting its music file |
+| **Compacto** | Switch between the full interface and compact transport view |
+| **Apariencia** | Choose a theme, reduce motion or transparency, and toggle optional tips |
+| **Guía** | Read common questions and repeat the introduction |
+| **Cuenta** | Use configured sign-in, sign out, export or reset local data |
+| **Soporte** | Prepare a GitHub report draft for review before submitting |
 
-## First login
+Changing the genre starts a new in-memory session. A queue with no eligible candidates explains the blocking rule; Cauce does not silently relax it or stream a service link. The progress bar displays position; seeking and a previous-track transport control are not implemented in this preview.
 
-```text
-PS Music:\> login
+## Notification area and shortcut
 
-Google OAuth setup
-------------------
- [1] Paste Google OAuth Client ID
- [2] Open step-by-step setup instructions
- [3] Cancel
+Minimizing hides the window in the Windows notification area while playback can continue. Double-click the Cauce icon or choose **Abrir Cauce** to restore it. Its menu also offers **Reproducir / pausar**, **Siguiente** and **Salir**.
+
+**Alt+Shift+C** restores the window when Windows permits Cauce to register it. If another application owns the shortcut, use the tray icon instead. Closing the main window or choosing **Salir** exits and attempts to save pending preferences.
+
+## Development entry points
+
+```powershell
+./build/dev.ps1
+./build/cauce.ps1 -Runtime win-x64
+./build/release.ps1 -Version 0.6.0-alpha.1 -Architectures x64,arm64
 ```
 
-After the Client ID has been saved, future `login` commands skip the wizard unless configuration is reset or replaced.
+These are repository scripts, not music-player commands. Outputs and verification requirements are documented in [building and releasing](releasing.md).
+

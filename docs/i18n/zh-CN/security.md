@@ -1,15 +1,13 @@
 # 安全与隐私
 
-NgMusic 是桌面客户端，没有项目自营的账户或遥测后端。
+Cauce 没有遥测、自动错误上传、封面缓存或音频复制。曲库引用和偏好保存在 `%LOCALAPPDATA%\Cauce`，上限为 10,000 条、16 MiB。会话历史和账户身份只保存在内存中。
 
-它可能处理搜索词、OAuth token、Google 基本资料以及 YouTube 视频元数据。
+无法读取的曲库最多保留三个恢复文件。较新版本的存储格式不会被覆盖。**Borrar datos locales** 删除曲库和恢复文件，不会删除音乐。
 
-项目不会主动收集第一方分析、广告标识或遥测。
+可选 OIDC 使用系统浏览器、PKCE、state 和 nonce，要求 HTTPS，并验证签名、签发者、受众和有效期。提供商秘密留在身份代理中。Cauce 不保存令牌，也不提供云同步。
 
-Google 登录、token 刷新、YouTube 搜索和播放会产生网络请求。OAuth 和播放器本地服务只监听 `127.0.0.1`。
+外部链接所打开的服务适用其自身条款。错误报告草稿不会自动附加日志或文件。导出包含路径和 URL，分享前请移除私人信息。
 
-OAuth token 保存在 Windows Credential Manager 的 `NgMusic.GoogleOAuth`。
+漏洞报告请遵循 [SECURITY.md](../../../SECURITY.md)。当前预览版未签名；参阅[代码签名政策](code-signing-policy.md)。
 
-NgMusic 不会向项目自营服务器传输数据，因为项目没有此类后端。用户使用登录、搜索或播放时，数据会传递给 Google/YouTube。
-
-敏感安全问题请通过私有渠道联系维护者，不要在公开 issue 中发布凭据或可利用细节。
+[主页](../../../README.zh-CN.md) · [英文指南](../../security.md)

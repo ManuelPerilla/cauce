@@ -1,31 +1,11 @@
-# Configuración y OAuth de Google
+# Preferencias y cuentas
 
-La forma recomendada ya no requiere variables de entorno.
+En **Apariencia**, elige Sistema, Claro, Oscuro, Bosque o Alto contraste. Puedes reducir movimiento y transparencia. En **Escuchar**, selecciona género, separación entre artistas y si permites repeticiones. Cambiar de género inicia una nueva sesión.
 
-Ejecuta:
+Cauce guarda referencias, metadatos y preferencias en `%LOCALAPPDATA%\Cauce`: como máximo 10.000 referencias y 16 MiB. Nunca copia ni modifica el audio. El historial de escucha vive únicamente durante la sesión. **Exportar datos** incluye rutas y URLs; revísalo antes de compartirlo.
 
-```text
-PS Music:\> login
-```
+Las cuentas son opcionales. El distribuidor puede instalar un `auth.json` público junto a `Cauce.exe` para conectar un broker OIDC confiable por HTTPS con Google, Apple, Facebook y Microsoft. Sin configuración real, el acceso está deshabilitado. El cliente usa el navegador del sistema y Authorization Code con PKCE; no almacena tokens ni secretos. La cuenta no sincroniza biblioteca ni autoriza servicios musicales.
 
-Si falta el Client ID, NgMusic abre el asistente automáticamente. Pega el OAuth Client ID de una aplicación Google de tipo **Desktop app**.
+La [guía de cuentas](../../cauce-accounts.md) detalla el registro del broker, los callbacks y las pruebas reales necesarias. El usuario puede escuchar sus archivos sin configurar ningún proveedor.
 
-El Client ID se guarda en:
-
-```text
-%LOCALAPPDATA%\NgMusic\config.json
-```
-
-El Client ID no es un secreto. Los tokens OAuth se guardan por separado en Windows Credential Manager.
-
-## Comandos
-
-- `setup`: configurar o reemplazar el Client ID local.
-- `config show`: mostrar estado y origen.
-- `config path`: mostrar ubicación del JSON.
-- `config reset`: eliminar configuración local.
-- `logout`: eliminar el token OAuth guardado.
-
-Las variables `NGMUSIC_GOOGLE_CLIENT_ID`, `NGMUSIC_GOOGLE_CLIENT_SECRET` y `NGMUSIC_YOUTUBE_API_KEY` siguen soportadas. El Client ID de entorno tiene prioridad sobre el guardado localmente.
-
-NgMusic nunca solicita ni almacena tu contraseña de Google.
+[Inicio](../../../README.es.md) · [Guía en inglés](../../configuration.md)

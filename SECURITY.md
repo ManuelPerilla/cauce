@@ -1,32 +1,25 @@
-# Security policy
+# Cauce security policy
 
 ## Supported versions
 
-NgMusic is an early-stage project. Security fixes are applied to the current development branch and newest published release when practical.
+Cauce is an early-stage desktop preview, currently `0.6.0-alpha.1`. Security fixes target the maintained development code and current preview. Alpha packages have no long-term support commitment.
 
 ## Reporting a vulnerability
 
-Please do not publish credentials, access tokens, signing material, or exploitable vulnerability details in a public issue.
+Do not post credentials, authorization codes, access tokens, signing material or exploitable vulnerability details in a public issue. Contact the [repository maintainer](https://github.com/ManuelPerilla) privately using an available GitHub contact mechanism. A dedicated private advisory channel is not currently configured.
 
-For security-sensitive reports, contact the repository owner privately through an appropriate GitHub contact mechanism. A dedicated private advisory workflow may be added later.
+Include the affected version, Windows architecture, reproduction steps, security impact and any proposed mitigation. Remove secrets and personal paths from supporting material. Ordinary playback or interface bugs can go to [GitHub Issues](https://github.com/ManuelPerilla/cauce/issues).
 
-Include, when possible:
+## Release integrity
 
-- affected version;
-- Windows architecture;
-- reproduction steps;
-- security impact;
-- logs with secrets removed;
-- suggested mitigation, if known.
+The maintained Windows workflows verify Cauce and produce portable ZIPs with SHA-256 checksums. The release workflow delivers a **draft** for maintainer review. A checksum detects a changed download when compared with a trusted published value; it is not a publisher signature.
 
-## Supply-chain security
+Current preview packages are unsigned. Public signing needs a real certificate or approved signing service, reviewable build provenance and human approval under [the signing policy](docs/code-signing-policy.md). The repository has no `LICENSE` file, and approval for the SignPath Foundation route is not established.
 
-Official release artifacts are built through the repository's GitHub Actions workflow and accompanied by SHA-256 checksums.
+Provider secrets, signing keys and private credentials must never enter source control, build logs or downloadable artifacts. Optional `auth.json` contains only public client configuration; placing secrets in it is unsupported.
 
-Code signing is governed by [docs/code-signing-policy.md](docs/code-signing-policy.md). SignPath Foundation approval is currently pending.
+## Privacy and trust boundaries
 
-Signing keys, OAuth credentials, and other private material must never be stored in the repository or release artifacts.
+Local music playback needs no account. Library metadata stays under `%LOCALAPPDATA%\Cauce`; audio is referenced rather than copied. Optional sign-in opens the system browser and uses a broker over HTTPS. External music links open in their own service and do not become in-app streams.
 
-## Privacy
-
-See [docs/security.md](docs/security.md) for NgMusic's privacy and data-handling model.
+See [security and privacy](docs/security.md), [account configuration](docs/cauce-accounts.md) and [architecture](docs/architecture.md) for the implemented boundaries.

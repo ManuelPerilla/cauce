@@ -1,15 +1,11 @@
 # Arquitectura
 
-NgMusic separa la experiencia de terminal, proveedor musical, autenticación y reproductor mediante interfaces.
+`Cauce.Core` contiene las pistas, el importador, las reglas deterministas de cola y el almacenamiento JSON acotado. No depende de WPF, redes ni autenticación. La cola filtra disponibilidad y género, controla repeticiones y separa artistas; informa por qué se detiene en lugar de relajar reglas automáticamente.
 
-- `MusicShell`: comandos, parser, cola e historial.
-- `IMusicProvider`: contrato para búsquedas musicales.
-- `YouTubeProvider`: usa YouTube Data API v3.
-- `IGoogleAuthService`: autenticación OAuth 2.0 + PKCE.
-- `WindowsCredentialTokenStore`: guarda tokens en Credential Manager.
-- `IPlayer`: contrato de reproducción.
-- `YouTubeIframePlayer`: player visible con IFrame API y puente localhost.
+`Cauce.Desktop` contiene la interfaz WPF, el modelo de vista, los temas, los adaptadores de audio de Windows y el cliente opcional de identidad. Los archivos locales y enlaces externos son fuentes distintas. Importar música guarda rutas y pequeños metadatos, no archivos de audio.
 
-La separación permite sustituir el reproductor actual por WebView2 sin rediseñar el shell.
+Las superficies translúcidas son estáticas; las animaciones breves responden a la interacción. La lista está virtualizada y el progreso se actualiza cada segundo durante la reproducción. No hay visualizaciones decorativas continuas ni un navegador embebido.
 
-Cada arquitectura (x64, ARM64, x86) genera un payload independiente y de ahí salen MSI y ZIP portable. Los intermediates de WiX están aislados por arquitectura para impedir reutilización cruzada accidental.
+`Cauce.Core.Tests`, `Cauce.Auth.Tests` y `Cauce.Desktop.Smoke` comprueban reglas, límites de autenticación y estados de interfaz. Las capturas de CI no sustituyen mediciones de consumo con bibliotecas y equipos reales.
+
+[Inicio](../../../README.es.md) · [Guía en inglés](../../architecture.md)

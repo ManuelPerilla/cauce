@@ -2,54 +2,59 @@
 
 **Tu música, sin perder el hilo.**
 
-Native Windows music player with a quiet, glass-inspired interface, genre-focused listening sessions, and a library that distinguishes playable files from service links. Cauce is the next direction for NgMusic.
+A native Windows music player built with C#/.NET 10 and WPF. Cauce keeps listening sessions within the genre you choose, explains its queue decisions and distinguishes playable local files from external service links.
 
-> **0.6.0-alpha.1 — development preview.** The desktop builds and has automated checks. Public signing and real social-provider login require external setup. This is not a finished streaming service.
+> **0.6.0-alpha.1 — development preview.** The portable preview is unsigned. Account sign-in requires an identity broker and real provider registrations. Integrated streaming and cloud synchronization are not available.
 
-[Español](README.es.md) · [User guide and architecture](docs/cauce.md) · [Accounts](docs/cauce-accounts.md) · [Legacy NgMusic](docs/ngmusic-legacy.md)
+[Español](README.es.md) · [简体中文](README.zh-CN.md) · [हिन्दी](README.hi.md) · [Français](README.fr.md) · [Documentation](docs/README.md)
 
-## The experience
+## What Cauce does
 
-- Add local MP3, WAV and M4A without copying your audio. Edit library metadata without modifying files.
-- Keep a session within a genre, control artist spacing and repetition, and see why the queue can or cannot continue.
-- Save HTTPS references to music services with honest availability: a link is not a playable stream.
-- Switch between a full library and a compact player; use tray controls and an optional global shortcut.
-- Choose system, light, dark, forest or high-contrast themes. Reduce movement and transparency independently.
-- Learn through a repeatable introduction, optional tips and a built-in guide. Review bug reports before sending them.
-- Keep a bounded local library with export/reset controls and no listening-history persistence or telemetry.
+- Plays local MP3, WAV and M4A using Windows media support. Importing stores references; it never copies or edits your audio.
+- Applies deterministic genre, artist-spacing and repeat rules. If no song meets them, the player explains why instead of silently changing the session.
+- Saves HTTPS service links separately. Opening a link delegates playback to that service; it does not add a stream to Cauce's local queue.
+- Offers a compact player, notification-area controls and the optional **Alt+Shift+C** restore shortcut.
+- Includes system, light, dark, forest and high-contrast themes, reduced motion and opaque surfaces.
+- Provides a repeatable introduction, optional tips, a guide and bug-report drafts you review before sending.
+- Stores bounded metadata and preferences locally, with export and reset controls. There is no persistent listening history or telemetry.
 
-## Run
+## Run and verify
 
-On Windows with the .NET 10 SDK:
+Development requires Windows and the .NET 10 SDK. From the repository root:
 
 ```powershell
-dotnet run --project src/Cauce.Desktop
+./build/dev.ps1
 ```
 
-The library is stored in %LOCALAPPDATA%\\Cauce. Listening to local files does not require an account or administrator rights.
-
-## Verify and package
+Run the checks and create an unsigned, self-contained review ZIP:
 
 ```powershell
 dotnet run --project tests/Cauce.Core.Tests -c Release
 dotnet run --project tests/Cauce.Auth.Tests -c Release
 dotnet run --project tests/Cauce.Desktop.Smoke -c Release -- artifacts/cauce-smoke
-./build/cauce.ps1
+./build/cauce.ps1 -Runtime win-x64
 ```
 
-The package is explicitly unsigned unless a real signing certificate is supplied. CI produces review artifacts, not public releases. Read the [signing and verification boundaries](docs/cauce.md#signing-readiness).
+The portable package includes its .NET runtime. Extract the complete ZIP and run `Cauce.exe`; no account or administrator installation is needed for local playback. See [installation](docs/installation.md) and [building and releasing](docs/releasing.md).
 
-## Accounts and sources
+## Accounts and data
 
-Google, Apple, Facebook and Microsoft sign-in are wired through a configurable OIDC identity service. Buttons remain disabled until that service and real provider registrations are configured. The native client uses the system browser, PKCE, state/nonce and signed-token validation. No provider secret is embedded in the executable.
+The library lives in `%LOCALAPPDATA%\Cauce`. Cauce stores file paths, service URLs, small text metadata and preferences, capped at 10,000 references and 16 MiB. Audio remains in its original location. Exports contain paths and URLs, so review them before sharing.
 
-The account is optional and separate from music-source authorization. There is no cloud sync or integrated commercial streaming catalog in this preview. See [configuration and prerequisites](docs/cauce-accounts.md).
+Google, Apple, Facebook and Microsoft buttons use an optional configurable OIDC identity broker. They remain disabled without valid configuration; provider credentials belong on the broker, never inside the Windows client. The account identifies you only during the running process and does not synchronize your library or authorize a music subscription. Read [accounts and prerequisites](docs/cauce-accounts.md) and [security and privacy](docs/security.md).
 
 ## Project structure
 
-- src/Cauce.Core — bounded library persistence, metadata, import and deterministic session rules; no UI/network dependencies.
-- src/Cauce.Desktop — WPF presentation, native playback, themes, tray and optional authentication.
-- tests/Cauce.* — queue/storage, authentication-boundary and rendered-interface checks.
-- src/NgMusic* — original terminal player retained during migration.
+| Path | Responsibility |
+| --- | --- |
+| `src/Cauce.Core` | Library models, bounded persistence, reference import and deterministic queue rules |
+| `src/Cauce.Desktop` | WPF interface, native audio, themes, tray controls and optional account adapter |
+| `tests/Cauce.Core.Tests` | Queue, import and storage checks |
+| `tests/Cauce.Auth.Tests` | Identity and callback checks using synthetic data |
+| `tests/Cauce.Desktop.Smoke` | Rendered interface, bindings, themes and preference checks |
+| `build` | Development, portable review and release packaging |
+| `.github/workflows` | Windows verification and draft release delivery |
 
-For legacy YouTube terminal commands and installers, see [the preserved NgMusic guide](docs/ngmusic-legacy.md). Earlier translated guides refer to that version.
+The `archive/` directory contains reference code excluded from the maintained builds and distributed packages.
+
+Start with the [detailed guide](docs/cauce.md), [contribution guide](CONTRIBUTING.md) or [security policy](SECURITY.md). The repository currently has no `LICENSE` file; public access to source does not imply an open-source license.

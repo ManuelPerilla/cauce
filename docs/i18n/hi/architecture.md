@@ -1,14 +1,11 @@
-# Architecture
+# संरचना
 
-NgMusic shell, provider, authentication और player को interfaces से अलग रखता है।
+`Cauce.Core` में गीत, आयात, निश्चित नियमों वाली प्लेलिस्ट कतार और सीमित JSON संग्रह हैं। यह WPF, नेटवर्क या प्रमाणीकरण पर निर्भर नहीं है। कतार उपलब्धता और genre चुनती है, दोहराव नियंत्रित करती है और कलाकारों के बीच अंतर रखती है। रुकने पर कारण बताया जाता है; नियम अपने आप ढीले नहीं होते।
 
-- `MusicShell`: commands, parser, queue/history।
-- `YouTubeProvider`: YouTube Data API v3।
-- `GoogleOAuthService`: OAuth 2.0 + PKCE।
-- `WindowsCredentialTokenStore`: token storage।
-- `IPlayer`: playback abstraction।
-- `YouTubeIframePlayer`: visible IFrame player और localhost bridge।
+`Cauce.Desktop` में WPF इंटरफ़ेस, view model, थीम, Windows ऑडियो एडाप्टर और वैकल्पिक पहचान क्लाइंट हैं। स्थानीय फ़ाइलें और बाहरी लिंक अलग स्रोत हैं। आयात केवल पथ और छोटा मेटाडेटा सहेजता है, ऑडियो नहीं।
 
-इस separation से future WebView2 player बिना shell redesign के जोड़ा जा सकता है।
+पारदर्शी सतहें स्थिर हैं। छोटे एनिमेशन उपयोगकर्ता की क्रिया पर चलते हैं। सूची वर्चुअलाइज़ की गई है और बजने के दौरान प्रगति हर सेकंड बदलती है। लगातार सजावटी एनिमेशन या एम्बेडेड ब्राउज़र नहीं हैं।
 
-x64, ARM64 और x86 स्वतंत्र रूप से build होते हैं और WiX intermediate directories भी architecture के अनुसार अलग हैं।
+`Cauce.Core.Tests`, `Cauce.Auth.Tests` और `Cauce.Desktop.Smoke` नियम, प्रमाणीकरण की सीमाएँ और इंटरफ़ेस की स्थितियाँ जाँचते हैं। CI की तस्वीरें वास्तविक कंप्यूटर और बड़ी लाइब्रेरी पर संसाधन-मापन का विकल्प नहीं हैं।
+
+[मुख्य पृष्ठ](../../../README.hi.md) · [अंग्रेज़ी गाइड](../../architecture.md)

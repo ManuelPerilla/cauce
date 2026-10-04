@@ -1,82 +1,44 @@
-# Code signing policy
+# Cauce code signing policy
 
-[Documentation home](../README.md) · [Security](security.md) · [Releasing](releasing.md)
+[Documentation](README.md) · [Security](security.md) · [Releasing](releasing.md)
 
-This page defines the code-signing governance for official NgMusic Windows releases.
+This policy governs signing of official Cauce Windows artifacts. The current `0.6.0-alpha.1` preview is unsigned. No certificate is included, and SignPath Foundation approval/configuration is not established. The repository has no `LICENSE` file; the owner must choose an appropriate license before pursuing a Foundation route that requires one.
 
-## Status
+## Scope and roles
 
-SignPath Foundation approval is currently pending.
+Only Cauce artifacts built from [ManuelPerilla/cauce](https://github.com/ManuelPerilla/cauce) source and the maintained pipeline are eligible for project signing. Its identity must not sign unrelated projects, third-party proprietary payloads, unverifiable locally modified binaries or artifacts outside the approved process.
 
-When SignPath signing is active for NgMusic official releases:
-
-**Free code signing provided by SignPath.io, certificate by SignPath Foundation.**
-
-Unsigned historical releases must not be represented as signed.
-
-## Scope
-
-Only artifacts produced from the official `ManuelPerilla/cauce` repository and its maintained build scripts are eligible for project signing.
-
-NgMusic must not use its signing identity to sign unrelated projects, third-party proprietary code, locally modified binaries with unverifiable provenance, or artifacts produced outside the approved release pipeline.
-
-## Team roles
-
-Current project governance:
+Current governance:
 
 - **Committer:** [ManuelPerilla](https://github.com/ManuelPerilla)
 - **Reviewer:** [ManuelPerilla](https://github.com/ManuelPerilla)
 - **Signing approver:** [ManuelPerilla](https://github.com/ManuelPerilla)
 
-External pull requests must be reviewed by the maintainer before merge. Signing requests require an explicit human approval by the signing approver.
+External pull requests require maintainer review before merge. **Signing requests require explicit human approval by the signing approver.** Update these roles if the team changes.
 
-If the maintainer team grows, this document must be updated to list the applicable committers, reviewers, and approvers or link to maintained GitHub teams.
+## Access and provenance
 
-## Access requirements
-
-Maintainers with repository or signing access are required to use multi-factor authentication on GitHub and the signing service.
-
-Signing credentials/private keys must never be exported into source control, GitHub logs, build artifacts, or developer-accessible plaintext secrets.
-
-## Build provenance
+Maintainers with repository/signing access must use multi-factor authentication on GitHub and the signing service. Private keys and credentials must never enter source control, build logs, downloadable artifacts or developer-accessible plaintext files.
 
 Official signed artifacts must:
 
-1. originate from source in this repository;
-2. be produced by the maintained automated Windows build pipeline;
-3. preserve consistent product/version metadata;
-4. pass the normal release build before signing;
-5. be manually approved for signing;
-6. be published through the official GitHub Release process.
+1. originate from reviewed source in this repository;
+2. use the maintained automated Windows build pipeline;
+3. preserve consistent Cauce product/version metadata;
+4. pass relevant checks and the release build;
+5. receive human approval for signing;
+6. have signatures and timestamps verified before publication through the official GitHub Release process.
 
-Build scripts and CI configuration are security-sensitive and must receive the same review attention as application code.
+Build scripts, CI permissions, dependencies and account configuration are security-sensitive. Checksums do not substitute for publisher signatures. Unsigned packages must stay clearly labeled unsigned.
 
-## Privacy policy
+## Packaging behavior and privacy
 
-See [Security and privacy](security.md).
+The distribution is a portable x64/ARM64 ZIP. It requires no administrator installation, Program Files changes or `PATH` updates and has no self-updater. Delete the extracted folder to remove the program; manage library metadata separately under `%LOCALAPPDATA%\Cauce` or reset it from **Cuenta**. Reset never removes original music.
 
-NgMusic has no project-operated telemetry backend. Network transfers to Google/YouTube occur only when requested by user-facing functionality such as authentication, search, or playback.
-
-Third-party Google/YouTube services remain governed by their respective privacy policies and terms.
-
-## System changes
-
-The MSI installs application files under Program Files, registers uninstall/upgrade information, and modifies the system `PATH` to expose the `ngmusic` command. The portable distribution does not make these installation changes.
-
-These behaviors must remain documented on the download/installation page.
-
-## Uninstallation
-
-The MSI must support standard Windows uninstallation. Portable installations can be removed by deleting the extracted application directory; saved OAuth credentials can be removed with `logout` or through Windows Credential Manager.
+Cauce has no telemetry backend or automatic report uploads. Local playback is independent of accounts. Optional broker sign-in and external links have their own boundaries, described in [security and privacy](security.md). Signing does not authorize extra data collection.
 
 ## Incident handling
 
-If a signed release is suspected of containing malicious or unintended code, the maintainer must:
+If a signed artifact is suspected of containing malicious or unintended code, pause signing/publication, identify affected versions/hashes, preserve build/signing evidence, investigate source/dependencies/workflows/approvals, coordinate certificate or signature revocation when required, and publish remediation guidance.
 
-1. stop or pause further signing/releases;
-2. identify affected versions/artifacts;
-3. preserve logs and build provenance;
-4. investigate source, dependencies, build scripts, and signing approvals;
-5. coordinate certificate/signature revocation with the signing provider when required;
-6. publish a clear remediation notice for users.
-
+This policy documents governance; it does not establish an active certificate, approved signing service or signed public release.
