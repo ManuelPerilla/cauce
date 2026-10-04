@@ -20,7 +20,7 @@ concurrency:
 jobs:
   verify-and-package:
     runs-on: windows-latest
-    timeout-minutes: 35
+    timeout-minutes: 50
     outputs:
       version: ${{ steps.version.outputs.version }}
     env:
@@ -64,11 +64,20 @@ jobs:
           name: cauce-release-ui-verification
           path: artifacts/cauce-smoke
           retention-days: 7
+      - name: Install packaging tools
+        shell: pwsh
+        run: |
+          dotnet tool install --global wix --version 4.0.6
+          if ($LASTEXITCODE -ne 0) { throw 'WiX installation failed.' }
+          choco install innosetup --version=6.4.3 --yes --no-progress
+          if ($LASTEXITCODE -ne 0) { throw 'Inno Setup installation failed.' }
       - name: Package unsigned x64 and ARM64 releases
         shell: pwsh
         env:
           RELEASE_VERSION: ${{ steps.version.outputs.version }}
-        run: ./build/release.ps1 -Version $env:RELEASE_VERSION
+        run: |
+          ./build/release.ps1 -Version $env:RELEASE_VERSION
+          ./build/installers.ps1 -Version $env:RELEASE_VERSION
       - uses: actions/upload-artifact@v4
         with:
           name: cauce-release-packages
@@ -100,7 +109,7 @@ jobs:
           $tag = "v$version"
           $releaseDirectory = Join-Path $PWD 'artifacts/release'
           $assets = @(Get-ChildItem -LiteralPath $releaseDirectory -File | ForEach-Object { $_.FullName })
-          if ($assets.Count -ne 3) { throw 'Expected two portable packages and SHA256SUMS.txt.' }
+          if ($assets.Count -ne 7) { throw 'Expected six Windows packages and SHA256SUMS.txt.' }
           $releases = gh api --paginate --slurp "repos/$env:GH_REPO/releases?per_page=100"
           if ($LASTEXITCODE -ne 0) { throw 'Could not verify existing releases; no release was changed.' }
           $existing = @($releases | ConvertFrom-Json) | ForEach-Object { $_ } | Where-Object { $_.tag_name -eq $tag }
@@ -108,7 +117,9 @@ jobs:
           $notes = @(
             "Cauce $version — unsigned preview"
             ''
-            'Portable Windows x64 and ARM64 packages. Extract the ZIP and run Cauce.exe.'
+            'Windows x64 and ARM64: EXE setup, MSI installer and self-contained portable ZIP.'
+            'For portable use, extract the ZIP and run Cauce.exe. Installers create a Start menu shortcut.'
+            'EXE and MSI use separate installation folders; use one installer format per device.'
             'SHA256SUMS.txt records each package hash; each ZIP also contains file hashes.'
             'Local playback, reference-only library, deterministic genre sessions and a compact interface.'
             'External services remain links. Social sign-in requires an identity service and registered providers.'
