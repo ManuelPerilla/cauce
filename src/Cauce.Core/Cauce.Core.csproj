@@ -5,6 +5,12 @@
     <Nullable>enable</Nullable>
     <RootNamespace>Cauce.Core</RootNamespace>
     <AssemblyName>Cauce.Core</AssemblyName>
+    <IsPackable>true</IsPackable>
+    <PackageId>Cauce.Core</PackageId>
+    <PackageProjectUrl>https://github.com/ManuelPerilla/cauce</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/ManuelPerilla/cauce</RepositoryUrl>
+    <PackageTags>cauce;music;library;queue</PackageTags>
     <Description>Local library and transparent queue planning for Cauce.</Description>
   </PropertyGroup>
 </Project>
