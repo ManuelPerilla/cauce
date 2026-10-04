@@ -82,7 +82,7 @@ jobs:
         run: |
           dotnet tool install --global wix --version 4.0.6
           if ($LASTEXITCODE -ne 0) { throw 'WiX installation failed.' }
-          choco install innosetup --version=6.4.3 --yes --no-progress
+          choco install innosetup --version=6.4.3 --allow-downgrade --yes --no-progress
           if ($LASTEXITCODE -ne 0) { throw 'Inno Setup installation failed.' }
       - name: Package unsigned x64 and ARM64 releases
         shell: pwsh
