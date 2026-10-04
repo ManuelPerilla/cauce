@@ -17,6 +17,7 @@ External pull requests require maintainer review before merge. Changes to authen
 Use Windows with the .NET 10 SDK:
 
 ```powershell
+./build/check-repository.ps1
 ./build/dev.ps1
 dotnet run --project tests/Cauce.Core.Tests -c Release
 dotnet run --project tests/Cauce.Auth.Tests -c Release
