@@ -85,7 +85,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-  draft-release:
+  publish-release:
     needs: verify-and-package
     runs-on: windows-latest
     timeout-minutes: 10
@@ -96,7 +96,7 @@ jobs:
         with:
           name: cauce-release-packages
           path: artifacts/release
-      - name: Create a new draft release
+      - name: Publish release packages
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
@@ -127,7 +127,7 @@ jobs:
           )
           $notesPath = Join-Path $PWD 'cauce-release-notes.md'
           $notes | Set-Content -LiteralPath $notesPath -Encoding utf8
-          $arguments = @('release', 'create', $tag) + $assets + @('--repo', $env:GH_REPO, '--target', $env:RELEASE_COMMIT, '--title', "Cauce v$version", '--notes-file', $notesPath, '--draft')
+          $arguments = @('release', 'create', $tag) + $assets + @('--repo', $env:GH_REPO, '--target', $env:RELEASE_COMMIT, '--title', "Cauce v$version", '--notes-file', $notesPath)
           if ($version.Split('+')[0].Contains('-')) { $arguments += '--prerelease' }
           gh @arguments
-          if ($LASTEXITCODE -ne 0) { throw 'Draft release creation failed.' }
+          if ($LASTEXITCODE -ne 0) { throw 'Release publication failed.' }
